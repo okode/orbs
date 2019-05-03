@@ -1,0 +1,115 @@
+version: 2.1
+
+description: |
+  Build fullstack applications based on Ionic and Spring Boot
+  Repository: https://github.com/okode/orbs
+
+cache-key-npm: &cache-key-npm
+  key: cache-npm-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "package-lock.json" }}
+
+cache-key-gradle: &cache-key-gradle
+  key: cache-gradle-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "build.gradle" }}
+
+executors:
+  java:
+    docker:
+      - image: circleci/openjdk:8u181
+  node:
+    docker:
+      - image: circleci/node:11-browsers
+
+jobs:
+  app:
+    parameters:
+      dir:
+        type: string
+        default: app
+      package:
+        type: boolean
+        default: false
+    executor: node
+    working_directory: ~/project/<<parameters.dir>>
+    steps:
+      - checkout:
+          path: ~/project
+      - restore_cache:
+          <<: *cache-key-npm
+      - run:
+          name: Installing NPM dependencies
+          command: if [ ! -d "node_modules" ]; then npm ci; fi
+      - run:
+          name: Restoring package-lock.json
+          command: git checkout package-lock.json
+      - save_cache:
+          <<: *cache-key-npm
+          paths:
+            - node_modules
+      - when:
+          condition: <<parameters.package>>
+          steps:
+            - run:
+                name: Installing Ionic
+                command: sudo npm install -g ionic
+            - run:
+                name: Building
+                command: ionic build --prod
+            - persist_to_workspace:
+                root: .
+                paths:
+                  - www
+      - unless:
+          condition: <<parameters.package>>
+          steps:
+            - run:
+                name: Building
+                command: npm run build
+            - run:
+                name: Running unit tests
+                command: npm run test -- --watch=false --progress=false --configuration test
+            - run:
+                name: Running e2e tests
+                command: npm run e2e -- --configuration ci
+            - store_test_results:
+                path: test-results
+  server:
+    parameters:
+      dir:
+        type: string
+        default: server
+      package:
+        type: boolean
+        default: false
+    executor: java
+    working_directory: ~/project/<<parameters.dir>>
+    steps:
+      - checkout:
+          path: ~/project
+      - restore_cache:
+          <<: *cache-key-gradle
+      - when:
+          condition: <<parameters.package>>
+          steps:
+            - attach_workspace:
+                at: /tmp/workspace
+            - run:
+                name: Copying resources
+                command: mkdir -p src/main/resources/static && cp -R /tmp/workspace/www/* src/main/resources/static
+            - run:
+                name: Building and Packaging
+                command: ./gradlew bootJar
+            - persist_to_workspace:
+                root: .
+                paths:
+                  - build/libs
+      - unless:
+          condition: <<parameters.package>>
+          steps:
+            - run:
+                name: Building
+                command: ./gradlew build
+            - store_test_results:
+                path: build/test-results
+      - save_cache:
+          <<: *cache-key-gradle
+          paths:
+            - ~/.gradle
