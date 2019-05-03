@@ -21,19 +21,19 @@ executors:
 jobs:
   app:
     parameters:
-      dir:
+      path:
         type: string
         default: app
       package:
         type: boolean
         default: false
     executor: node
-    working_directory: ~/project/<<parameters.dir>>
+    working_directory: ~/project/<< parameters.path >>
     steps:
       - checkout:
           path: ~/project
       - restore_cache:
-          <<: *cache-key-npm
+          << : *cache-key-npm
       - run:
           name: Installing NPM dependencies
           command: if [ ! -d "node_modules" ]; then npm ci; fi
@@ -41,11 +41,11 @@ jobs:
           name: Restoring package-lock.json
           command: git checkout package-lock.json
       - save_cache:
-          <<: *cache-key-npm
+          << : *cache-key-npm
           paths:
             - node_modules
       - when:
-          condition: <<parameters.package>>
+          condition: << parameters.package >>
           steps:
             - run:
                 name: Installing Ionic
@@ -58,7 +58,7 @@ jobs:
                 paths:
                   - www
       - unless:
-          condition: <<parameters.package>>
+          condition: << parameters.package >>
           steps:
             - run:
                 name: Building
@@ -73,21 +73,21 @@ jobs:
                 path: test-results
   server:
     parameters:
-      dir:
+      path:
         type: string
         default: server
       package:
         type: boolean
         default: false
     executor: java
-    working_directory: ~/project/<<parameters.dir>>
+    working_directory: ~/project/<< parameters.path >>
     steps:
       - checkout:
           path: ~/project
       - restore_cache:
-          <<: *cache-key-gradle
+          << : *cache-key-gradle
       - when:
-          condition: <<parameters.package>>
+          condition: << parameters.package >>
           steps:
             - attach_workspace:
                 at: /tmp/workspace
@@ -102,7 +102,7 @@ jobs:
                 paths:
                   - build/libs
       - unless:
-          condition: <<parameters.package>>
+          condition: << parameters.package >>
           steps:
             - run:
                 name: Building
@@ -110,6 +110,6 @@ jobs:
             - store_test_results:
                 path: build/test-results
       - save_cache:
-          <<: *cache-key-gradle
+          << : *cache-key-gradle
           paths:
             - ~/.gradle
