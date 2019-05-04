@@ -16,7 +16,7 @@ cache-key-sonar: &cache-key-sonar
 executors:
   java:
     docker:
-      - image: circleci/openjdk:8
+      - image: circleci/openjdk:8-node
   node:
     docker:
       - image: circleci/node:11-browsers
