@@ -120,7 +120,6 @@ jobs:
     parameters:
       path:
         type: string
-        default: app
     executor: java
     working_directory: ~/project/<< parameters.path >>
     steps:
