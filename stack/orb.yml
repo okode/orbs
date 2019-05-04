@@ -8,7 +8,10 @@ cache-key-npm: &cache-key-npm
   key: cache-npm-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "package-lock.json" }}
 
 cache-key-gradle: &cache-key-gradle
-  key: cache-gradle-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "build.gradle" }}
+  key: cache-gradle-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "build.gradle" }}
+
+cache-key-sonar: &cache-key-sonar
+  key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "sonar-project.properties" }}
 
 executors:
   java:
@@ -113,3 +116,25 @@ jobs:
           << : *cache-key-gradle
           paths:
             - ~/.gradle
+  scan:
+    parameters:
+      path:
+        type: string
+        default: app
+    executor: java
+    working_directory: ~/project/<< parameters.path >>
+    steps:
+      - checkout:
+          path: ~/project
+      - run:
+          name: Download Sonar scanner
+          command: curl -L http://central.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/3.3.0.1492/sonar-scanner-cli-3.3.0.1492.jar > sonar-scanner.jar
+      - restore_cache:
+          << : *cache-key-sonar
+      - run:
+          name: Scanning
+          command: java -jar sonar-scanner.jar
+      - save_cache:
+          << : *cache-key-npm
+          paths:
+            - ~/.sonar
