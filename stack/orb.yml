@@ -120,11 +120,22 @@ jobs:
     parameters:
       path:
         type: string
+      attach-workspace:
+        type: boolean
+        default: false
+      workspace-root:
+        type: string
+        default: << parameters.path >>
     executor: java
     working_directory: ~/project/<< parameters.path >>
     steps:
       - checkout:
           path: ~/project
+      - when:
+          condition: << parameters.attach-workspace >>
+          steps:
+            - attach_workspace:
+                at: << parameters.workspace-root >>
       - run:
           name: Download Sonar scanner
           command: curl -L http://central.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/3.3.0.1492/sonar-scanner-cli-3.3.0.1492.jar > sonar-scanner.jar
