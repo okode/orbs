@@ -130,7 +130,7 @@ jobs:
           steps:
             - run:
                 name: Building
-                command: ./gradlew build
+                command: ./gradlew build jacocoTestReport
             - store_test_results:
                 path: build/test-results
             - scan
