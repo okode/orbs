@@ -30,7 +30,7 @@ commands:
           name: Scanning
           command: java -jar sonar-scanner.jar
       - save_cache:
-          << : *cache-key-npm
+          << : *cache-key-sonar
           paths:
             - ~/.sonar
 
