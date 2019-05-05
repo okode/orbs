@@ -133,7 +133,6 @@ jobs:
                 command: ./gradlew build jacocoTestReport
             - store_test_results:
                 path: build/test-results
-            - scan
       - save_cache:
           << : *cache-key-gradle
           paths:
