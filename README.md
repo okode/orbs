@@ -16,3 +16,8 @@ $ circleci orb publish promote okode/[name]@dev:first patch
 ### stack
 
 Build and publish fullstack applications based on Ionic and Spring Boot.
+
+```
+$ circleci orb publish stack/orb.yml okode/stack@dev:first
+$ circleci orb publish promote okode/stack@dev:first patch
+```
