@@ -18,22 +18,6 @@ executors:
     docker:
       - image: circleci/openjdk:8-node-browsers
 
-commands:
-  scan:
-    steps:
-      - run:
-          name: Download Sonar scanner
-          command: curl -L http://central.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/3.3.0.1492/sonar-scanner-cli-3.3.0.1492.jar > sonar-scanner.jar
-      - restore_cache:
-          << : *cache-key-sonar
-      - run:
-          name: Scanning
-          command: java -jar sonar-scanner.jar
-      - save_cache:
-          << : *cache-key-sonar
-          paths:
-            - ~/.sonar
-
 jobs:
   app:
     parameters:
@@ -94,7 +78,18 @@ jobs:
                 command: npm run e2e
             - store_test_results:
                 path: test-results
-            - scan
+            - run:
+                name: Download Sonar scanner
+                command: curl -L http://central.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/3.3.0.1492/sonar-scanner-cli-3.3.0.1492.jar > sonar-scanner.jar
+            - restore_cache:
+                << : *cache-key-sonar
+            - run:
+                name: Scanning
+                command: java -jar sonar-scanner.jar
+            - save_cache:
+                << : *cache-key-sonar
+                paths:
+                  - ~/.sonar
   server:
     parameters:
       path:
