@@ -1,7 +1,7 @@
 version: 2.1
 
 description: |
-  Build fullstack applications based on Ionic and Spring Boot
+  Build and publish hybrid Apps based on Ionic for iOS / Android.
   Repository: https://github.com/okode/orbs
 
 cache-key-npm: &cache-key-npm

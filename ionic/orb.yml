@@ -1,0 +1,216 @@
+version: 2.1
+
+description: |
+  Build and publish hybrid Apps based on Ionic for iOS / Android
+  Repository: https://github.com/okode/orbs
+
+cache-key-npm: &cache-key-npm
+  key: cache-npm-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "package-lock.json" }}
+
+cache-key-gradle: &cache-key-gradle
+  key: cache-gradle-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "plugins/fetch.json" }}
+
+cache-key-sonar: &cache-key-sonar
+  key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "sonar-project.properties" }}
+
+cache-key-cocoapods: &cache-key-cocoapods
+  key: cache-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "plugins/fetch.json" }}
+
+executors:
+  node:
+    docker:
+      - image: circleci/node:12
+  java-node:
+    docker:
+      - image: circleci/openjdk:8-node-browsers
+  android:
+    docker:
+      - image: circleci/android:api-28-node
+  ios:
+    macos:
+      xcode: "10.2.1"
+
+jobs:
+  test:
+    executor: java-node
+    steps:
+      - checkout
+      - restore_cache:
+          << : *cache-key-npm
+      - run:
+          name: Installing NPM dependencies
+          command: if [ ! -d "node_modules" ]; then npm ci; fi
+      - run:
+          name: Restoring package-lock.json
+          command: git checkout package-lock.json
+      - save_cache:
+          << : *cache-key-npm
+          paths:
+            - node_modules
+      - run:
+          name: Building
+          command: npm run build
+      - run:
+          name: Updating Chrome
+          command: |
+            wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+            sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+            sudo apt-get update
+            sudo apt-get install google-chrome-stable
+      - run:
+          name: Running unit tests
+          command: npm run test -- --configuration ci
+      - run:
+          name: Running e2e tests
+          command: npm run e2e
+      - store_test_results:
+          path: test-results
+      - run:
+          name: Download Sonar scanner
+          command: curl -L http://central.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/3.3.0.1492/sonar-scanner-cli-3.3.0.1492.jar > sonar-scanner.jar
+      - restore_cache:
+          << : *cache-key-sonar
+      - run:
+          name: Scanning
+          command: java -jar sonar-scanner.jar
+      - save_cache:
+          << : *cache-key-sonar
+          paths:
+            - ~/.sonar
+  ios:
+    parameters:
+      use-node-10:
+        type: boolean
+        default: false
+      dev-signing-password:
+        type: string
+      dist-signing-password:
+        type: string
+    executor: ios
+    steps:
+      - checkout
+      - when:
+          condition: << parameters.use-node-10 >>
+          steps:
+            - run:
+                name: Downgrading Node version 10
+                command: |
+                  brew install node@10
+                  rm /usr/local/bin/node
+                  ln -s /usr/local/opt/node@10/bin/node /usr/local/bin/node
+      - restore_cache:
+          << : *cache-key-npm
+      - run:
+          name: Installing NPM dependencies
+          command: if [ ! -d "node_modules" ]; then npm install; fi
+      - run:
+          name: Restoring package-lock.json
+          command: git checkout package-lock.json
+      - save_cache:
+          << : *cache-key-npm
+          paths:
+            - node_modules
+      - run:
+          name: Installing CI dependencies
+          command: npx cci ci install
+      - run:
+          name: Installing Certificates
+          command: npx cci ci keychain << parameters.dev-signing-password >> << parameters.dist-signing-password >>
+      - restore_cache:
+          << : *cache-key-cocoapods
+      - run:
+          name: Installing Cocoapods dependencies
+          command: pod setup
+      - run:
+          name: Building
+          command: scripts/build.sh
+          no_output_timeout: 30m
+      - persist_to_workspace:
+          root: .
+          paths:
+            - output
+      - run:
+          name: Restoring plugins/fetch.json
+          command: git checkout plugins/fetch.json
+      - save_cache:
+          << : *cache-key-cocoapods
+          paths:
+            - ~/.cocoapods
+  android:
+    parameters:
+      use-node-11:
+        type: boolean
+        default: false
+    executor: android
+    steps:
+      - checkout
+      - when:
+          condition: << parameters.use-node-11 >>
+          steps:
+            - run:
+                name: Upgrading Node version 11
+                command: |
+                  curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
+                  sudo apt-get -qq install -y nodejs
+      - restore_cache:
+          << : *cache-key-npm
+      - run:
+          name: Installing NPM dependencies
+          command: if [ ! -d "node_modules" ]; then npm install; fi
+      - run:
+          name: Restoring package-lock.json
+          command: git checkout package-lock.json
+      - save_cache:
+          << : *cache-key-npm
+          paths:
+            - node_modules
+      - run:
+          name: Installing CI dependencies
+          command: npx cci ci install
+      - restore_cache:
+          << : *cache-key-gradle
+      - run:
+          name: Building
+          command: scripts/build.sh
+          no_output_timeout: 30m
+      - persist_to_workspace:
+          root: .
+          paths:
+            - output
+      - run:
+          name: Restoring plugins/fetch.json
+          command: git checkout plugins/fetch.json
+      - save_cache:
+          << : *cache-key-gradle
+          paths:
+            - ~/.gradle/caches
+  fabric-ios:
+    executor: ios
+      steps:
+        - run:
+            name: Fabric iOS not implemented
+            command: echo "Fabric iOS not implemented"
+  fabric-android:
+    executor: android
+      steps:
+        - run:
+            name: Fabric Android not implemented
+            command: echo "Fabric Android not implemented"
+  testflight:
+    executor: ios
+      steps:
+        - run:
+            name: TestFlight not implemented
+            command: echo "TestFlight iOS not implemented"
+  googleplay:
+    executor: android
+      steps:
+        - run:
+            name: Google PLay not implemented
+            command: echo "Google Play not implemented"
+  browserstack:
+    executor: node
+      steps:
+        - run:
+            name: BrowserStack not implemented
+            command: echo "BrowserStack not implemented"
