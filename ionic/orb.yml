@@ -35,6 +35,15 @@ jobs:
     executor: java-node
     steps:
       - checkout
+      - run:
+          name: Upgrading Node version 12
+          command: |
+            curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+            sudo apt-get -qq install -y nodejs
+            sudo rm -f /usr/local/bin/node /usr/local/bin/npm /usr/local/bin/npx
+            sudo ln -s /usr/bin/node /usr/local/bin
+            sudo ln -s /usr/bin/npm /usr/local/bin
+            sudo ln -s /usr/bin/npx /usr/local/bin
       - restore_cache:
           << : *cache-key-npm
       - run:
@@ -79,9 +88,6 @@ jobs:
             - ~/.sonar
   ios:
     parameters:
-      use-node-10:
-        type: boolean
-        default: false
       dev-signing-password:
         type: string
       dist-signing-password:
@@ -89,20 +95,11 @@ jobs:
     executor: ios
     steps:
       - checkout
-      - when:
-          condition: << parameters.use-node-10 >>
-          steps:
-            - run:
-                name: Downgrading Node version 10
-                command: |
-                  brew install node@10
-                  rm /usr/local/bin/node
-                  ln -s /usr/local/opt/node@10/bin/node /usr/local/bin/node
       - restore_cache:
           << : *cache-key-npm
       - run:
           name: Installing NPM dependencies
-          command: if [ ! -d "node_modules" ]; then npm install; fi
+          command: if [ ! -d "node_modules" ]; then npm ci; fi
       - run:
           name: Restoring package-lock.json
           command: git checkout package-lock.json
@@ -137,21 +134,18 @@ jobs:
           paths:
             - ~/.cocoapods
   android:
-    parameters:
-      use-node-11:
-        type: boolean
-        default: false
     executor: android
     steps:
       - checkout
-      - when:
-          condition: << parameters.use-node-11 >>
-          steps:
-            - run:
-                name: Upgrading Node version 11
-                command: |
-                  curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
-                  sudo apt-get -qq install -y nodejs
+      - run:
+          name: Upgrading Node version 12
+          command: |
+            curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+            sudo apt-get -qq install -y nodejs
+            sudo rm -f /usr/local/bin/node /usr/local/bin/npm /usr/local/bin/npx
+            sudo ln -s /usr/bin/node /usr/local/bin
+            sudo ln -s /usr/bin/npm /usr/local/bin
+            sudo ln -s /usr/bin/npx /usr/local/bin
       - restore_cache:
           << : *cache-key-npm
       - run:
