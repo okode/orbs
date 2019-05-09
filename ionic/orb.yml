@@ -75,6 +75,9 @@ jobs:
       - store_test_results:
           path: test-results
       - run:
+          name: Running lint
+          command: npx ng lint --force --format=json app > lint-results.json
+      - run:
           name: Download Sonar scanner
           command: curl -L http://central.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/3.3.0.1492/sonar-scanner-cli-3.3.0.1492.jar > sonar-scanner.jar
       - restore_cache:
