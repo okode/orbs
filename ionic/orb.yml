@@ -92,6 +92,9 @@ jobs:
         type: string
       dist-signing-password:
         type: string
+      pod-setup:
+        type: boolean
+        default: false
     executor: ios
     steps:
       - checkout
@@ -113,11 +116,14 @@ jobs:
       - run:
           name: Installing Certificates
           command: npx cci ci keychain << parameters.dev-signing-password >> << parameters.dist-signing-password >>
-      - restore_cache:
-          << : *cache-key-cocoapods
-      - run:
-          name: Installing Cocoapods dependencies
-          command: pod setup
+      - when:
+          condition: << parameters.pod-setup >>
+          steps:
+            - restore_cache:
+                << : *cache-key-cocoapods
+            - run:
+                name: Installing Cocoapods dependencies
+                command: pod setup
       - run:
           name: Building
           command: scripts/build.sh
@@ -126,13 +132,16 @@ jobs:
           root: .
           paths:
             - output
-      - run:
-          name: Restoring plugins/fetch.json
-          command: git checkout plugins/fetch.json
-      - save_cache:
-          << : *cache-key-cocoapods
-          paths:
-            - ~/.cocoapods
+      - when:
+          condition: << parameters.pod-setup >>
+          steps:
+            - run:
+                name: Restoring plugins/fetch.json
+                command: git checkout plugins/fetch.json
+            - save_cache:
+                << : *cache-key-cocoapods
+                paths:
+                  - ~/.cocoapods
       - run:
           name: Deploying
           command: scripts/deploy.sh
