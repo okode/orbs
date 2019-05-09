@@ -122,10 +122,6 @@ jobs:
           name: Building
           command: scripts/build.sh
           no_output_timeout: 30m
-      - persist_to_workspace:
-          root: .
-          paths:
-            - output
       - run:
           name: Restoring plugins/fetch.json
           command: git checkout plugins/fetch.json
@@ -133,6 +129,9 @@ jobs:
           << : *cache-key-cocoapods
           paths:
             - ~/.cocoapods
+      - run:
+          name: Deploying
+          command: scripts/deploy.sh
   android:
     executor: android
     steps:
@@ -167,10 +166,6 @@ jobs:
           name: Building
           command: scripts/build.sh
           no_output_timeout: 30m
-      - persist_to_workspace:
-          root: .
-          paths:
-            - output
       - run:
           name: Restoring plugins/fetch.json
           command: git checkout plugins/fetch.json
@@ -178,33 +173,6 @@ jobs:
           << : *cache-key-gradle
           paths:
             - ~/.gradle/caches
-  fabric-ios:
-    executor: ios
-    steps:
       - run:
-          name: Fabric iOS not implemented
-          command: echo "Fabric iOS not implemented"
-  fabric-android:
-    executor: android
-    steps:
-      - run:
-          name: Fabric Android not implemented
-          command: echo "Fabric Android not implemented"
-  testflight:
-    executor: ios
-    steps:
-      - run:
-          name: TestFlight not implemented
-          command: echo "TestFlight iOS not implemented"
-  googleplay:
-    executor: android
-    steps:
-      - run:
-          name: Google PLay not implemented
-          command: echo "Google Play not implemented"
-  browserstack:
-    executor: node
-    steps:
-      - run:
-          name: BrowserStack not implemented
-          command: echo "BrowserStack not implemented"
+          name: Deploying
+          command: scripts/deploy.sh
