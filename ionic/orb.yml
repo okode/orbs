@@ -122,6 +122,10 @@ jobs:
           name: Building
           command: scripts/build.sh
           no_output_timeout: 30m
+      - persist_to_workspace:
+          root: .
+          paths:
+            - output
       - run:
           name: Restoring plugins/fetch.json
           command: git checkout plugins/fetch.json
@@ -166,6 +170,10 @@ jobs:
           name: Building
           command: scripts/build.sh
           no_output_timeout: 30m
+      - persist_to_workspace:
+          root: .
+          paths:
+            - output
       - run:
           name: Restoring plugins/fetch.json
           command: git checkout plugins/fetch.json
