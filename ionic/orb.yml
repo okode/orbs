@@ -58,7 +58,8 @@ jobs:
             - node_modules
       - run:
           name: Building
-          command: npm run build
+          command: npm run build -- --aot
+          
       - run:
           name: Updating Chrome
           command: |
