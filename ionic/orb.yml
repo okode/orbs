@@ -32,6 +32,13 @@ executors:
 
 jobs:
   test:
+    parameters:
+      skip-tests:
+        type: boolean
+        default: false
+      skip-lint:
+        type: boolean
+        default: false
     executor: java-node
     steps:
       - checkout
@@ -59,25 +66,30 @@ jobs:
       - run:
           name: Building
           command: npm run build -- --aot
-          
-      - run:
-          name: Updating Chrome
-          command: |
-            wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-            sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-            sudo apt-get update
-            sudo apt-get install google-chrome-stable
-      - run:
-          name: Running unit tests
-          command: npm run test -- --configuration ci
-      - run:
-          name: Running e2e tests
-          command: npm run e2e
-      - store_test_results:
-          path: test-results
-      - run:
-          name: Running lint
-          command: npx ng lint --force --format=json app > lint-results.json
+      - unless:
+          condition: << parameters.skip-tests >>
+          steps:
+            - run:
+                name: Updating Chrome
+                command: |
+                  wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+                  sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+                  sudo apt-get update
+                  sudo apt-get install google-chrome-stable
+            - run:
+                name: Running unit tests
+                command: npm run test -- --configuration ci
+            - run:
+                name: Running e2e tests
+                command: npm run e2e
+            - store_test_results:
+                path: test-results
+      - unless:
+          condition: << parameters.skip-lint >>
+          steps:
+            - run:
+                name: Running lint
+                command: npx ng lint --force --format=json app > lint-results.json
       - run:
           name: Download Sonar scanner
           command: curl -L http://central.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/3.3.0.1492/sonar-scanner-cli-3.3.0.1492.jar > sonar-scanner.jar
