@@ -4,6 +4,9 @@ description: |
   Common commands for building Okode projects
   Repository: https://github.com/okode/orbs
 
+cache-key-npm: &cache-key-npm
+  key: cache-npm-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "package-lock.json" }}
+
 cache-key-sonar: &cache-key-sonar
   key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "sonar-project.properties" }}
 
@@ -23,3 +26,18 @@ commands:
           << : *cache-key-sonar
           paths:
             - ~/.sonar
+  npm-install:
+    description: "Run npm install"
+    steps:
+      - restore_cache:
+          << : *cache-key-npm
+      - run:
+          name: Installing NPM dependencies
+          command: if [ ! -d "node_modules" ]; then npm ci; fi
+      - run:
+          name: Restoring package-lock.json
+          command: git checkout package-lock.json
+      - save_cache:
+          << : *cache-key-npm
+          paths:
+            - node_modules
