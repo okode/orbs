@@ -10,8 +10,8 @@ cache-key-npm: &cache-key-npm
 cache-key-gradle: &cache-key-gradle
   key: cache-gradle-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "build.gradle" }}
 
-cache-key-sonar: &cache-key-sonar
-  key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "sonar-project.properties" }}
+orbs:
+  common: okode/common@dev:first
 
 executors:
   java-node:
@@ -78,18 +78,7 @@ jobs:
                 command: npm run e2e
             - store_test_results:
                 path: test-results
-            - run:
-                name: Download Sonar scanner
-                command: curl -L http://central.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/3.3.0.1492/sonar-scanner-cli-3.3.0.1492.jar > sonar-scanner.jar
-            - restore_cache:
-                << : *cache-key-sonar
-            - run:
-                name: Scanning
-                command: java -jar sonar-scanner.jar
-            - save_cache:
-                << : *cache-key-sonar
-                paths:
-                  - ~/.sonar
+            - common/sonar
   server:
     parameters:
       path:
