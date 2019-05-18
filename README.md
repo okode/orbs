@@ -2,6 +2,12 @@
 
 A set of orbs for continuous integration for Okode projects.
 
+## Creating
+
+```
+$ circleci orb create okode/<orb>
+```
+
 ## Publishing
 
 ```
@@ -12,6 +18,15 @@ $ circleci orb publish promote okode/[name]@dev:first patch
 ```
 
 ## Orbs
+
+### common
+
+Common commands for building Okode projects.
+
+```
+$ circleci orb publish common/orb.yml okode/common@dev:first
+$ circleci orb publish promote okode/common@dev:first patch
+```
 
 ### stack
 

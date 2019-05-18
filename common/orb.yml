@@ -1,0 +1,25 @@
+version: 2.1
+
+description: |
+  Common commands for building Okode projects
+  Repository: https://github.com/okode/orbs
+
+cache-key-sonar: &cache-key-sonar
+  key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "sonar-project.properties" }}
+
+commands:
+  sonar:
+    description: "Run Sonar scanner"
+    steps:
+      - run:
+          name: Downloading Sonar scanner
+          command: curl -L http://central.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/3.3.0.1492/sonar-scanner-cli-3.3.0.1492.jar > sonar-scanner.jar
+      - restore_cache:
+          << : *cache-key-sonar
+      - run:
+          name: Scanning
+          command: java -jar sonar-scanner.jar
+      - save_cache:
+          << : *cache-key-sonar
+          paths:
+            - ~/.sonar
