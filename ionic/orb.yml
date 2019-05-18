@@ -65,7 +65,7 @@ jobs:
             - node_modules
       - run:
           name: Building
-          command: npm run build -- progress false --aot
+          command: npm run build -- --progress false --aot
       - unless:
           condition: << parameters.skip-tests >>
           steps:
