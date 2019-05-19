@@ -29,6 +29,7 @@ jobs:
     steps:
       - checkout:
           path: ~/project
+      - common/node-upgrade
       - common/npm-install
       - when:
           condition: << parameters.package >>
