@@ -39,15 +39,7 @@ jobs:
     executor: java-node
     steps:
       - checkout
-      - run:
-          name: Upgrading Node version 12
-          command: |
-            curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
-            sudo apt-get -qq install -y nodejs
-            sudo rm -f /usr/local/bin/node /usr/local/bin/npm /usr/local/bin/npx
-            sudo ln -s /usr/bin/node /usr/local/bin
-            sudo ln -s /usr/bin/npm /usr/local/bin
-            sudo ln -s /usr/bin/npx /usr/local/bin
+      - common/node-upgrade
       - common/npm-install
       - run:
           name: Building
@@ -129,15 +121,7 @@ jobs:
     executor: android
     steps:
       - checkout
-      - run:
-          name: Upgrading Node version 12
-          command: |
-            curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
-            sudo apt-get -qq install -y nodejs
-            sudo rm -f /usr/local/bin/node /usr/local/bin/npm /usr/local/bin/npx
-            sudo ln -s /usr/bin/node /usr/local/bin
-            sudo ln -s /usr/bin/npm /usr/local/bin
-            sudo ln -s /usr/bin/npx /usr/local/bin
+      - common/node-upgrade
       - common/npm-install
       - run:
           name: Installing CI dependencies
