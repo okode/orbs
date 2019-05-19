@@ -75,6 +75,10 @@ commands:
   sentry-release:
     description: Create Sentry release and uploads sourcemaps from Android bundle
     parameters:
+      org:
+        type: string
+      project:
+        type: string
       auth-token:
         type: string
     steps:
@@ -88,6 +92,9 @@ commands:
           command: cd /output && unzip *.apk
       - run:
           name: Creating Sentry release and uploading sourcemaps
+          environment:
+            SENTRY_ORG: << parameters.org >>
+            SENTRY_PROJECT: << parameters.project >>
           command: |
             cd /output/assets/www
             VERSIONENVIRONMENT=${CIRCLE_TAG%-dist}
@@ -103,9 +110,15 @@ jobs:
   sentry-release:
     description: Create Sentry release and uploads sourcemaps from bundle
     parameters:
+      org:
+        type: string
+      project:
+        type: string
       auth-token:
         type: string
     executor: node
     steps:
       - sentry-release:
+          org: << parameters.org >>
+          project: << parameters.project >>
           auth-token: << parameters.auth-token >>
