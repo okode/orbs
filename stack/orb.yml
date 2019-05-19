@@ -4,9 +4,6 @@ description: |
   Build and publish hybrid Apps based on Ionic for iOS / Android.
   Repository: https://github.com/okode/orbs
 
-cache-key-npm: &cache-key-npm
-  key: cache-npm-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "package-lock.json" }}
-
 cache-key-gradle: &cache-key-gradle
   key: cache-gradle-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "build.gradle" }}
 
@@ -32,18 +29,7 @@ jobs:
     steps:
       - checkout:
           path: ~/project
-      - restore_cache:
-          << : *cache-key-npm
-      - run:
-          name: Installing NPM dependencies
-          command: if [ ! -d "node_modules" ]; then npm ci; fi
-      - run:
-          name: Restoring package-lock.json
-          command: git checkout package-lock.json
-      - save_cache:
-          << : *cache-key-npm
-          paths:
-            - node_modules
+      - common/npm-install
       - when:
           condition: << parameters.package >>
           steps:
@@ -62,7 +48,7 @@ jobs:
           steps:
             - run:
                 name: Building
-                command: npm run build
+                command: npm run build -- --progress false --aot
             - common/chrome-upgrade
             - run:
                 name: Running unit tests
