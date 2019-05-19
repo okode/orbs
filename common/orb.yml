@@ -10,6 +10,11 @@ cache-key-npm: &cache-key-npm
 cache-key-sonar: &cache-key-sonar
   key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "sonar-project.properties" }}
 
+executors:
+  node:
+    docker:
+      - image: circleci/node:12
+
 commands:
   sonar:
     description: "Run Sonar scanner"
@@ -67,3 +72,40 @@ commands:
             sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
             sudo apt-get update
             sudo apt-get install google-chrome-stable
+  sentry-release:
+    description: Create Sentry release and uploads sourcemaps from Android bundle
+    parameters:
+      auth-token:
+        type: string
+    steps:
+      - attach_workspace:
+          at: /output
+      - run:
+          name: Installing Sentry CLI
+          command: sudo npm i -g @sentry/cli --quiet --unsafe-perm
+      - run:
+          name: Uncompress Android bundle
+          command: cd /output && unzip *.apk
+      - run:
+          name: Creating Sentry release and uploading sourcemaps
+          command: |
+            cd /output/assets/www
+            VERSIONENVIRONMENT=${CIRCLE_TAG%-dist}
+            ENVIRONMENT=${VERSIONENVIRONMENT#*-}
+            VERSION=${VERSIONENVIRONMENT%-$ENVIRONMENT}
+            if [[ $CIRCLE_TAG == *-dist ]]; then VERSION=${VERSION}-dist; fi
+            sentry-cli --auth-token << parameters.auth-token >> releases new $VERSION
+            sentry-cli --auth-token << parameters.auth-token >> releases files $VERSION upload-sourcemaps --url-prefix / . > /dev/null 2>&1
+            if [[ $CIRCLE_TAG == *-dist ]]; then sentry-cli --auth-token << parameters.auth-token >> releases deploys $VERSION new -e $ENVIRONMENT; fi
+            sentry-cli --auth-token << parameters.auth-token >> releases finalize $VERSION
+
+jobs:
+  sentry-release:
+    description: Create Sentry release and uploads sourcemaps from bundle
+    parameters:
+      auth-token:
+        type: string
+    executor: node
+    steps:
+      - sentry-release:
+          auth-token: << parameters.auth-token >>
