@@ -63,8 +63,23 @@ jobs:
                 name: Running lint
                 command: npx ng lint --force --format=json app > lint-results.json
       - common/sonar
+  pwa:
+    executor: node
+    steps:
+      - checkout
+      - common/npm-install
+      - run:
+          name: Building
+          command: npm run build -- --progress false --prod
+      - persist_to_workspace:
+          root: .
+          paths:
+            - www
   ios:
     parameters:
+      attach-workspace:
+        type: boolean
+        default: false
       dev-signing-password:
         type: string
       dist-signing-password:
@@ -90,6 +105,11 @@ jobs:
             - run:
                 name: Installing Cocoapods dependencies
                 command: pod setup
+      - when:
+          condition: << parameters.attach-workspace >>
+          steps:
+            - attach_workspace:
+                at: .
       - run:
           name: Building
           command: scripts/build.sh
@@ -112,6 +132,10 @@ jobs:
           name: Deploying
           command: scripts/deploy.sh
   android:
+    parameters:
+      attach-workspace:
+        type: boolean
+        default: false
     executor: android
     steps:
       - checkout
@@ -122,6 +146,11 @@ jobs:
           command: npx cci ci install
       - restore_cache:
           << : *cache-key-gradle
+      - when:
+          condition: << parameters.attach-workspace >>
+          steps:
+            - attach_workspace:
+                at: .
       - run:
           name: Building
           command: scripts/build.sh
