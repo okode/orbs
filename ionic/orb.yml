@@ -110,6 +110,9 @@ jobs:
           steps:
             - attach_workspace:
                 at: .
+            - run:
+                name: Clearing sourcemaps
+                command: find www -name *.map -type f -delete
       - run:
           name: Building
           command: scripts/build.sh
