@@ -45,3 +45,12 @@ Build and publish hybrid Apps based on Ionic for iOS / Android.
 $ circleci orb publish ionic/orb.yml okode/ionic@dev:first
 $ circleci orb publish promote okode/ionic@dev:first patch
 ```
+
+### library
+
+Build and publish Ionic/Angular libraries.
+
+```
+$ circleci orb publish library/orb.yml okode/library@dev:first
+$ circleci orb publish promote okode/library@dev:first patch
+```
