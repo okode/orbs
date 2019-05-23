@@ -20,131 +20,71 @@ jobs:
     parameters:
       project:
         type: string
-      scope:
-        type: string
     executor: browsers
     steps:
       - checkout
-      - when:
-          condition: << parameters.project >>
-          steps:
-            - checkout
-            - common/node-upgrade
-            - common/npm-install
-            - when:
-                condition: << parameters.scope >>
-                steps:
-                  - run:
-                      name: Building
-                      command: npm run build -- @<< parameters.scope >>/<< parameters.project >>
-                  - run:
-                      name: Running unit tests
-                      command: npm run test -- @<< parameters.scope >>/<< parameters.project >> --watch false --progress false
-            - unless:
-                condition: << parameters.scope >>
-                steps:
-                  - checkout
-                  - common/node-upgrade
-                  - common/npm-install
-                  - when:
-                    condition: << parameters.scope >>
-                    steps:
-                      - run:
-                          name: Building
-                          command: npm run build -- << parameters.project >>
-                      - run:
-                          name: Running unit tests
-                          command: npm run test -- << parameters.project >> --watch false --progress false
+      - common/node-upgrade
+      - common/npm-install
+      - run:
+          name: Building
+          command: npm run build -- << parameters.project >>
+      - run:
+          name: Running unit tests
+          command: npm run test -- << parameters.project >> --watch false --progress false
   build:
     parameters:
       project:
         type: string
-      output:
-        type: string
-        default: dist
-      scope:
-        type: string
     executor: node
     steps:
-    - when:
-        condition: << parameters.project >>
-        steps:
-          - checkout
-          - common/node-upgrade
-          - common/npm-install
-          - when:
-              condition: << parameters.scope >>
-              steps:
-                - run:
-                    name: Building
-                    command: npm run build -- @<< parameters.scope >>/<< parameters.project >>
-          - unless:
-              condition: << parameters.scope >>
-              steps:
-                - run:
-                    name: Building
-                    command: npm run build -- << parameters.project >>
-          - persist_to_workspace:
-              root: ./<< parameters.project >>
-              paths:
-                - << parameters.output >>
-  publish_npm:
+      - checkout
+      - common/node-upgrade
+      - common/npm-install
+      - run:
+          name: Building
+          command: npm run build -- << parameters.project >>
+      - persist_to_workspace:
+          root: .
+          paths:
+            - dist
+  publish-npm:
     parameters:
-      project:
+      path:
         type: string
-      output:
-        type: string
-        default: dist
       access:
         type: string
         default: public
-      scope:
-        type: string
     executor: node
     steps:
-      - when:
-          condition: << parameters.project >>
-          steps:
-            - attach_workspace:
-                at: .
-            - run:
-                name: Installing NPM CLI Login
-                command: sudo npm install -g npm-cli-login
-            - run:
-                name: Authenticating NPM
-                command: npm-cli-login
-            - run:
-                name: Publishing NPM package
-                command: cd << parameters.project >>/<< parameters.output >>/<< parameters.scope >>/<< parameters.project >> && npm publish --access=<< parameters.access >>
-  publish_bitbucket:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Installing NPM CLI Login
+          command: sudo npm install -g npm-cli-login
+      - run:
+          name: Authenticating NPM
+          command: npm-cli-login
+      - run:
+          name: Publishing NPM package
+          command: cd << parameters.path >> && npm publish --access=<< parameters.access >>
+  publish-bitbucket:
     parameters:
-      project:
+      path:
         type: string
       repo:
         type: string
-      output:
-        type: string
-        default: dist
-      scope:
-        type: string
-      team:
-        type: string
-        default: okode
     executor: node
     steps:
-      - when:
-          condition:  << parameters.project >>
-          steps:
-            - attach_workspace:
-              at: .
-            - run:
-                name: Publish NPM package at Bitbcuket
-                command: |
-                  git clone git@bitbucket.org:<< parameters.team >>/<< parameters.repo >>-dist.git
-                  cd << parameters.repo >>-dist
-                  rm -rf *
-                  cp -R ../dist/<< parameters.scope >>/<< parameters.project >>/* .
-                  git add --all
-                  git commit -m "Bumped version $CIRCLE_TAG" || true
-                  git tag $CIRCLE_TAG || true
-                  git push && git push --tags || true
+      - attach_workspace:
+        at: .
+      - run:
+          name: Publish NPM package at Bitbcuket
+          command: |
+            git clone git@bitbucket.org:<< parameters.repo >>-dist.git npmdist
+            cd npmdist
+            rm -rf *
+            cp -R ../<< parameters.path >>/* .
+            git add --all
+            git commit -m "Bumped version $CIRCLE_TAG" || true
+            git tag $CIRCLE_TAG || true
+            git push && git push --tags || true
