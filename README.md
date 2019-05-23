@@ -46,11 +46,11 @@ $ circleci orb publish ionic/orb.yml okode/ionic@dev:first
 $ circleci orb publish promote okode/ionic@dev:first patch
 ```
 
-### library
+### angular
 
 Build and publish Ionic/Angular libraries.
 
 ```
-$ circleci orb publish library/orb.yml okode/library@dev:first
-$ circleci orb publish promote okode/library@dev:first patch
+$ circleci orb publish angular/orb.yml okode/angular@dev:first
+$ circleci orb publish promote okode/angular@dev:first patch
 ```
