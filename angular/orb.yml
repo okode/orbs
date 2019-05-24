@@ -76,11 +76,11 @@ jobs:
     executor: node
     steps:
       - attach_workspace:
-        at: .
+          at: .
       - run:
           name: Publish NPM package at Bitbcuket
           command: |
-            git clone git@bitbucket.org:<< parameters.repo >>-dist.git npmdist
+            git clone -q git@bitbucket.org:<< parameters.repo >>-dist.git npmdist
             cd npmdist
             rm -rf *
             cp -R ../<< parameters.path >>/* .
