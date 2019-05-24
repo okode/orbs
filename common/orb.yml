@@ -73,7 +73,7 @@ commands:
             sudo apt-get update
             sudo apt-get install google-chrome-stable
   sentry-release:
-    description: Create Sentry release and uploads sourcemaps from PWA
+    description: Create Sentry release and uploads sourcemaps from Android bundle
     parameters:
       org:
         type: string
@@ -88,12 +88,15 @@ commands:
           name: Installing Sentry CLI
           command: sudo npm i -g @sentry/cli --quiet --unsafe-perm
       - run:
+          name: Uncompress Android bundle
+          command: cd /tmp/workspace/output && unzip *.apk
+      - run:
           name: Creating Sentry release and uploading sourcemaps
           environment:
             SENTRY_ORG: << parameters.org >>
             SENTRY_PROJECT: << parameters.project >>
           command: |
-            cd /tmp/workspace/www
+            cd /tmp/workspace/output/assets/www
             VERSIONENVIRONMENT=${CIRCLE_TAG%-dist}
             ENVIRONMENT=${VERSIONENVIRONMENT#*-}
             VERSION=${VERSIONENVIRONMENT%-$ENVIRONMENT}
