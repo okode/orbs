@@ -77,9 +77,6 @@ jobs:
             - www
   ios:
     parameters:
-      attach-workspace:
-        type: boolean
-        default: false
       dev-signing-password:
         type: string
       dist-signing-password:
@@ -105,14 +102,6 @@ jobs:
             - run:
                 name: Installing Cocoapods dependencies
                 command: pod setup
-      - when:
-          condition: << parameters.attach-workspace >>
-          steps:
-            - attach_workspace:
-                at: .
-            - run:
-                name: Clearing sourcemaps
-                command: find www -name *.map -type f -delete
       - run:
           name: Building
           command: scripts/build.sh
@@ -135,10 +124,6 @@ jobs:
           name: Deploying
           command: scripts/deploy.sh
   android:
-    parameters:
-      attach-workspace:
-        type: boolean
-        default: false
     executor: android
     steps:
       - checkout
@@ -149,14 +134,6 @@ jobs:
           command: npx cci ci install
       - restore_cache:
           << : *cache-key-gradle
-      - when:
-          condition: << parameters.attach-workspace >>
-          steps:
-            - attach_workspace:
-                at: .
-            - run:
-                name: Clearing sourcemaps
-                command: find www -name *.map -type f -delete
       - run:
           name: Building
           command: scripts/build.sh
