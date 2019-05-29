@@ -36,6 +36,9 @@ jobs:
       skip-lint:
         type: boolean
         default: false
+      skip-sonar:
+        type: boolean
+        default: false
     executor: java-node
     steps:
       - checkout
@@ -62,7 +65,10 @@ jobs:
             - run:
                 name: Running lint
                 command: npx ng lint --force --format=json app > lint-results.json
-      - common/sonar
+      - unless:
+          condition: << parameters.skip-sonar >>
+          steps:
+            - common/sonar
   pwa:
     executor: node
     steps:
