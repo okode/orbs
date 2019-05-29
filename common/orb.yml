@@ -16,8 +16,27 @@ executors:
       - image: circleci/node:12
 
 commands:
+  bitbucket-downloads:
+    description: Upload artifacts to BitBucket Downloads
+    parameters:
+      auth-string:
+        type: string
+      group:
+        type: string
+      repo:
+        type: string
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          name: Upload "Upload artifacts to BitBucket Downloads"
+          command: |
+            cd /tmp/workspace
+            for FILE in *.ipa; do mv $file $(basename ${FILE} .ipa)-${CIRCLE_TAG}.ipa; done
+            for FILE in *.apk; do mv $file $(basename ${FILE} .apk)-${CIRCLE_TAG}.apk; done
+            for FILE in *; do curl -X POST "https://<< parameters.auth-string >>@api.bitbucket.org/2.0/repositories/<< parameters.group >>/<< parameters.repo >>/downloads" --form files=@"${FILE}"; done
   sonar:
-    description: "Run Sonar scanner"
+    description: Run Sonar scanner
     steps:
       - run:
           name: Downloading Sonar scanner
@@ -32,7 +51,7 @@ commands:
           paths:
             - ~/.sonar
   npm-install:
-    description: "Run npm install"
+    description: Run npm install
     steps:
       - restore_cache:
           << : *cache-key-npm
@@ -47,7 +66,7 @@ commands:
           paths:
             - node_modules
   node-upgrade:
-    description: "Upgrades Node"
+    description: Upgrades Node
     parameters:
       version:
         type: string
@@ -119,3 +138,18 @@ jobs:
           org: << parameters.org >>
           project: << parameters.project >>
           auth-token: << parameters.auth-token >>
+  bitbucket-downloads:
+    description: Upload artifacts to BitBucket Downloads
+    parameters:
+      auth-string:
+        type: string
+      group:
+        type: string
+      repo:
+        type: string
+    executor: node
+    steps:
+      - bitbucket-downloads:
+          auth-string: << parameters.auth-string >>
+          group: << parameters.group >>
+          repo: << parameters.repo >>
