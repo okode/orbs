@@ -25,6 +25,8 @@ commands:
         type: string
       repo:
         type: string
+      tag:
+        type: string
     steps:
       - attach_workspace:
           at: /tmp/workspace
@@ -32,8 +34,8 @@ commands:
           name: Upload "Upload artifacts to BitBucket Downloads"
           command: |
             cd /tmp/workspace
-            for FILE in *.ipa; do mv $file $(basename ${FILE} .ipa)-${CIRCLE_TAG}.ipa; done
-            for FILE in *.apk; do mv $file $(basename ${FILE} .apk)-${CIRCLE_TAG}.apk; done
+            for FILE in *.ipa; do mv $file $(basename ${FILE} .ipa)-<< parameters.tag >>.ipa; done
+            for FILE in *.apk; do mv $file $(basename ${FILE} .apk)-<< parameters.tag >>.apk; done
             for FILE in *; do curl -X POST "https://<< parameters.auth-string >>@api.bitbucket.org/2.0/repositories/<< parameters.group >>/<< parameters.repo >>/downloads" --form files=@"${FILE}"; done
   sonar:
     description: Run Sonar scanner
@@ -147,9 +149,12 @@ jobs:
         type: string
       repo:
         type: string
+      tag:
+        type: string
     executor: node
     steps:
       - bitbucket-downloads:
           auth-string: << parameters.auth-string >>
           group: << parameters.group >>
           repo: << parameters.repo >>
+          tag: << parameters.tag >>
