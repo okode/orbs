@@ -80,6 +80,7 @@ jobs:
                 paths:
                   - test-results
                   - lint-results.json
+                  - coverage
   pwa:
     executor: node
     steps:
