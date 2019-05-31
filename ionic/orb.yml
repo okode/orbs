@@ -39,7 +39,7 @@ jobs:
       skip-sonar:
         type: boolean
         default: false
-      persist:
+      persist-results:
         type: boolean
         default: false
     executor: java-node
@@ -73,7 +73,7 @@ jobs:
           steps:
             - common/sonar
       - when:
-          condition: << parameters.persist >>
+          condition: << parameters.persist-results >>
           steps:
             - persist_to_workspace:
                 root: .
