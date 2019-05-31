@@ -163,3 +163,31 @@ jobs:
           repo: << parameters.repo >>
           tag: << parameters.tag >>
           path: << parameters.path >>
+  sonar-vpn:
+    machine: true
+    parameters:
+      vpn-user:
+        type: string
+      vpn-pass:
+        type: string
+      vpn-conf:
+        type: string
+    steps:
+      - checkout
+      - run: |
+          sudo wget -O - https://swupdate.openvpn.net/repos/repo-public.gpg | sudo apt-key add -
+          sudo bash -c 'echo "deb http://build.openvpn.net/debian/openvpn/release/2.4 trusty main" > /etc/apt/sources.list.d/openvpn-aptrepo.list'
+          sudo apt-get update && sudo apt-get install openvpn
+          
+          echo "<< parameters.vpn-conf >>" > /home/circleci/vpn.conf
+          echo "<< parameters.vpn-user >>" > /home/circleci/auth.txt
+          echo "<< parameters.vpn-pass >>" >> /home/circleci/auth.txt
+
+          sudo bash -c "base64 -d /home/circleci/vpn.conf > /etc/openvpn/vpn.conf"
+          sudo cp /home/circleci/auth.txt /etc/openvpn/auth.txt
+
+          sudo openvpn --daemon --config /etc/openvpn/vpn.conf  
+          sudo sleep 2s
+      - attach_workspace:
+          at: .
+      - sonar

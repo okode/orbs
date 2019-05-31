@@ -39,6 +39,9 @@ jobs:
       skip-sonar:
         type: boolean
         default: false
+      persist:
+        type: boolean
+        default: false
     executor: java-node
     steps:
       - checkout
@@ -69,6 +72,14 @@ jobs:
           condition: << parameters.skip-sonar >>
           steps:
             - common/sonar
+      - when:
+          condition: << parameters.persist >>
+          steps:
+            - persist_to_workspace:
+                root: .
+                paths:
+                  - test-results
+                  - lint-results.json
   pwa:
     executor: node
     steps:
