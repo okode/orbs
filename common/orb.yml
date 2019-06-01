@@ -19,11 +19,11 @@ commands:
   vpn:
     description: Start VPN connection
     parameters:
-      vpn-user:
+      user:
         type: string
-      vpn-pass:
+      password:
         type: string
-      vpn-conf:
+      config:
         type: string
     steps:
      - run:
@@ -32,9 +32,9 @@ commands:
             wget -O - https://swupdate.openvpn.net/repos/repo-public.gpg | sudo apt-key add -
             sudo bash -c 'echo "deb http://build.openvpn.net/debian/openvpn/release/2.4 trusty main" > /etc/apt/sources.list.d/openvpn-aptrepo.list'
             sudo apt-get update && sudo apt-get install openvpn
-            echo "<< parameters.vpn-conf >>" > /tmp/vpn.conf
-            echo "<< parameters.vpn-user >>" > /tmp/auth.txt
-            echo "<< parameters.vpn-pass >>" >> /tmp/auth.txt
+            echo "<< parameters.config >>" > /tmp/vpn.conf
+            echo "<< parameters.user >>" > /tmp/auth.txt
+            echo "<< parameters.password >>" >> /tmp/auth.txt
             sudo bash -c "base64 -d /tmp/vpn.conf > /etc/openvpn/vpn.conf"
             sudo cp /tmp/auth.txt /etc/openvpn/auth.txt
             rm -f /tmp/vpn.conf /tmp/auth.txt
@@ -190,11 +190,11 @@ jobs:
   sonar-vpn:
     machine: true
     parameters:
-      vpn-user:
+      user:
         type: string
-      vpn-pass:
+      password:
         type: string
-      vpn-conf:
+      config:
         type: string
       attach-results-path:
         type: string
@@ -202,9 +202,9 @@ jobs:
     steps:
       - checkout
       - vpn:
-          vpn-user: << parameters.vpn-user >>
-          vpn-pass: << parameters.vpn-pass >>
-          vpn-conf: << parameters.vpn-conf >>
+          user: << parameters.user >>
+          password: << parameters.password >>
+          config: << parameters.config >>
       - when:
           condition: << parameters.attach-results-path >>
           steps:
