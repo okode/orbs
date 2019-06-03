@@ -144,7 +144,7 @@ commands:
             VERSIONENVIRONMENT=${CIRCLE_TAG%-dist}
             ENVIRONMENT=${VERSIONENVIRONMENT#*-}
             VERSION=${VERSIONENVIRONMENT%-$ENVIRONMENT}
-            if [[ $CIRCLE_TAG == *-dist ]]; then VERSION=${VERSION}-dist; fi
+            if [[ $CIRCLE_TAG == *-dist ]]; then VERSION=${VERSION}-dist; else VERSION=${CIRCLE_TAG}; fi
             sentry-cli --auth-token << parameters.auth-token >> releases new $VERSION
             sentry-cli --auth-token << parameters.auth-token >> releases files $VERSION upload-sourcemaps --url-prefix / . > /dev/null 2>&1
             if [[ $CIRCLE_TAG == *-dist ]]; then sentry-cli --auth-token << parameters.auth-token >> releases deploys $VERSION new -e $ENVIRONMENT; fi
