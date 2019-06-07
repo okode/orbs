@@ -31,7 +31,7 @@ commands:
           command: |
             wget -O - https://swupdate.openvpn.net/repos/repo-public.gpg | sudo apt-key add -
             sudo bash -c 'echo "deb http://build.openvpn.net/debian/openvpn/release/2.4 trusty main" > /etc/apt/sources.list.d/openvpn-aptrepo.list'
-            sudo apt-get update && sudo apt-get install openvpn
+            sudo killall -9 apt-get || true && sudo apt-get update && sudo apt-get install openvpn
             echo "<< parameters.config >>" > /tmp/vpn.conf
             echo "<< parameters.user >>" > /tmp/auth.txt
             echo "<< parameters.password >>" >> /tmp/auth.txt
