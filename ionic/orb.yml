@@ -5,10 +5,10 @@ description: |
   Repository: https://github.com/okode/orbs
 
 cache-key-gradle: &cache-key-gradle
-  key: cache-gradle-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "plugins/fetch.json" }}
+  key: cache-gradle-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "package-lock.json" }}
 
 cache-key-cocoapods: &cache-key-cocoapods
-  key: cache-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "plugins/fetch.json" }}
+  key: cache-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
 
 orbs:
   common: okode/common@dev:first
