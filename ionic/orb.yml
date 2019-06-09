@@ -143,8 +143,8 @@ jobs:
           condition: << parameters.pod-setup >>
           steps:
             - run:
-                name: Restoring plugins/fetch.json
-                command: git checkout plugins/fetch.json
+                name: Restoring package-lock.json
+                command: git checkout package-lock.json
             - save_cache:
                 << : *cache-key-cocoapods
                 paths:
@@ -184,8 +184,8 @@ jobs:
           paths:
             - output
       - run:
-          name: Restoring plugins/fetch.json
-          command: git checkout plugins/fetch.json
+          name: Restoring package-lock.json
+          command: git checkout package-lock.json
       - save_cache:
           << : *cache-key-gradle
           paths:
