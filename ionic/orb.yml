@@ -8,7 +8,7 @@ cache-key-gradle: &cache-key-gradle
   key: cache-gradle-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "package-lock.json" }}
 
 cache-key-cocoapods: &cache-key-cocoapods
-  key: cache-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
+  key: cache-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "<< parameters.cocoapods-lock-path >>" }}
 
 orbs:
   common: okode/common@dev:first
@@ -102,9 +102,9 @@ jobs:
         type: string
       dist-signing-password:
         type: string
-      pod-setup:
-        type: boolean
-        default: false
+      cocoapods-lock-path:
+        type: string
+        default: ''
     executor: ios
     steps:
       - checkout
@@ -116,7 +116,7 @@ jobs:
           name: Installing Certificates
           command: npx cci ci keychain << parameters.dev-signing-password >> << parameters.dist-signing-password >>
       - when:
-          condition: << parameters.pod-setup >>
+          condition: << parameters.cocoapods-lock-path >>
           steps:
             - restore_cache:
                 << : *cache-key-cocoapods
@@ -140,11 +140,11 @@ jobs:
           paths:
             - output
       - when:
-          condition: << parameters.pod-setup >>
+          condition: << parameters.cocoapods-lock-path >>
           steps:
             - run:
-                name: Restoring package-lock.json
-                command: git checkout package-lock.json
+                name: Restoring << parameters.cocoapods-lock-path >>
+                command: git checkout << parameters.cocoapods-lock-path >>
             - save_cache:
                 << : *cache-key-cocoapods
                 paths:
