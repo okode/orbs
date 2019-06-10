@@ -78,9 +78,11 @@ jobs:
             - persist_to_workspace:
                 root: .
                 paths:
+                  - node_modules
                   - test-results
                   - lint-results.json
                   - coverage
+                  - www
   pwa:
     executor: node
     steps:
