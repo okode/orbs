@@ -71,6 +71,9 @@ jobs:
       package:
         type: boolean
         default: false
+      copy-static-resources:
+        type: boolean
+        default: true
     executor: java-node
     working_directory: ~/project/<< parameters.path >>
     steps:
@@ -81,11 +84,14 @@ jobs:
       - when:
           condition: << parameters.package >>
           steps:
-            - attach_workspace:
-                at: /tmp/workspace
-            - run:
-                name: Copying resources
-                command: mkdir -p src/main/resources/static && cp -R /tmp/workspace/www/* src/main/resources/static
+            - when:
+                condition: << parameters.copy-static-resources >>
+                steps:
+                  - attach_workspace:
+                      at: /tmp/workspace
+                  - run:
+                      name: Copying resources
+                      command: mkdir -p src/main/resources/static && cp -R /tmp/workspace/www/* src/main/resources/static
             - run:
                 name: Building and Packaging
                 command: ./gradlew bootJar
