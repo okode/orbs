@@ -39,7 +39,8 @@ commands:
             sudo bash -c "base64 -d /tmp/vpn.conf > /etc/openvpn/vpn.conf"
             sudo cp /tmp/auth.txt /etc/openvpn/auth.txt
             rm -f /tmp/vpn.conf /tmp/auth.txt
-            sudo openvpn --daemon --config /etc/openvpn/vpn.conf  
+            sudo openvpn --daemon --config /etc/openvpn/vpn.conf
+            sleep 10
   bitbucket-downloads:
     description: Upload artifacts to BitBucket Downloads
     parameters:
