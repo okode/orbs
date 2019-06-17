@@ -150,6 +150,52 @@ commands:
             sentry-cli --auth-token << parameters.auth-token >> releases files $VERSION upload-sourcemaps .
             if [[ $CIRCLE_TAG == *-dist ]]; then sentry-cli --auth-token << parameters.auth-token >> releases deploys $VERSION new -e $ENVIRONMENT; fi
             sentry-cli --auth-token << parameters.auth-token >> releases finalize $VERSION
+    keychain:
+      description: Installs iOS certificates
+      parameters:
+        dev-signing-password:
+          type: string
+        dist-signing-password:
+          type: string
+        repo-path:
+          type: string
+          default: http://github.com/okode/certs
+      steps:
+        - run:
+            name: Installing iOS certificates
+            command: |
+              if [! -d "certs" ]
+              then
+                git clone --quiet --depth=1 << parameters.repo-path >> certs
+              fi
+
+              KEYCHAIN_PASS=circleci
+              KEYCHAIN=ios-build.keychain
+              security create-keychain -p $KEYCHAIN_PASS $KEYCHAIN
+              security unlock-keychain -p $KEYCHAIN_PASS $KEYCHAIN
+              security set-keychain-settings -t 3600 -u $KEYCHAIN
+              security list-keychains -s $KEYCHAIN
+              security default-keychain -s $KEYCHAIN
+              security import certs/apple-wwdcrca.cer -k $KEYCHAIN -T /usr/bin/codesign
+              
+              if [ -f "config.xml" ]; then
+                if [[ $CIRCLE_TAG == *-dist ]]
+                then
+                  TEAM_ID=$(jq -r '.ios | .[] | select(.packageType | contains("development") | not) | .developmentTeam' build.json)
+                  CERT_NAME=$(TEAM_ID="$TEAM_ID" jq -r '.[] | select(.teamId | contains('env.TEAM_ID')) | select(.distribution | contains(true)) | .name' certificates.json)
+                  security import certs/$CERT_NAME.p12 -k $KEYCHAIN -P << parameters.dist-signing-password >> -A
+                else
+                  TEAM_ID=$(jq -r '.ios | .[] | select(.packageType | contains("development")) | .developmentTeam' build.json)
+                  CERT_NAME=$(TEAM_ID="$TEAM_ID" jq -r '.[] | select(.teamId | contains('env.TEAM_ID')) | select(.distribution | contains(false)) | .name' certs/certificates.json)
+                  security import certs/$CERT_NAME.p12 -k $KEYCHAIN -P << parameters.dev-signing-password >> -A
+                fi
+              else
+                if [ -f "capacitor.config.json" ]; then
+                  echo "Capacitor not implemented"
+                fi
+              fi
+
+              "security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $KEYCHAIN_PASS $KEYCHAIN"
 
 jobs:
   sentry-release:
