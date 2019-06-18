@@ -185,7 +185,6 @@ commands:
                   CERT_NAME=$(TEAM_ID="$TEAM_ID" jq -r '.[] | select(.teamId | contains('env.TEAM_ID')) | select(.distribution | contains(true)) | .name' certificates.json)
                   security import certs/$CERT_NAME.p12 -k $KEYCHAIN -P << parameters.dist-signing-password >> -A
                   PROV_PROFILE=$(jq -r '.ios.release.provisioningProfile' build.json)
-
                 else
                   TEAM_ID=$(jq -r '.ios | .[] | select(.packageType | contains("development")) | .developmentTeam' build.json)
                   CERT_NAME=$(TEAM_ID="$TEAM_ID" jq -r '.[] | select(.teamId | contains('env.TEAM_ID')) | select(.distribution | contains(false)) | .name' certs/certificates.json)
@@ -211,9 +210,6 @@ commands:
               --team_id           $TEAM_ID                                             \
               $CERT_OWNER
             fi
-
-              
-
 
 jobs:
   sentry-release:
