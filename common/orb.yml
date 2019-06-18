@@ -164,38 +164,56 @@ commands:
         - run:
             name: Installing iOS certificates
             command: |
-              if [! -d "certs" ]
-              then
-                git clone --quiet --depth=1 << parameters.repo-path >> certs
-              fi
-
-              KEYCHAIN_PASS=circleci
-              KEYCHAIN=ios-build.keychain
-              security create-keychain -p $KEYCHAIN_PASS $KEYCHAIN
-              security unlock-keychain -p $KEYCHAIN_PASS $KEYCHAIN
-              security set-keychain-settings -t 3600 -u $KEYCHAIN
-              security list-keychains -s $KEYCHAIN
-              security default-keychain -s $KEYCHAIN
-              security import certs/apple-wwdcrca.cer -k $KEYCHAIN -T /usr/bin/codesign
-              
-              if [ -f "config.xml" ]; then
-                if [[ $CIRCLE_TAG == *-dist ]]
-                then
-                  TEAM_ID=$(jq -r '.ios | .[] | select(.packageType | contains("development") | not) | .developmentTeam' build.json)
-                  CERT_NAME=$(TEAM_ID="$TEAM_ID" jq -r '.[] | select(.teamId | contains('env.TEAM_ID')) | select(.distribution | contains(true)) | .name' certificates.json)
-                  security import certs/$CERT_NAME.p12 -k $KEYCHAIN -P << parameters.dist-signing-password >> -A
-                else
-                  TEAM_ID=$(jq -r '.ios | .[] | select(.packageType | contains("development")) | .developmentTeam' build.json)
-                  CERT_NAME=$(TEAM_ID="$TEAM_ID" jq -r '.[] | select(.teamId | contains('env.TEAM_ID')) | select(.distribution | contains(false)) | .name' certs/certificates.json)
-                  security import certs/$CERT_NAME.p12 -k $KEYCHAIN -P << parameters.dev-signing-password >> -A
-                fi
+              if [-d "certs" ]; then
+                npx cci ci keychain << parameters.dev-signing-password >> << parameters.dist-signing-password >>
               else
-                if [ -f "capacitor.config.json" ]; then
-                  echo "Capacitor not implemented"
+                git clone --quiet --depth=1 << parameters.repo-path >> certs
+                KEYCHAIN_PASS=circleci
+                KEYCHAIN=ios-build.keychain
+                security create-keychain -p $KEYCHAIN_PASS $KEYCHAIN
+                security unlock-keychain -p $KEYCHAIN_PASS $KEYCHAIN
+                security set-keychain-settings -t 3600 -u $KEYCHAIN
+                security list-keychains -s $KEYCHAIN
+                security default-keychain -s $KEYCHAIN
+                security import certs/apple-wwdcrca.cer -k $KEYCHAIN -T /usr/bin/codesign
+                
+                if [ -f "config.xml" ]; then
+                  PACKAGE_NAME=$(grep '<widget' config.xml | tr ' ' '\n' | awk -F'"' '/^id/ {print $2}')
+                  if [[ $CIRCLE_TAG == *-dist ]]
+                  then
+                    TEAM_ID=$(jq -r '.ios | .[] | select(.packageType | contains("development") | not) | .developmentTeam' build.json)
+                    CERT_NAME=$(TEAM_ID="$TEAM_ID" jq -r '.[] | select(.teamId | contains('env.TEAM_ID')) | select(.distribution | contains(true)) | .name' certificates.json)
+                    security import certs/$CERT_NAME.p12 -k $KEYCHAIN -P << parameters.dist-signing-password >> -A
+                    PROV_PROFILE=$(jq -r '.ios.release.provisioningProfile' build.json)
+
+                  else
+                    TEAM_ID=$(jq -r '.ios | .[] | select(.packageType | contains("development")) | .developmentTeam' build.json)
+                    CERT_NAME=$(TEAM_ID="$TEAM_ID" jq -r '.[] | select(.teamId | contains('env.TEAM_ID')) | select(.distribution | contains(false)) | .name' certs/certificates.json)
+                    security import certs/$CERT_NAME.p12 -k $KEYCHAIN -P << parameters.dev-signing-password >> -A
+                    PROV_PROFILE=$(jq -r '.ios.debug.provisioningProfile' build.json)
+                    DEVELOPMENT_FLAG=--development
+                    CERT_OWNER='--cert_owner_name "Okode Developers"'
+                  fi
+                else
+                  if [ -f "capacitor.config.json" ]; then
+                    echo "Capacitor not implemented"
+                  fi
                 fi
+
+                "security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $KEYCHAIN_PASS $KEYCHAIN"
+
+                LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8                                      \
+                fastlane sigh                                                            \
+                --force                                                                  \
+                $DEVELOPMENT_FLAG                                                        \
+                --app_identifier    $PACKAGE_NAME                                        \
+                --provisioning_name $PROV_PROFILE                                        \
+                --team_id           $TEAM_ID                                             \
+                $CERT_OWNER
               fi
 
-              "security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $KEYCHAIN_PASS $KEYCHAIN"
+              
+
 
 jobs:
   sentry-release:
