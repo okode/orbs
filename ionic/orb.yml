@@ -134,11 +134,15 @@ jobs:
       cocoapods-lock-path:
         type: string
         default: ''
+      cordova-version:
+        type: string
+        default: "8"
     executor: ios
     steps:
       - checkout
       - common/npm-install
-      - install
+      - install:
+          cordova-version: << parameters.cordova-version >>
       - run:
           name: Installing Certificates
           command: npx cci ci keychain << parameters.dev-signing-password >> << parameters.dist-signing-password >>
@@ -184,12 +188,16 @@ jobs:
       attach-workspace:
         type: boolean
         default: false
+      cordova-version:
+        type: string
+        default: "8"
     executor: android
     steps:
       - checkout
       - common/node-upgrade
       - common/npm-install
-      - install
+      - install:
+          cordova-version: << parameters.cordova-version >>
       - restore_cache:
           << : *cache-key-gradle
       - when:
