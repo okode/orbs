@@ -27,20 +27,20 @@ commands:
         type: string
     steps:
      - run:
-          name: Starting VPN connection
-          command: |
-            wget -O - https://swupdate.openvpn.net/repos/repo-public.gpg | sudo apt-key add -
-            sudo bash -c 'echo "deb http://build.openvpn.net/debian/openvpn/release/2.4 trusty main" > /etc/apt/sources.list.d/openvpn-aptrepo.list'
-            sudo apt-get update || true
-            sudo apt-get install openvpn
-            echo "<< parameters.config >>" > /tmp/vpn.conf
-            echo "<< parameters.user >>" > /tmp/auth.txt
-            echo "<< parameters.password >>" >> /tmp/auth.txt
-            sudo bash -c "base64 -d /tmp/vpn.conf > /etc/openvpn/vpn.conf"
-            sudo cp /tmp/auth.txt /etc/openvpn/auth.txt
-            rm -f /tmp/vpn.conf /tmp/auth.txt
-            sudo openvpn --daemon --config /etc/openvpn/vpn.conf
-            sleep 10
+        name: Starting VPN connection
+        command: |
+          wget -O - https://swupdate.openvpn.net/repos/repo-public.gpg | sudo apt-key add -
+          sudo bash -c 'echo "deb http://build.openvpn.net/debian/openvpn/release/2.4 trusty main" > /etc/apt/sources.list.d/openvpn-aptrepo.list'
+          sudo apt-get update || true
+          sudo apt-get install openvpn
+          echo "<< parameters.config >>" > /tmp/vpn.conf
+          echo "<< parameters.user >>" > /tmp/auth.txt
+          echo "<< parameters.password >>" >> /tmp/auth.txt
+          sudo bash -c "base64 -d /tmp/vpn.conf > /etc/openvpn/vpn.conf"
+          sudo cp /tmp/auth.txt /etc/openvpn/auth.txt
+          rm -f /tmp/vpn.conf /tmp/auth.txt
+          sudo openvpn --daemon --config /etc/openvpn/vpn.conf
+          sleep 10
   bitbucket-downloads:
     description: Upload artifacts to BitBucket Downloads
     parameters:

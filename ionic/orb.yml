@@ -27,6 +27,33 @@ executors:
     macos:
       xcode: "10.2.1"
 
+commands:
+  install:
+    description: Install Ionic requirements
+    parameters:
+      cordova-version:
+        type: string
+        default: "8"
+    steps:
+      - run:
+          name: Installing Ionic requirements
+          command: |
+            PLATFORM=${CIRCLE_JOB}
+            if [[ $PLATFORM == "ios" ]]; then
+              sudo gem install fastlane
+              npm install --quiet -g ionic cordova@<< parameters.cordova-version >>
+            fi
+            if [[ $PLATFORM == "android" ]]; then
+              sudo npm install --quiet -g ionic cordova@<< parameters.cordova-version >>
+              yes | sdkmanager --licenses
+              yes | sdkmanager "build-tools;28.0.3"
+              yes | sdkmanager "platforms;android-28"
+              yes | sdkmanager "platform-tools"
+              yes | sdkmanager "tools"
+              if [[ $CIRCLE_TAG == *-dist ]]; then
+                gem install fastlane -NV
+              fi
+            fi
 jobs:
   test:
     parameters:
@@ -111,9 +138,7 @@ jobs:
     steps:
       - checkout
       - common/npm-install
-      - run:
-          name: Installing CI dependencies
-          command: npx cci ci install
+      - install
       - run:
           name: Installing Certificates
           command: npx cci ci keychain << parameters.dev-signing-password >> << parameters.dist-signing-password >>
@@ -164,9 +189,7 @@ jobs:
       - checkout
       - common/node-upgrade
       - common/npm-install
-      - run:
-          name: Installing CI dependencies
-          command: npx cci ci install
+      - install
       - restore_cache:
           << : *cache-key-gradle
       - when:
