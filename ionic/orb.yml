@@ -28,32 +28,45 @@ executors:
       xcode: "10.2.1"
 
 commands:
-  install:
-    description: Install Ionic requirements
+  install-ios:
+    description: Install Ionic iOS requirements
     parameters:
       cordova-version:
         type: string
-        default: "8"
+        default: "latest"
     steps:
       - run:
-          name: Installing Ionic requirements
+          name: Installing Ionic iOS requirements
           command: |
-            PLATFORM=${CIRCLE_JOB}
-            if [[ $PLATFORM == "ios" ]]; then
-              sudo gem install fastlane
-              npm install --quiet -g ionic cordova@<< parameters.cordova-version >>
+            sudo gem install fastlane
+            npm install --quiet -g ionic cordova@<< parameters.cordova-version >>
+  install-android:
+    description: Install Ionic Android requirements
+    parameters:
+      cordova-version:
+        type: string
+        default: "latest"
+      gradle-version:
+        type: string
+        default: "5.4.1"
+    steps:
+      - run:
+          name: Installing Ionic Android requirements
+          command: |
+            sudo npm install --quiet -g ionic cordova@<< parameters.cordova-version >>
+            yes | sdkmanager --licenses || true
+            yes | sdkmanager "build-tools;28.0.3" || true
+            yes | sdkmanager "platforms;android-28" || true
+            yes | sdkmanager "platform-tools" || true
+            yes | sdkmanager "tools" || true
+            curl https://downloads.gradle.org/distributions/gradle-<< parameters.gradle-version >>-bin.zip > /tmp/gradle-<< parameters.gradle-version >>-bin.zip
+            sudo unzip -qq /tmp/gradle-<< parameters.gradle-version >>-bin.zip -d /tmp && rm /tmp/gradle-<< parameters.gradle-version >>-bin.zip
+            sudo mv /tmp/gradle-<< parameters.gradle-version >> /opt/gradle
+            sudo ln -s /opt/gradle/bin/gradle /usr/local/bin/gradle
+            if [[ $CIRCLE_TAG == *-dist ]]; then
+              gem install fastlane -NV
             fi
-            if [[ $PLATFORM == "android" ]]; then
-              sudo npm install --quiet -g ionic cordova@<< parameters.cordova-version >>
-              yes | sdkmanager --licenses || true
-              yes | sdkmanager "build-tools;28.0.3" || true
-              yes | sdkmanager "platforms;android-28" || true
-              yes | sdkmanager "platform-tools" || true
-              yes | sdkmanager "tools" || true
-              if [[ $CIRCLE_TAG == *-dist ]]; then
-                gem install fastlane -NV
-              fi
-            fi
+
 jobs:
   test:
     parameters:
@@ -141,7 +154,7 @@ jobs:
     steps:
       - checkout
       - common/npm-install
-      - install:
+      - install-ios:
           cordova-version: << parameters.cordova-version >>
       - run:
           name: Installing Certificates
@@ -196,7 +209,7 @@ jobs:
       - checkout
       - common/node-upgrade
       - common/npm-install
-      - install:
+      - install-android:
           cordova-version: << parameters.cordova-version >>
       - restore_cache:
           << : *cache-key-gradle
