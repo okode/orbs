@@ -16,6 +16,44 @@ executors:
       - image: circleci/node:12
 
 commands:
+  install-ios:
+    description: Install Ionic iOS requirements
+    parameters:
+      cordova-version:
+        type: string
+        default: "latest"
+    steps:
+      - run:
+          name: Installing Ionic iOS requirements
+          command: |
+            sudo gem install fastlane
+            npm install --quiet -g ionic cordova@<< parameters.cordova-version >>
+  install-android:
+    description: Install Ionic Android requirements
+    parameters:
+      cordova-version:
+        type: string
+        default: "latest"
+      gradle-version:
+        type: string
+        default: "5.4.1"
+    steps:
+      - run:
+          name: Installing Ionic Android requirements
+          command: |
+            sudo npm install --quiet -g ionic cordova@<< parameters.cordova-version >>
+            yes | sdkmanager --licenses || true
+            yes | sdkmanager "build-tools;28.0.3" || true
+            yes | sdkmanager "platforms;android-28" || true
+            yes | sdkmanager "platform-tools" || true
+            yes | sdkmanager "tools" || true
+            curl https://downloads.gradle.org/distributions/gradle-<< parameters.gradle-version >>-bin.zip > /tmp/gradle-<< parameters.gradle-version >>-bin.zip
+            sudo unzip -qq /tmp/gradle-<< parameters.gradle-version >>-bin.zip -d /tmp && rm /tmp/gradle-<< parameters.gradle-version >>-bin.zip
+            sudo mv /tmp/gradle-<< parameters.gradle-version >> /opt/gradle
+            sudo ln -s /opt/gradle/bin/gradle /usr/local/bin/gradle
+            if [[ $CIRCLE_TAG == *-dist ]]; then
+              gem install fastlane -NV
+            fi
   vpn:
     description: Start VPN connection
     parameters:
@@ -153,62 +191,45 @@ commands:
   keychain:
     description: Installs iOS certificates
     parameters:
-      dev-signing-password:
+      package-name:
         type: string
-      dist-signing-password:
+      team-id:
         type: string
-      repo-path:
+      development-provisioning-name:
         type: string
-        default: http://github.com/okode/certs
+      distribution-provisioning-name:
+        type: string
+      development-signing-password:
+        type: string
+      distribution-signing-password:
+        type: string
     steps:
       - run:
           name: Installing iOS certificates
           command: |
-            if [-d "certs" ]; then
-              npx cci ci keychain << parameters.dev-signing-password >> << parameters.dist-signing-password >>
+            KEY_CHAIN=ios-build.keychain
+            KEY_CHAIN_PASS=circleci
+            CERT_DIR=certs
+            security create-keychain -p ${KEY_CHAIN_PASS} ${KEY_CHAIN}
+            security unlock-keychain -p ${KEY_CHAIN_PASS} ${KEY_CHAIN}
+            security set-keychain-settings -t 3600 -u ${KEY_CHAIN}
+            security list-keychains -s ${KEY_CHAIN}
+            security default-keychain -s ${KEY_CHAIN}
+            security import ${CERT_DIR}/apple-wwdcrca.cer -k ${KEY_CHAIN} -T /usr/bin/codesign
+            security import ${CERT_DIR}/development.p12 -k ${KEY_CHAIN} -P << parameters.development-signing-password >> -A
+            security import ${CERT_DIR}/distribution.p12 -k ${KEY_CHAIN} -P << parameters.distribution-signing-password >> -A
+            security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k ${KEY_CHAIN_PASS} ${KEY_CHAIN}
+            if [[ $CIRCLE_TAG == *-dist ]]; then
+              LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 fastlane sigh --force                \
+                --app_identifier "<< parameters.package-name >>"                       \
+                --provisioning_name "<< parameters.distribution-provisioning-name >>"  \
+                --team_id "<< parameters.team-id >>"
             else
-              git clone --quiet --depth=1 << parameters.repo-path >> certs
-              KEYCHAIN_PASS=circleci
-              KEYCHAIN=ios-build.keychain
-              security create-keychain -p $KEYCHAIN_PASS $KEYCHAIN
-              security unlock-keychain -p $KEYCHAIN_PASS $KEYCHAIN
-              security set-keychain-settings -t 3600 -u $KEYCHAIN
-              security list-keychains -s $KEYCHAIN
-              security default-keychain -s $KEYCHAIN
-              security import certs/apple-wwdcrca.cer -k $KEYCHAIN -T /usr/bin/codesign
-              
-              if [ -f "config.xml" ]; then
-                PACKAGE_NAME=$(grep '<widget' config.xml | tr ' ' '\n' | awk -F'"' '/^id/ {print $2}')
-                if [[ $CIRCLE_TAG == *-dist ]]
-                then
-                  TEAM_ID=$(jq -r '.ios | .[] | select(.packageType | contains("development") | not) | .developmentTeam' build.json)
-                  CERT_NAME=$(TEAM_ID="$TEAM_ID" jq -r '.[] | select(.teamId | contains('env.TEAM_ID')) | select(.distribution | contains(true)) | .name' certificates.json)
-                  security import certs/$CERT_NAME.p12 -k $KEYCHAIN -P << parameters.dist-signing-password >> -A
-                  PROV_PROFILE=$(jq -r '.ios.release.provisioningProfile' build.json)
-                else
-                  TEAM_ID=$(jq -r '.ios | .[] | select(.packageType | contains("development")) | .developmentTeam' build.json)
-                  CERT_NAME=$(TEAM_ID="$TEAM_ID" jq -r '.[] | select(.teamId | contains('env.TEAM_ID')) | select(.distribution | contains(false)) | .name' certs/certificates.json)
-                  security import certs/$CERT_NAME.p12 -k $KEYCHAIN -P << parameters.dev-signing-password >> -A
-                  PROV_PROFILE=$(jq -r '.ios.debug.provisioningProfile' build.json)
-                  DEVELOPMENT_FLAG=--development
-                  CERT_OWNER='--cert_owner_name "Okode Developers"'
-                fi
-              else
-                if [ -f "capacitor.config.json" ]; then
-                  echo "Capacitor not implemented"
-                fi
-              fi
-
-              "security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $KEYCHAIN_PASS $KEYCHAIN"
-
-              LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8                                      \
-              fastlane sigh                                                            \
-              --force                                                                  \
-              $DEVELOPMENT_FLAG                                                        \
-              --app_identifier    $PACKAGE_NAME                                        \
-              --provisioning_name $PROV_PROFILE                                        \
-              --team_id           $TEAM_ID                                             \
-              $CERT_OWNER
+              LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 fastlane sigh --force --development  \
+              --app_identifier "<< parameters.package-name >>"                         \
+              --provisioning_name "<< parameters.development-provisioning-name >>"     \
+              --team_id "<< parameters.team-id >>"                                     \
+              --cert_owner_name "Okode Developers"
             fi
 
 jobs:

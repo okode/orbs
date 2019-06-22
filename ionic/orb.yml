@@ -27,46 +27,6 @@ executors:
     macos:
       xcode: "10.2.1"
 
-commands:
-  install-ios:
-    description: Install Ionic iOS requirements
-    parameters:
-      cordova-version:
-        type: string
-        default: "latest"
-    steps:
-      - run:
-          name: Installing Ionic iOS requirements
-          command: |
-            sudo gem install fastlane
-            npm install --quiet -g ionic cordova@<< parameters.cordova-version >>
-  install-android:
-    description: Install Ionic Android requirements
-    parameters:
-      cordova-version:
-        type: string
-        default: "latest"
-      gradle-version:
-        type: string
-        default: "5.4.1"
-    steps:
-      - run:
-          name: Installing Ionic Android requirements
-          command: |
-            sudo npm install --quiet -g ionic cordova@<< parameters.cordova-version >>
-            yes | sdkmanager --licenses || true
-            yes | sdkmanager "build-tools;28.0.3" || true
-            yes | sdkmanager "platforms;android-28" || true
-            yes | sdkmanager "platform-tools" || true
-            yes | sdkmanager "tools" || true
-            curl https://downloads.gradle.org/distributions/gradle-<< parameters.gradle-version >>-bin.zip > /tmp/gradle-<< parameters.gradle-version >>-bin.zip
-            sudo unzip -qq /tmp/gradle-<< parameters.gradle-version >>-bin.zip -d /tmp && rm /tmp/gradle-<< parameters.gradle-version >>-bin.zip
-            sudo mv /tmp/gradle-<< parameters.gradle-version >> /opt/gradle
-            sudo ln -s /opt/gradle/bin/gradle /usr/local/bin/gradle
-            if [[ $CIRCLE_TAG == *-dist ]]; then
-              gem install fastlane -NV
-            fi
-
 jobs:
   test:
     parameters:
@@ -137,12 +97,20 @@ jobs:
             - www
   ios:
     parameters:
+      package-name:
+        type: string
+      team-id:
+        type: string
       attach-workspace:
         type: boolean
         default: false
-      dev-signing-password:
+      development-provisioning-name:
         type: string
-      dist-signing-password:
+      distribution-provisioning-name:
+        type: string
+      development-signing-password:
+        type: string
+      distribution-signing-password:
         type: string
       cocoapods-lock-path:
         type: string
@@ -154,11 +122,15 @@ jobs:
     steps:
       - checkout
       - common/npm-install
-      - install-ios:
+      - common/install-ios:
           cordova-version: << parameters.cordova-version >>
-      - run:
-          name: Installing Certificates
-          command: npx cci ci keychain << parameters.dev-signing-password >> << parameters.dist-signing-password >>
+      - common/keychain:
+          package-name: << parameters.package-name >>
+          team-id: << parameters.team-id >>
+          development-provisioning-name: << parameters.development-provisioning-name >>
+          distribution-provisioning-name: << parameters.distribution-provisioning-name >>
+          development-signing-password: << parameters.development-signing-password >>
+          distribution-signing-password: << parameters.distribution-signing-password >>
       - when:
           condition: << parameters.cocoapods-lock-path >>
           steps:
@@ -209,7 +181,7 @@ jobs:
       - checkout
       - common/node-upgrade
       - common/npm-install
-      - install-android:
+      - common/install-android:
           cordova-version: << parameters.cordova-version >>
       - restore_cache:
           << : *cache-key-gradle
