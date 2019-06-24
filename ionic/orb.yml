@@ -20,9 +20,6 @@ executors:
   java-node:
     docker:
       - image: circleci/openjdk:8-node-browsers
-  android:
-    docker:
-      - image: circleci/android:api-28-node
   ios:
     macos:
       xcode: "10.2.1"
@@ -176,7 +173,11 @@ jobs:
       cordova-version:
         type: string
         default: "8"
-    executor: android
+      api:
+        type: string
+        default: "28"
+    docker:
+      - image: circleci/android:api-<< parameters.api >>-node
     steps:
       - checkout
       - common/node-upgrade
