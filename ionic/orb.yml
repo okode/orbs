@@ -82,7 +82,6 @@ jobs:
                   - www
   pwa:
     executor: node
-    resource_class: large
     steps:
       - checkout
       - common/npm-install
