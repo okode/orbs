@@ -14,9 +14,6 @@ orbs:
   common: okode/common@dev:first
 
 executors:
-  node:
-    docker:
-      - image: circleci/node:12
   java-node:
     docker:
       - image: circleci/openjdk:8-node-browsers
@@ -81,7 +78,12 @@ jobs:
                   - coverage
                   - www
   pwa:
-    executor: node
+    parameters:
+      node-version:
+        type: string
+        default: "12"
+    docker:
+      - image: circleci/node:<< parameters.node-version >>
     steps:
       - checkout
       - common/npm-install
