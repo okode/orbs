@@ -82,16 +82,10 @@ jobs:
       node-version:
         type: string
         default: "12"
-    machine: true
+    docker:
+      - image: circleci/node:<< parameters.node-version >>
     steps:
       - checkout
-      - run:
-          name: Upgrading Node to version << parameters.node-version >> using nvm
-          command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm install << parameters.node-version >>
-            nvm alias default << parameters.node-version >>
       - common/npm-install
       - run:
           name: Building
