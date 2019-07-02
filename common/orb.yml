@@ -133,6 +133,17 @@ commands:
           << : *cache-key-npm
           paths:
             - node_modules
+  nvm-upgrade:
+    description: Upgrades Node using nvm
+    parameters:
+      version:
+        type: string
+        default: "12"
+    steps:
+      - run:
+          name: Upgrading Node version << parameters.version >> using nvm
+          command: |
+            nvm install << parameters.version >>
   node-upgrade:
     description: Upgrades Node
     parameters:

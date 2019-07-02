@@ -85,7 +85,7 @@ jobs:
     machine: true
     steps:
       - checkout
-      - common/node-upgrade:
+      - common/nvm-upgrade:
           version: << parameters.node-version >>
       - common/npm-install
       - run:
