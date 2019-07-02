@@ -82,10 +82,11 @@ jobs:
       node-version:
         type: string
         default: "12"
-    docker:
-      - image: circleci/node:<< parameters.node-version >>
+    machine: true
     steps:
       - checkout
+      - common/node-upgrade:
+          version: << parameters.node-version >>
       - common/npm-install
       - run:
           name: Building
