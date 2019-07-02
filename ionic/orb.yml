@@ -85,8 +85,13 @@ jobs:
     machine: true
     steps:
       - checkout
-      - common/nvm-upgrade:
-          version: << parameters.node-version >>
+      - run:
+          name: Upgrading Node to version << parameters.version >> using nvm
+          command: |
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install << parameters.node-version >>
+            nvm alias default << parameters.node-version >>
       - common/npm-install
       - run:
           name: Building
