@@ -86,7 +86,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Upgrading Node to version << parameters.version >> using nvm
+          name: Upgrading Node to version << parameters.node-version >> using nvm
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
