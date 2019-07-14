@@ -216,7 +216,8 @@ commands:
             security set-keychain-settings -t 3600 -u ${KEY_CHAIN}
             security list-keychains -s ${KEY_CHAIN}
             security default-keychain -s ${KEY_CHAIN}
-            security import ${CERT_DIR}/apple-wwdcrca.cer -k ${KEY_CHAIN} -T /usr/bin/codesign
+            curl https://developer.apple.com/certificationauthority/AppleWWDRCA.cer > ${CERT_DIR}/AppleWWDRCA.cer
+            security import ${CERT_DIR}/AppleWWDRCA.cer -k ${KEY_CHAIN} -T /usr/bin/codesign
             security import ${CERT_DIR}/development.p12 -k ${KEY_CHAIN} -P << parameters.development-signing-password >> -A
             security import ${CERT_DIR}/distribution.p12 -k ${KEY_CHAIN} -P << parameters.distribution-signing-password >> -A
             security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k ${KEY_CHAIN_PASS} ${KEY_CHAIN}
