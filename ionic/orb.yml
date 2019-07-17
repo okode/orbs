@@ -82,14 +82,12 @@ jobs:
       node-version:
         type: string
         default: "12"
-    machine: true
+    docker:
+      - image: circleci/node:<< parameters.node-version >>
     environment:
       NODE_OPTIONS: --max_old_space_size=4096
     steps:
       - checkout
-      - run:
-          name: Upgrading Node to version << parameters.node-version >> using nvm
-          command: echo "source /opt/circleci/.nvm/nvm.sh &>/dev/null && nvm install << parameters.node-version >>" >> ${BASH_ENV}
       - common/npm-install
       - run:
           name: Building
