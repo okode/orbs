@@ -68,7 +68,9 @@ commands:
      - run:
         name: Starting VPN connection
         command: |
-          wget -O - https://swupdate.openvpn.net/repos/repo-public.gpg | sudo apt-key add -
+          wget -O - https://swupdate.openvpn.net/repos/repo-public.gpg > /tmp/repo-public.gpg
+          sudo apt-key add /tmp/repo-public.gpg
+          sleep 3
           sudo bash -c 'echo "deb http://build.openvpn.net/debian/openvpn/release/2.4 trusty main" > /etc/apt/sources.list.d/openvpn-aptrepo.list'
           sudo apt-get update || true
           sudo apt-get install openvpn
