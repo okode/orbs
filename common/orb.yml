@@ -70,7 +70,6 @@ commands:
         command: |
           wget -O - https://swupdate.openvpn.net/repos/repo-public.gpg > /tmp/repo-public.gpg
           sudo apt-key add /tmp/repo-public.gpg
-          sudo killall apt apt-get
           sudo rm -f /var/lib/apt/lists/lock
           sudo rm -f /var/cache/apt/archives/lock
           sudo rm -f /var/lib/dpkg/lock
