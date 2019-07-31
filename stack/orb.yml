@@ -73,9 +73,9 @@ jobs:
             - run:
                 name: Running unit tests
                 command: npm run test -- --configuration ci
-            - run:
-                name: Running e2e tests
-                command: npm run e2e
+#            - run:
+#                name: Running e2e tests
+#                command: npm run e2e
             - store_test_results:
                 path: test-results
             - common/sonar
