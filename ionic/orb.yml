@@ -13,14 +13,6 @@ cache-key-cocoapods: &cache-key-cocoapods
 orbs:
   common: okode/common@dev:first
 
-executors:
-  java-node:
-    docker:
-      - image: circleci/openjdk:8-node-browsers
-  ios:
-    macos:
-      xcode: "10.3.0"
-
 jobs:
   test:
     parameters:
@@ -36,7 +28,8 @@ jobs:
       persist-results:
         type: boolean
         default: false
-    executor: java-node
+    docker:
+      - image: circleci/openjdk:8-node-browsers
     steps:
       - checkout
       - common/node-upgrade
@@ -122,7 +115,8 @@ jobs:
       cordova-version:
         type: string
         default: "8"
-    executor: ios
+    macos:
+      xcode: "10.3.0"
     steps:
       - checkout
       - common/npm-install
