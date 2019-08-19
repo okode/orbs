@@ -20,10 +20,6 @@ circleci orb publish stack/orb.yml okode/stack@$TAG
 
 if [[ $TAG != "dev:first" ]]
 then
-  if [[ -n $(git status -z) ]]; then
-    echo "Repository not clean, ensure you have committed all your changes"
-    exit 1
-  fi
   
   git tag $TAG -m $TAG
   git push --tags
