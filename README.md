@@ -2,19 +2,32 @@
 
 A set of orbs for continuous integration for Okode projects.
 
+## Setup
+
+```
+$ brew install circleci
+$ circleci setup
+```
+The token can be retrieved from 1Password
+
 ## Creating
 
 ```
 $ circleci orb create okode/<orb>
 ```
+Also modify the release.sh script in order to add the publish command corresponding to the new orb.
+
+## Testing
+
+```
+$ ./release.sh dev:first
+```
+Remember to set the `dev:first` orb version at the config.yml template of the proyect that is going to be used to test.
 
 ## Publishing
 
 ```
-$ brew install circleci
-$ circleci setup
-$ circleci orb publish [orb.yml] okode/[name]@dev:first
-$ circleci orb publish promote okode/[name]@dev:first patch
+$ ./release.sh [VERSION]
 ```
 
 ## Orbs
@@ -23,34 +36,14 @@ $ circleci orb publish promote okode/[name]@dev:first patch
 
 Common commands for building Okode projects.
 
-```
-$ circleci orb publish common/orb.yml okode/common@dev:first
-$ circleci orb publish promote okode/common@dev:first patch
-```
-
 ### stack
 
 Build and publish fullstack applications based on Ionic and Spring Boot.
-
-```
-$ circleci orb publish stack/orb.yml okode/stack@dev:first
-$ circleci orb publish promote okode/stack@dev:first patch
-```
 
 ### ionic
 
 Build and publish hybrid Apps based on Ionic for iOS / Android.
 
-```
-$ circleci orb publish ionic/orb.yml okode/ionic@dev:first
-$ circleci orb publish promote okode/ionic@dev:first patch
-```
-
 ### angular
 
 Build and publish Ionic/Angular libraries.
-
-```
-$ circleci orb publish angular/orb.yml okode/angular@dev:first
-$ circleci orb publish promote okode/angular@dev:first patch
-```
