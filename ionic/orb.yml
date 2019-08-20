@@ -107,14 +107,23 @@ jobs:
         type: string
       development-signing-password:
         type: string
+        default: ''
       distribution-signing-password:
         type: string
+        default: ''
       cocoapods-lock-path:
         type: string
         default: ''
       cordova-version:
         type: string
         default: "8"
+      dev-certs-repo-url:
+        type: string
+        default: ''
+      dist-certs-repo-url:
+        type: string
+        default: ''
+
     macos:
       xcode: "10.3.0"
     steps:
@@ -129,6 +138,8 @@ jobs:
           distribution-provisioning-name: << parameters.distribution-provisioning-name >>
           development-signing-password: << parameters.development-signing-password >>
           distribution-signing-password: << parameters.distribution-signing-password >>
+          dev-certs-repo-url: << parameters.dev-certs-repo-url >>
+          dist-certs-repo-url: << parameters.dist-certs-repo-url >>
       - when:
           condition: << parameters.cocoapods-lock-path >>
           steps:

@@ -209,8 +209,10 @@ commands:
         type: string
       distribution-signing-password:
         type: string
-      certs-repo-url:
-        type: string 
+      dev-certs-repo-url:
+        type: string
+      dist-certs-repo-url:
+        type: string
     steps:
       - run:
           name: Installing iOS certificates
@@ -223,13 +225,18 @@ commands:
             security set-keychain-settings -t 3600 -u ${KEY_CHAIN}
             security list-keychains -s ${KEY_CHAIN}
             security default-keychain -s ${KEY_CHAIN}
-            if [ -z "<< parameters.certs-repo-url >>" ]; then
+            if [ -z "<< parameters.dev-certs-repo-url >>" ] || [ -z "<< parameters.dist-certs-repo-url >>" ]; then
               curl https://developer.apple.com/certificationauthority/AppleWWDRCA.cer > ${CERT_DIR}/AppleWWDRCA.cer
               security import ${CERT_DIR}/AppleWWDRCA.cer -k ${KEY_CHAIN} -T /usr/bin/codesign
               security import ${CERT_DIR}/development.p12 -k ${KEY_CHAIN} -P << parameters.development-signing-password >> -A
               security import ${CERT_DIR}/distribution.p12 -k ${KEY_CHAIN} -P << parameters.distribution-signing-password >> -A
             else
-              git clone --quiet --depth=1 << parameters.certs-repo-url >> ${CERT_DIR}
+              rm -rf ${CERT_DIR}
+              if [[ $CIRCLE_TAG == *-dist ]]; then
+                git clone --quiet --depth=1 << parameters.dist-certs-repo-url >> ${CERT_DIR}
+              else
+                git clone --quiet --depth=1 << parameters.dev-certs-repo-url >> ${CERT_DIR}
+              fi
               curl https://developer.apple.com/certificationauthority/AppleWWDRCA.cer > ${CERT_DIR}/AppleWWDRCA.cer
               for cert in $(jq -r '.[].name' ${CERT_DIR}/certificates.json); do
                 security import ${cert}.p12 -k login.keychain -P $(jq -r --arg cert "$cert" '.[] | select(.name == $cert) | .password' ${CERT_DIR}/certificates.json) -A \;
