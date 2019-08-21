@@ -11,7 +11,7 @@ cache-key-cocoapods: &cache-key-cocoapods
   key: cache-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "<< parameters.cocoapods-lock-path >>" }}
 
 orbs:
-  common: okode/common@dev:first
+  common: okode/common@volatile
 
 jobs:
   test:
