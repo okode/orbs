@@ -123,6 +123,9 @@ jobs:
       dist-certs-repo-url:
         type: string
         default: ''
+      ssh-permission-fingerprint:
+        type: string
+        default: ''
 
     macos:
       xcode: "10.3.0"
@@ -140,6 +143,7 @@ jobs:
           distribution-signing-password: << parameters.distribution-signing-password >>
           dev-certs-repo-url: << parameters.dev-certs-repo-url >>
           dist-certs-repo-url: << parameters.dist-certs-repo-url >>
+          ssh-permission-fingerprint: << parameters.ssh-permission-fingerprint >>
       - when:
           condition: << parameters.cocoapods-lock-path >>
           steps:

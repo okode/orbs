@@ -211,9 +211,17 @@ commands:
         type: string
       dev-certs-repo-url:
         type: string
+        default: ''
       dist-certs-repo-url:
         type: string
+        default: ''
+      ssh-permission-fingerprint:
+        type: string
+        default: ''
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "<< parameters.ssh-permission-fingerprint >>"
       - run:
           name: Installing iOS certificates
           command: |
@@ -238,11 +246,19 @@ commands:
                 git clone --quiet --depth=1 << parameters.dev-certs-repo-url >> ${CERT_DIR}
               fi
               curl https://developer.apple.com/certificationauthority/AppleWWDRCA.cer > ${CERT_DIR}/AppleWWDRCA.cer
+              security import ${CERT_DIR}/AppleWWDRCA.cer -k ${KEY_CHAIN} -T /usr/bin/codesign
               for cert in $(jq -r '.[].name' ${CERT_DIR}/certificates.json); do
-                security import ${cert}.p12 -k login.keychain -P $(jq -r --arg cert "$cert" '.[] | select(.name == $cert) | .password' ${CERT_DIR}/certificates.json) -A \;
+                CERT_PASS=$(jq -r --arg cert "$cert" '.[] | select(.name == $cert) | .password' ${CERT_DIR}/certificates.json)
+                security import ${CERT_DIR}/${cert}.p12 -k ${KEY_CHAIN} -P ${CERT_PASS} -A \;
               done
             fi
             security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k ${KEY_CHAIN_PASS} ${KEY_CHAIN}
+
+            LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 fastlane produce  \ 
+            --app_identifier "<< parameters.package-name >>"      \
+            --team_id "<< parameters.team-id >>"                  \
+            --skip_itc
+
             if [[ $CIRCLE_TAG == *-dist ]]; then
               LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 fastlane sigh --force                \
                 --app_identifier "<< parameters.package-name >>"                       \
@@ -255,7 +271,6 @@ commands:
               --team_id "<< parameters.team-id >>"                                     \
               --cert_owner_name "Okode Developers"
             fi
-
 jobs:
   sentry-release:
     description: Create Sentry release and uploads sourcemaps from bundle
