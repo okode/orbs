@@ -254,9 +254,10 @@ commands:
             fi
             security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k ${KEY_CHAIN_PASS} ${KEY_CHAIN}
 
-            LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 fastlane produce  \ 
+            LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 fastlane produce  \
             --app_identifier "<< parameters.package-name >>"      \
             --team_id "<< parameters.team-id >>"                  \
+            --app_name "${CIRCLE_PROJECT_REPONAME}"               \
             --skip_itc
 
             if [[ $CIRCLE_TAG == *-dist ]]; then
@@ -270,6 +271,31 @@ commands:
               --provisioning_name "<< parameters.development-provisioning-name >>"     \
               --team_id "<< parameters.team-id >>"                                     \
               --cert_owner_name "Okode Developers"
+            fi
+  keystores:
+    description: Retrieves Android keystores
+    parameters:
+      dist-certs-repo-url:
+        type: string
+        default: ''
+      ssh-permission-fingerprint:
+        type: string
+        default: ''
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "<< parameters.ssh-permission-fingerprint >>"
+      - run:
+          name: Getting Android distribution keystore (if needed)
+          command: |
+            if [[ $CIRCLE_TAG == *-dist ]] && [[ -n "<< parameters.dist-certs-repo-url >>" ]]; then
+              CERT_DIR=certs
+              rm -rf ${CERT_DIR}
+              git clone --quiet --depth=1 << parameters.dist-certs-repo-url >> ${CERT_DIR}
+              STORE_PASS=$(jq -r '.[0] | .storePassword' ${CERT_DIR}/keystores.json)
+              KEYSTORE_PASS=$(jq -r '.[0] | .password' ${CERT_DIR}/keystores.json)
+              sed -i 's/KEYSTORE_STORE_PASS_PLACEHOLDER/'"$STORE_PASS"'/' build.json
+              sed -i 's/KEYSTORE_PASS_PLACEHOLDER/'"$KEYSTORE_PASS"'/' build.json
             fi
 jobs:
   sentry-release:

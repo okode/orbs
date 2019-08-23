@@ -192,6 +192,12 @@ jobs:
       api-version:
         type: string
         default: "28"
+      dist-certs-repo-url:
+        type: string
+        default: ''
+      ssh-permission-fingerprint:
+        type: string
+        default: ''
     docker:
       - image: circleci/android:api-<< parameters.api-version >>-node
     steps:
@@ -210,6 +216,9 @@ jobs:
             - run:
                 name: Clearing sourcemaps
                 command: find www -name *.map -type f -delete
+      - common/keystores:
+          dist-certs-repo-url: << parameters.dist-certs-repo-url >>
+          ssh-permission-fingerprint: << parameters.ssh-permission-fingerprint >>
       - run:
           name: Building
           command: scripts/build.sh
