@@ -73,8 +73,14 @@ jobs:
         type: string
       repo:
         type: string
+      ssh-permission-fingerprint:
+        type: string
+        default: ''
     executor: node
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "<< parameters.ssh-permission-fingerprint >>"
       - attach_workspace:
           at: .
       - run:
