@@ -86,8 +86,8 @@ jobs:
       - run:
           name: Publish NPM package at Bitbcuket
           command: |
-            mkdir ~/.ssh/ && echo -e "Host bitbucket.org\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
-            git clone -q git@bitbucket.org:<< parameters.repo >>-dist.git npmdist
+            mkdir -p ~/.ssh/ && echo -e "Host bitbucket.org\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+            git clone --quiet --depth=1 git@bitbucket.org:<< parameters.repo >>-dist.git npmdist
             cd npmdist
             rm -rf *
             cp -R ../<< parameters.path >>/* .
