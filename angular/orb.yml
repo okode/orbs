@@ -60,10 +60,10 @@ jobs:
           at: .
       - run:
           name: Installing NPM CLI Login
-          command: sudo npm install -g npm-cli-login
+          command: sudo npm install -g npm-cli-adduser
       - run:
           name: Authenticating NPM
-          command: npm-cli-login
+          command: npm-cli-adduser
       - run:
           name: Publishing NPM package
           command: cd << parameters.path >> && npm publish --access=<< parameters.access >>
