@@ -86,12 +86,14 @@ jobs:
       - run:
           name: Publish NPM package at Bitbcuket
           command: |
-            mkdir -p ~/.ssh/ && echo -e "Host bitbucket.org\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
-            git clone --quiet --depth=1 git@bitbucket.org:<< parameters.repo >>-dist.git npmdist
+            mkdir -p ~/.ssh/ && echo -e "Host bitbucket.org\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+            git config --global user.email "dummy@mail.com"
+            git config --global user.name "$CIRCLE_USERNAME"
+            git clone --quiet git@bitbucket.org:<< parameters.repo >>-dist.git npmdist
             cd npmdist
             rm -rf *
             cp -R ../<< parameters.path >>/* .
             git add --all
-            git commit -m "Bumped version $CIRCLE_TAG" || true
-            git tag $CIRCLE_TAG || true
-            git push && git push --tags || true
+            git commit -m "Bumped version $CIRCLE_TAG"
+            git tag $CIRCLE_TAG
+            git push && git push --tags
