@@ -25,6 +25,9 @@ jobs:
       skip-sonar:
         type: boolean
         default: false
+      skip-e2e:
+        type: boolean
+        default: false
       persist-results:
         type: boolean
         default: false
@@ -44,9 +47,12 @@ jobs:
             - run:
                 name: Running unit tests
                 command: npm run test -- --configuration ci
-            - run:
-                name: Running e2e tests
-                command: npm run e2e
+            - unless:
+                condition: << parameters.skip-e2e >>
+                steps:
+                  - run:
+                      name: Running e2e tests
+                      command: npm run e2e
             - store_test_results:
                 path: test-results
       - unless:
