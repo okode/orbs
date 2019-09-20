@@ -134,7 +134,7 @@ jobs:
         default: ''
 
     macos:
-      xcode: "11.0.0"
+      xcode: "10.3.0"
     steps:
       - checkout
       - common/npm-install
