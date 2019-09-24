@@ -24,7 +24,7 @@ commands:
         default: "latest"
       cocoapods-version:
         type: string
-        default: "1.7.5"
+        default: ">= 0"
     steps:
       - run:
           name: Installing Ionic iOS requirements

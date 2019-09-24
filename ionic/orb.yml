@@ -123,6 +123,9 @@ jobs:
       cordova-version:
         type: string
         default: "8"
+      cocoapods-version:
+        type: string
+        default: "1.7.5"
       dev-certs-repo-url:
         type: string
         default: ''
@@ -140,6 +143,7 @@ jobs:
       - common/npm-install
       - common/install-ios:
           cordova-version: << parameters.cordova-version >>
+          cocoapods-version: << parameters.cocoapods-version >>
       - common/keychain:
           package-name: << parameters.package-name >>
           team-id: << parameters.team-id >>
