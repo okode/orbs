@@ -7,9 +7,6 @@ description: |
 cache-key-gradle: &cache-key-gradle
   key: cache-gradle-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "package-lock.json" }}
 
-cache-key-cocoapods: &cache-key-cocoapods
-  key: cache-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "<< parameters.cocoapods-lock-path >>" }}
-
 orbs:
   common: okode/common@volatile
 
@@ -117,9 +114,6 @@ jobs:
       distribution-signing-password:
         type: string
         default: ''
-      cocoapods-lock-path:
-        type: string
-        default: ''
       cordova-version:
         type: string
         default: "8"
@@ -151,14 +145,6 @@ jobs:
           dist-certs-repo-url: << parameters.dist-certs-repo-url >>
           ssh-permission-fingerprint: << parameters.ssh-permission-fingerprint >>
       - when:
-          condition: << parameters.cocoapods-lock-path >>
-          steps:
-            - restore_cache:
-                << : *cache-key-cocoapods
-            - run:
-                name: Installing Cocoapods dependencies
-                command: pod setup
-      - when:
           condition: << parameters.attach-workspace >>
           steps:
             - attach_workspace:
@@ -174,16 +160,6 @@ jobs:
           root: .
           paths:
             - output
-      - when:
-          condition: << parameters.cocoapods-lock-path >>
-          steps:
-            - run:
-                name: Restoring << parameters.cocoapods-lock-path >>
-                command: git checkout << parameters.cocoapods-lock-path >>
-            - save_cache:
-                << : *cache-key-cocoapods
-                paths:
-                  - ~/.cocoapods
       - run:
           name: Deploying
           command: scripts/deploy.sh

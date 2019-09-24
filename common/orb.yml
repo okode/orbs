@@ -27,6 +27,7 @@ commands:
           name: Installing Ionic iOS requirements
           command: |
             sudo gem install cocoapods
+            pod setup
             sudo gem install fastlane
             npm install --quiet -g ionic cordova@<< parameters.cordova-version >>
   install-android:
