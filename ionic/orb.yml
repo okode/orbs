@@ -126,6 +126,9 @@ jobs:
       cocoapods-version:
         type: string
         default: "1.7.5"
+      xcode-version:
+        type: string
+        default: "11.0.0"
       dev-certs-repo-url:
         type: string
         default: ''
@@ -137,7 +140,7 @@ jobs:
         default: ''
 
     macos:
-      xcode: "11.0.0"
+      xcode: "<< parameters.xcode-version >>"
     steps:
       - checkout
       - common/npm-install
