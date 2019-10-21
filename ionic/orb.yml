@@ -132,6 +132,9 @@ jobs:
       install-firebase-cli:
         type: boolean
         default: false
+      ios-firebase-app-id:
+        type: string
+        default: ''
       dev-certs-repo-url:
         type: string
         default: ''
@@ -144,6 +147,9 @@ jobs:
 
     macos:
       xcode: "<< parameters.xcode-version >>"
+    environment:
+      FIREBASE_APP_ID: << parameters.ios-firebase-app-id >>
+
     steps:
       - checkout
       - common/npm-install
@@ -212,6 +218,9 @@ jobs:
       install-firebase-cli:
         type: boolean
         default: false
+      android-firebase-app-id:
+        type: string
+        default: ''
       dist-certs-repo-url:
         type: string
         default: ''
@@ -220,6 +229,8 @@ jobs:
         default: ''
     docker:
       - image: circleci/android:api-<< parameters.api-version >>-node
+        environment:
+          FIREBASE_APP_ID: << parameters.android-firebase-app-id >>
     steps:
       - checkout
       - common/node-upgrade
