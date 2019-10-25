@@ -129,6 +129,9 @@ jobs:
       xcode-version:
         type: string
         default: "11.0.0"
+      node-version:
+        type: string
+        default: "12"
       install-firebase-cli:
         type: boolean
         default: false
@@ -152,6 +155,15 @@ jobs:
 
     steps:
       - checkout
+      - when:
+          condition: << parameters.node-version >>
+          steps:
+            - run:
+                name: Installing node version << parameters.node-version >>
+                run: |
+                  brew unlink node
+                  brew install node@<< parameters.node-version >>
+                  brew link node@<< parameters.node-version >>
       - common/npm-install
       - common/install-ios:
           cordova-version: << parameters.cordova-version >>
@@ -215,6 +227,9 @@ jobs:
       api-version:
         type: string
         default: "28"
+      node-version:
+        type: string
+        default: ''
       install-firebase-cli:
         type: boolean
         default: false
@@ -233,7 +248,8 @@ jobs:
           FIREBASE_APP_ID: << parameters.android-firebase-app-id >>
     steps:
       - checkout
-      - common/node-upgrade
+      - common/node-upgrade:
+          node-version: << parameters.node-version >>
       - common/npm-install
       - common/install-android:
           cordova-version: << parameters.cordova-version >>
