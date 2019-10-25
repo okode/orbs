@@ -31,11 +31,15 @@ jobs:
       persist-results:
         type: boolean
         default: false
+      node-version:
+        type: string
+        default: ''
     docker:
       - image: circleci/openjdk:8-node-browsers
     steps:
       - checkout
-      - common/node-upgrade
+      - common/node-upgrade:
+          version: << parameters.node-version >>
       - common/npm-install
       - run:
           name: Building
