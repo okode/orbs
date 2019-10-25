@@ -281,7 +281,7 @@ commands:
             --app_identifier "<< parameters.package-name >>"      \
             --team_id "<< parameters.team-id >>"                  \
             --app_name "${CIRCLE_PROJECT_REPONAME}"               \
-            --skip_itc
+            --skip_itc || true
 
             if [[ $CIRCLE_TAG == *-dist ]]; then
               LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 fastlane sigh --force                \
