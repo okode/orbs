@@ -163,7 +163,7 @@ jobs:
                 command: |
                   brew unlink node
                   brew install node@<< parameters.node-version >>
-                  brew link node@<< parameters.node-version >>
+                  brew link --overwrite node@<< parameters.node-version >> --force
       - common/npm-install
       - common/install-ios:
           cordova-version: << parameters.cordova-version >>
