@@ -33,6 +33,7 @@ jobs:
         default: false
       node-version:
         type: string
+        default: "12"
     docker:
       - image: circleci/openjdk:8-node-browsers
     steps:
