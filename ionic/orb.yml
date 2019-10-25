@@ -249,7 +249,7 @@ jobs:
     steps:
       - checkout
       - common/node-upgrade:
-          node-version: << parameters.node-version >>
+          version: << parameters.node-version >>
       - common/npm-install
       - common/install-android:
           cordova-version: << parameters.cordova-version >>
