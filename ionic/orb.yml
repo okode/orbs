@@ -160,7 +160,7 @@ jobs:
           steps:
             - run:
                 name: Installing node version << parameters.node-version >>
-                run: |
+                command: |
                   brew unlink node
                   brew install node@<< parameters.node-version >>
                   brew link node@<< parameters.node-version >>
