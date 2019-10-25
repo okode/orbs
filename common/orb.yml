@@ -172,6 +172,7 @@ commands:
           name: Upgrading Node version << parameters.version >>
           command: |
             curl -sL https://deb.nodesource.com/setup_<< parameters.version >>.x | sudo -E bash -
+            sudo apt-get remove -y nodejs
             sudo apt-get -qq install -y nodejs
             sudo rm -f /usr/local/bin/node /usr/local/bin/npm /usr/local/bin/npx
             sudo ln -s /usr/bin/node /usr/local/bin
