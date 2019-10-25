@@ -131,7 +131,6 @@ jobs:
         default: "11.0.0"
       node-version:
         type: string
-        default: "12"
       install-firebase-cli:
         type: boolean
         default: false
