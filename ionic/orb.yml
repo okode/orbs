@@ -165,7 +165,7 @@ jobs:
                 name: Installing node version << parameters.node-version >>
                 command: |
                   brew unlink node
-                  brew install node@<< parameters.node-version >>
+                  HOMEBREW_NO_AUTO_UPDATE=1 brew install node@<< parameters.node-version >>
                   brew link --overwrite node@<< parameters.node-version >> --force
       - common/npm-install
       - common/install-ios:
