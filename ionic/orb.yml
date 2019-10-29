@@ -230,7 +230,7 @@ jobs:
       api-version:
         type: string
         default: "28"
-      api-version:
+      gradle-version:
         type: string
         default: "5.4.1"
       node-version:
