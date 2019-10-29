@@ -230,6 +230,9 @@ jobs:
       api-version:
         type: string
         default: "28"
+      api-version:
+        type: string
+        default: "5.4.1"
       node-version:
         type: string
         default: ''
@@ -255,6 +258,7 @@ jobs:
           version: << parameters.node-version >>
       - common/npm-install
       - common/install-android:
+          gradle-version: << parameters.gradle-version >>
           cordova-version: << parameters.cordova-version >>
           install-firebase-cli: << parameters.install-firebase-cli >>
       - restore_cache:
