@@ -135,6 +135,7 @@ jobs:
         default: "11.0.0"
       node-version:
         type: string
+        default: "12"
       install-firebase-cli:
         type: boolean
         default: false
@@ -235,7 +236,7 @@ jobs:
         default: "5.4.1"
       node-version:
         type: string
-        default: ''
+        default: "12"
       install-firebase-cli:
         type: boolean
         default: false
