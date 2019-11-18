@@ -136,12 +136,6 @@ jobs:
       node-version:
         type: string
         default: "12"
-      install-firebase-cli:
-        type: boolean
-        default: false
-      ios-firebase-app-id:
-        type: string
-        default: ''
       dev-certs-repo-url:
         type: string
         default: ''
@@ -151,12 +145,8 @@ jobs:
       ssh-permission-fingerprint:
         type: string
         default: ''
-
     macos:
       xcode: "<< parameters.xcode-version >>"
-    environment:
-      FIREBASE_APP_ID: << parameters.ios-firebase-app-id >>
-
     steps:
       - checkout
       - when:
@@ -172,7 +162,6 @@ jobs:
       - common/install-ios:
           cordova-version: << parameters.cordova-version >>
           cocoapods-version: << parameters.cocoapods-version >>
-          install-firebase-cli: << parameters.install-firebase-cli >>
       - common/keychain:
           package-name: << parameters.package-name >>
           team-id: << parameters.team-id >>
@@ -237,12 +226,6 @@ jobs:
       node-version:
         type: string
         default: "12"
-      install-firebase-cli:
-        type: boolean
-        default: false
-      android-firebase-app-id:
-        type: string
-        default: ''
       dist-certs-repo-url:
         type: string
         default: ''
@@ -251,8 +234,6 @@ jobs:
         default: ''
     docker:
       - image: circleci/android:api-<< parameters.api-version >>-node
-        environment:
-          FIREBASE_APP_ID: << parameters.android-firebase-app-id >>
     steps:
       - checkout
       - common/node-upgrade:
@@ -261,7 +242,6 @@ jobs:
       - common/install-android:
           gradle-version: << parameters.gradle-version >>
           cordova-version: << parameters.cordova-version >>
-          install-firebase-cli: << parameters.install-firebase-cli >>
       - restore_cache:
           << : *cache-key-gradle
       - when:
