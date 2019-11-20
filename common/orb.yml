@@ -51,7 +51,7 @@ commands:
           command: |
             sudo npm install --quiet -g ionic cordova@<< parameters.cordova-version >>
             yes | sdkmanager --licenses || true
-            yes | sdkmanager "build-tools;28.0.3" || true
+            # yes | sdkmanager "build-tools;28.0.3" || true
             yes | sdkmanager "platforms;android-28" || true
             yes | sdkmanager "platform-tools" || true
             yes | sdkmanager "tools" || true
