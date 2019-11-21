@@ -199,7 +199,7 @@ commands:
             if [[ $CIRCLE_TAG == *-dist ]]; then VERSION=${VERSION}-dist; else VERSION=${CIRCLE_TAG}; fi
             sentry-cli --auth-token << parameters.auth-token >> releases new $VERSION
             sentry-cli --auth-token << parameters.auth-token >> releases files $VERSION upload-sourcemaps . --no-rewrite
-            sentry-cli --auth-token << parameters.auth-token >> releases set-commits $VERSION --commit "<< parameters.project >>@$CIRCLE_SHA1" || true
+            sentry-cli --auth-token << parameters.auth-token >> releases set-commits $VERSION --commit "okode/<< parameters.project >>@$CIRCLE_SHA1" || true
             if [[ $CIRCLE_TAG == *-dist ]]; then sentry-cli --auth-token << parameters.auth-token >> releases deploys $VERSION new -e $ENVIRONMENT; fi
             sentry-cli --auth-token << parameters.auth-token >> releases finalize $VERSION
   keychain:
