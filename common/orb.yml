@@ -180,9 +180,6 @@ commands:
         type: string
       auth-token:
         type: string
-      repo-name:
-        type: string
-        default: ""
     steps:
       - attach_workspace:
           at: /tmp/workspace
@@ -202,32 +199,7 @@ commands:
             if [[ $CIRCLE_TAG == *-dist ]]; then VERSION=${VERSION}-dist; else VERSION=${CIRCLE_TAG}; fi
             sentry-cli --auth-token << parameters.auth-token >> releases new $VERSION
             sentry-cli --auth-token << parameters.auth-token >> releases files $VERSION upload-sourcemaps . --no-rewrite
-      - when:
-          condition: << parameters.repo-name >>
-          environment:
-            SENTRY_ORG: << parameters.org >>
-            SENTRY_PROJECT: << parameters.project >>
-          steps:
-            - run:
-                name: Set commits for repo name << parameters.repo-name >>
-                command: |
-                  cd /tmp/workspace/www
-                  VERSIONENVIRONMENT=${CIRCLE_TAG%-dist}
-                  ENVIRONMENT=${VERSIONENVIRONMENT#*-}
-                  VERSION=${VERSIONENVIRONMENT%-$ENVIRONMENT}
-                  if [[ $CIRCLE_TAG == *-dist ]]; then VERSION=${VERSION}-dist; else VERSION=${CIRCLE_TAG}; fi
-                  sentry-cli --auth-token << parameters.auth-token >> releases set-commits $VERSION --commit "<< parameters.repo-name >>@$CIRCLE_SHA1"
-      - run:
-          name: Finalize Sentry release
-          environment:
-            SENTRY_ORG: << parameters.org >>
-            SENTRY_PROJECT: << parameters.project >>
-          command: |
-            cd /tmp/workspace/www
-            VERSIONENVIRONMENT=${CIRCLE_TAG%-dist}
-            ENVIRONMENT=${VERSIONENVIRONMENT#*-}
-            VERSION=${VERSIONENVIRONMENT%-$ENVIRONMENT}
-            if [[ $CIRCLE_TAG == *-dist ]]; then VERSION=${VERSION}-dist; else VERSION=${CIRCLE_TAG}; fi
+            sentry-cli --auth-token << parameters.auth-token >> releases set-commits $VERSION --commit "<< parameters.project >>@$CIRCLE_SHA1" || true
             if [[ $CIRCLE_TAG == *-dist ]]; then sentry-cli --auth-token << parameters.auth-token >> releases deploys $VERSION new -e $ENVIRONMENT; fi
             sentry-cli --auth-token << parameters.auth-token >> releases finalize $VERSION
   keychain:
