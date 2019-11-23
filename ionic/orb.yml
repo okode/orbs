@@ -132,7 +132,7 @@ jobs:
         default: "1.7.5"
       xcode-version:
         type: string
-        default: "11.0.0"
+        default: "11.2.1"
       node-version:
         type: string
         default: "12"
