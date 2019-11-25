@@ -25,9 +25,6 @@ commands:
       cocoapods-version:
         type: string
         default: "'>= 0'"
-      install-firebase-cli:
-        type: boolean
-        default: false
     steps:
       - run:
           name: Installing Ionic iOS requirements
@@ -35,12 +32,9 @@ commands:
             sudo gem install cocoapods -v << parameters.cocoapods-version >>
             sudo gem install fastlane
             npm install --quiet -g ionic cordova@<< parameters.cordova-version >>
-      - when:
-          condition: << parameters.install-firebase-cli >>
-          steps:
-            - run:
-                name: Installing firebase-cli
-                command: npm install -g firebase-tools
+      - run:
+          name: Installing Firebase CLI
+          command: npm install -g firebase-tools
           
   install-android:
     description: Install Ionic Android requirements
@@ -51,16 +45,13 @@ commands:
       gradle-version:
         type: string
         default: "5.4.1"
-      install-firebase-cli:
-        type: boolean
-        default: false
     steps:
       - run:
           name: Installing Ionic Android requirements
           command: |
             sudo npm install --quiet -g ionic cordova@<< parameters.cordova-version >>
             yes | sdkmanager --licenses || true
-            yes | sdkmanager "build-tools;28.0.3" || true
+            # yes | sdkmanager "build-tools;28.0.3" || true
             yes | sdkmanager "platforms;android-28" || true
             yes | sdkmanager "platform-tools" || true
             yes | sdkmanager "tools" || true
@@ -71,12 +62,9 @@ commands:
             if [[ $CIRCLE_TAG == *-dist ]]; then
               gem install fastlane -NV
             fi
-      - when:
-          condition: << parameters.install-firebase-cli >>
-          steps:
-            - run:
-                name: Installing firebase-cli
-                command: sudo npm install -g firebase-tools
+      - run:
+          name: Installing Firebase CLI
+          command: sudo npm install -g firebase-tools
 
   vpn:
     description: Start VPN connection
@@ -210,7 +198,8 @@ commands:
             VERSION=${VERSIONENVIRONMENT%-$ENVIRONMENT}
             if [[ $CIRCLE_TAG == *-dist ]]; then VERSION=${VERSION}-dist; else VERSION=${CIRCLE_TAG}; fi
             sentry-cli --auth-token << parameters.auth-token >> releases new $VERSION
-            sentry-cli --auth-token << parameters.auth-token >> releases files $VERSION upload-sourcemaps .
+            sentry-cli --auth-token << parameters.auth-token >> releases files $VERSION upload-sourcemaps . --no-rewrite
+            sentry-cli --auth-token << parameters.auth-token >> releases set-commits $VERSION --commit "okode/<< parameters.project >>@$CIRCLE_SHA1" || true
             if [[ $CIRCLE_TAG == *-dist ]]; then sentry-cli --auth-token << parameters.auth-token >> releases deploys $VERSION new -e $ENVIRONMENT; fi
             sentry-cli --auth-token << parameters.auth-token >> releases finalize $VERSION
   keychain:
