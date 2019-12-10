@@ -305,6 +305,16 @@ commands:
               sed -i 's/KEYSTORE_STORE_PASS_PLACEHOLDER/'"$STORE_PASS"'/' build.json
               sed -i 's/KEYSTORE_PASS_PLACEHOLDER/'"$KEYSTORE_PASS"'/' build.json
             fi
+  custom-npm-login:
+    description: Logging into custom NPM registry
+    steps:
+      - run:
+          name: Installing NPM CLI Login
+          command: sudo npm install -g npm-cli-adduser
+      - run:
+          name: Authenticating NPM
+          command: npm-cli-adduser
+
 jobs:
   sentry-release:
     description: Create Sentry release and uploads sourcemaps from bundle
