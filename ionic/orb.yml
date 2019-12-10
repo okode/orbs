@@ -159,6 +159,9 @@ jobs:
       ssh-permission-fingerprint:
         type: string
         default: ''
+      custom-npm-login:
+        type: boolean
+        default: false
     macos:
       xcode: "<< parameters.xcode-version >>"
     steps:
@@ -172,6 +175,10 @@ jobs:
                   brew unlink node
                   HOMEBREW_NO_AUTO_UPDATE=1 brew install node@<< parameters.node-version >>
                   brew link --overwrite node@<< parameters.node-version >> --force
+      - when:
+          condition: << parameters.custom-npm-login >>
+          steps:
+            - common/custom-npm-login
       - common/npm-install
       - common/install-ios:
           cordova-version: << parameters.cordova-version >>
@@ -246,12 +253,19 @@ jobs:
       ssh-permission-fingerprint:
         type: string
         default: ''
+      custom-npm-login:
+        type: boolean
+        default: false
     docker:
       - image: circleci/android:api-<< parameters.api-version >>-node
     steps:
       - checkout
       - common/node-upgrade:
           version: << parameters.node-version >>
+      - when:
+          condition: << parameters.custom-npm-login >>
+          steps:
+            - common/custom-npm-login
       - common/npm-install
       - common/install-android:
           gradle-version: << parameters.gradle-version >>
