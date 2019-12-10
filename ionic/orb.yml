@@ -265,7 +265,9 @@ jobs:
       - when:
           condition: << parameters.custom-npm-login >>
           steps:
-            - common/custom-npm-login
+            - run:
+                name: Logging into custom NPM registry
+                command: sudo npm install -g npm-cli-adduser && npm-cli-adduser
       - common/npm-install
       - common/install-android:
           gradle-version: << parameters.gradle-version >>
