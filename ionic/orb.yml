@@ -144,6 +144,9 @@ jobs:
       cocoapods-version:
         type: string
         default: "1.7.5"
+      fastlane-version:
+        type: string
+        default: "'>= 0'"
       xcode-version:
         type: string
         default: "11.2.1"

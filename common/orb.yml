@@ -25,12 +25,15 @@ commands:
       cocoapods-version:
         type: string
         default: "'>= 0'"
+      fastlane-version:
+        type: string
+        default: "'>= 0'"
     steps:
       - run:
           name: Installing Ionic iOS requirements
           command: |
             sudo gem install cocoapods -v << parameters.cocoapods-version >>
-            sudo gem install fastlane
+            sudo gem install fastlane -v << parameters.fastlane-version >>
             npm install --quiet -g ionic cordova@<< parameters.cordova-version >>
       - run:
           name: Installing Firebase CLI
