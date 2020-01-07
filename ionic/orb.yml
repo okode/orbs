@@ -186,6 +186,7 @@ jobs:
       - common/install-ios:
           cordova-version: << parameters.cordova-version >>
           cocoapods-version: << parameters.cocoapods-version >>
+          fastlane-version: << parameters.fastlane-version >>
       - common/keychain:
           package-name: << parameters.package-name >>
           team-id: << parameters.team-id >>
