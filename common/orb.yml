@@ -313,7 +313,7 @@ commands:
     steps:
       - run:
           name: Installing NPM CLI Login
-          command: sudo npm install -g npm-cli-adduser
+          command: npm install -g npm-cli-adduser
       - run:
           name: Authenticating NPM
           command: npm-cli-adduser
