@@ -258,10 +258,9 @@ commands:
               fi
               curl https://developer.apple.com/certificationauthority/AppleWWDRCA.cer > ${CERT_DIR}/AppleWWDRCA.cer
               security import ${CERT_DIR}/AppleWWDRCA.cer -k ${KEY_CHAIN} -T /usr/bin/codesign
-              for cert in $(jq -r '.[].name' ${CERT_DIR}/certificates.json); do
-                CERT_PASS=$(jq -r --arg cert "$cert" '.[] | select(.name == $cert) | .password' ${CERT_DIR}/certificates.json)
-                security import ${CERT_DIR}/${cert}.p12 -k ${KEY_CHAIN} -P ${CERT_PASS} -A \;
-              done
+              CERT=$(jq -r --arg teamId "<< parameters.team-id >>" '.[] | select(.teamId == $teamId) | .name' ${CERT_DIR}/certificates.json)
+              CERT_PASS=$(jq -r --arg cert "$CERT" '.[] | select(.name == $cert) | .password' ${CERT_DIR}/certificates.json)
+              security import ${CERT_DIR}/${CERT}.p12 -k ${KEY_CHAIN} -P ${CERT_PASS} -A \;
             fi
             security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k ${KEY_CHAIN_PASS} ${KEY_CHAIN}
 
