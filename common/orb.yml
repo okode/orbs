@@ -251,14 +251,16 @@ commands:
               security import ${CERT_DIR}/distribution.p12 -k ${KEY_CHAIN} -P << parameters.distribution-signing-password >> -A
             else
               rm -rf ${CERT_DIR}
+              DIST=false
               if [[ $CIRCLE_TAG == *-dist ]]; then
                 git clone --quiet --depth=1 << parameters.dist-certs-repo-url >> ${CERT_DIR}
+                DIST=true
               else
                 git clone --quiet --depth=1 << parameters.dev-certs-repo-url >> ${CERT_DIR}
               fi
               curl https://developer.apple.com/certificationauthority/AppleWWDRCA.cer > ${CERT_DIR}/AppleWWDRCA.cer
               security import ${CERT_DIR}/AppleWWDRCA.cer -k ${KEY_CHAIN} -T /usr/bin/codesign
-              CERT=$(jq -r --arg teamId "<< parameters.team-id >>" '.[] | select(.teamId == $teamId) | .name' ${CERT_DIR}/certificates.json)
+              CERT=$(jq -r --arg teamId "<< parameters.team-id >>" --argjson dist $DIST '.[] | select(.teamId == $teamId and .distribution == $dist) | .name' ${CERT_DIR}/certificates.json)
               CERT_PASS=$(jq -r --arg cert "$CERT" '.[] | select(.name == $cert) | .password' ${CERT_DIR}/certificates.json)
               security import ${CERT_DIR}/${CERT}.p12 -k ${KEY_CHAIN} -P ${CERT_PASS} -A \;
             fi
