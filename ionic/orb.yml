@@ -101,6 +101,9 @@ jobs:
       custom-npm-login:
         type: boolean
         default: false
+      build-params:
+        type: string
+        default: "--prod"
     machine: true
     environment:
       NODE_OPTIONS: --max_old_space_size=4096
@@ -116,7 +119,7 @@ jobs:
       - common/npm-install
       - run:
           name: Building
-          command: npm run build -- --progress false --prod
+          command: npm run build -- --progress false << parameters.build-params >>
           no_output_timeout: 20m
       - persist_to_workspace:
           root: .
@@ -171,10 +174,19 @@ jobs:
       custom-npm-login:
         type: boolean
         default: false
+      update-brew:
+        type: boolean
+        default: false
     macos:
       xcode: "<< parameters.xcode-version >>"
     steps:
       - checkout
+      - when:
+          condition: << parameters.update-brew >>
+          steps:
+            - run:
+                name: Updating Homebrew
+                command: brew update
       - when:
           condition: << parameters.node-version >>
           steps:
