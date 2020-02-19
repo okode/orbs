@@ -37,6 +37,9 @@ jobs:
       custom-npm-login:
         type: boolean
         default: false
+      build-params:
+        type: string
+        default: "--aot"
     docker:
       - image: circleci/openjdk:8-node-browsers
     steps:
@@ -53,7 +56,7 @@ jobs:
       - common/npm-install
       - run:
           name: Building
-          command: npm run build -- --progress false --aot
+          command: npm run build -- --progress false << parameters.build-params >>
       - unless:
           condition: << parameters.skip-tests >>
           steps:
