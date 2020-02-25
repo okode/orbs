@@ -62,7 +62,7 @@ commands:
             sudo unzip -qq /tmp/gradle-<< parameters.gradle-version >>-bin.zip -d /tmp && rm /tmp/gradle-<< parameters.gradle-version >>-bin.zip
             sudo mv /tmp/gradle-<< parameters.gradle-version >> /opt/gradle
             sudo ln -s /opt/gradle/bin/gradle /usr/local/bin/gradle
-            sudo gem install fastlane -NV
+            gem install fastlane -NV
       - run:
           name: Installing Firebase CLI
           command: sudo npm install -g firebase-tools
