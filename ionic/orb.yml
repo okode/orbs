@@ -104,6 +104,9 @@ jobs:
       build-params:
         type: string
         default: "--prod"
+      web-path:
+        type: string
+        default: "www"
     machine: true
     environment:
       NODE_OPTIONS: --max_old_space_size=4096
@@ -124,7 +127,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - www
+            - << parameters.web-path >>
   ios:
     parameters:
       package-name:
