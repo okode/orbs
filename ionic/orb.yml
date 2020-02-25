@@ -180,6 +180,9 @@ jobs:
       update-brew:
         type: boolean
         default: false
+      web-path:
+        type: string
+        default: "www"
     macos:
       xcode: "<< parameters.xcode-version >>"
     steps:
@@ -233,7 +236,7 @@ jobs:
                 at: .
             - run:
                 name: Clearing sourcemaps
-                command: find www -name *.map -type f -delete
+                command: find << parameters.web-path  >> -name *.map -type f -delete
       - run:
           name: Building
           command: scripts/build.sh
@@ -281,6 +284,9 @@ jobs:
       custom-npm-login:
         type: boolean
         default: false
+      web-path:
+        type: string
+        default: "www"
     docker:
       - image: circleci/android:api-<< parameters.api-version >>-node
     steps:
@@ -306,7 +312,7 @@ jobs:
                 at: .
             - run:
                 name: Clearing sourcemaps
-                command: find www -name *.map -type f -delete
+                command: find << parameters.web-path >> -name *.map -type f -delete
       - common/keystores:
           dist-certs-repo-url: << parameters.dist-certs-repo-url >>
           ssh-permission-fingerprint: << parameters.ssh-permission-fingerprint >>
