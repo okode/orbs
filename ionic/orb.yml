@@ -37,6 +37,8 @@ jobs:
       build-params:
         type: string
         default: "--aot"
+    environment:
+      NODE_OPTIONS: --max_old_space_size=4096
     docker:
       - image: circleci/openjdk:8-node-browsers
     steps:
@@ -99,6 +101,8 @@ jobs:
       web-path:
         type: string
         default: "www"
+    environment:
+      NODE_OPTIONS: --max_old_space_size=4096
     docker:
       - image: circleci/node
     steps:
