@@ -31,9 +31,6 @@ jobs:
       persist-results:
         type: boolean
         default: false
-      node-version:
-        type: string
-        default: "12"
       custom-npm-login:
         type: boolean
         default: false
@@ -44,8 +41,6 @@ jobs:
       - image: circleci/openjdk:8-node-browsers
     steps:
       - checkout
-      - common/node-upgrade:
-          version: << parameters.node-version >>
       - when: 
           condition: << parameters.custom-npm-login >>
           steps:
@@ -95,9 +90,6 @@ jobs:
                   - www
   pwa:
     parameters:
-      node-version:
-        type: string
-        default: "12"
       custom-npm-login:
         type: boolean
         default: false
@@ -107,14 +99,10 @@ jobs:
       web-path:
         type: string
         default: "www"
-    machine: true
-    environment:
-      NODE_OPTIONS: --max_old_space_size=4096
+    docker:
+      - image: circleci/node
     steps:
       - checkout
-      - run:
-          name: Upgrading Node to version << parameters.node-version >> using nvm
-          command: echo "source /opt/circleci/.nvm/nvm.sh &>/dev/null && nvm install << parameters.node-version >>" >> ${BASH_ENV}
       - when: 
           condition: << parameters.custom-npm-login >>
           steps:
@@ -152,19 +140,16 @@ jobs:
         default: ''
       cordova-version:
         type: string
-        default: "8"
+        default: "latest"
       cocoapods-version:
         type: string
-        default: "1.7.5"
+        default: "'>= 0'"
       fastlane-version:
         type: string
         default: "'>= 0'"
       xcode-version:
         type: string
         default: "11.3.1"
-      node-version:
-        type: string
-        default: "12"
       dev-certs-repo-url:
         type: string
         default: ''
@@ -193,15 +178,6 @@ jobs:
             - run:
                 name: Updating Homebrew
                 command: brew update
-      - when:
-          condition: << parameters.node-version >>
-          steps:
-            - run:
-                name: Installing node version << parameters.node-version >>
-                command: |
-                  brew unlink node
-                  HOMEBREW_NO_AUTO_UPDATE=1 brew install node@<< parameters.node-version >>
-                  brew link --overwrite node@<< parameters.node-version >> --force
       - when:
           condition: << parameters.custom-npm-login >>
           steps:
@@ -265,16 +241,13 @@ jobs:
         default: false
       cordova-version:
         type: string
-        default: "8"
+        default: "latest"
       api-version:
         type: string
-        default: "28"
+        default: "29"
       gradle-version:
         type: string
-        default: "5.4.1"
-      node-version:
-        type: string
-        default: "12"
+        default: "6.2.2"
       dist-certs-repo-url:
         type: string
         default: ''
@@ -291,8 +264,6 @@ jobs:
       - image: circleci/android:api-<< parameters.api-version >>-node
     steps:
       - checkout
-      - common/node-upgrade:
-          version: << parameters.node-version >>
       - when:
           condition: << parameters.custom-npm-login >>
           steps:

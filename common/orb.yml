@@ -13,7 +13,7 @@ cache-key-sonar: &cache-key-sonar
 executors:
   node:
     docker:
-      - image: circleci/node:12
+      - image: circleci/node
 
 commands:
   install-ios:
@@ -47,7 +47,7 @@ commands:
         default: "latest"
       gradle-version:
         type: string
-        default: "5.4.1"
+        default: "6.2.2"
     steps:
       - run:
           name: Installing Ionic Android requirements
@@ -150,18 +150,6 @@ commands:
           << : *cache-key-npm
           paths:
             - node_modules
-  node-upgrade:
-    description: Upgrades Node
-    parameters:
-      version:
-        type: string
-        default: "12"
-    steps:
-      - run:
-          name: Upgrading Node version << parameters.version >>
-          command: |
-            sudo npm install -g n
-            sudo n << parameters.version >>
   chrome-upgrade:
     description: "Upgrades Chrome"
     steps:
