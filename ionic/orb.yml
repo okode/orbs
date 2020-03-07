@@ -36,7 +36,7 @@ jobs:
         default: false
       build-params:
         type: string
-        default: "--aot"
+        default: "--prod"
     environment:
       NODE_OPTIONS: --max_old_space_size=4096
     docker:
