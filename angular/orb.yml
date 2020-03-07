@@ -10,10 +10,10 @@ orbs:
 executors:
   node:
     docker:
-      - image: circleci/node:12
+      - image: circleci/node
   browsers:
     docker:
-      - image: circleci/node:12-browsers
+      - image: circleci/node:browsers
 
 jobs:
   test:
@@ -30,7 +30,6 @@ jobs:
     executor: browsers
     steps:
       - checkout
-      - common/node-upgrade
       - common/npm-install
       - run:
           name: Building
@@ -57,7 +56,6 @@ jobs:
     executor: node
     steps:
       - checkout
-      - common/node-upgrade
       - common/npm-install
       - run:
           name: Building
