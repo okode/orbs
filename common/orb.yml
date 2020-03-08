@@ -373,18 +373,14 @@ jobs:
         type: string
       config:
         type: string
-      attach-results-path:
-        type: string
-        default: ''
+      attach-workspace:
+        type: boolean
+        default: false
     steps:
       - checkout
       - vpn:
           user: << parameters.user >>
           password: << parameters.password >>
           config: << parameters.config >>
-      - when:
-          condition: << parameters.attach-results-path >>
-          steps:
-            - attach_workspace:
-                at: .
-      - sonar
+      - sonar:
+          attach-workspace: << parameters.attach-workspace >>
