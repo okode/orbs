@@ -22,9 +22,6 @@ jobs:
       skip-lint:
         type: boolean
         default: false
-      skip-sonar:
-        type: boolean
-        default: false
       skip-e2e:
         type: boolean
         default: false
@@ -72,10 +69,6 @@ jobs:
             - run:
                 name: Running lint
                 command: npx ng lint --force --format=json app > lint-results.json
-      - unless:
-          condition: << parameters.skip-sonar >>
-          steps:
-            - common/sonar
       - when:
           condition: << parameters.persist-results >>
           steps:

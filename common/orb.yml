@@ -349,7 +349,19 @@ jobs:
           repo: << parameters.repo >>
           tag: << parameters.tag >>
           path: << parameters.path >>
+  sonar:
+    description: Run Sonar scanner
+    parameters:
+      attach-workspace:
+        type: boolean
+        default: false
+    executor: node
+    steps:
+      - checkout
+      - sonar:
+          attach-workspace: << parameters.attach-workspace >>
   sonar-vpn:
+    description: Run Sonar scanner with VPN
     machine: true
     parameters:
       user:
