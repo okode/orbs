@@ -47,7 +47,7 @@ jobs:
       - common/npm-install
       - run:
           name: Building
-          command: npm run build -- --progress false --aot
+          command: npm run build -- --progress false --prod
       - unless:
           condition: << parameters.skip-tests >>
           steps:
