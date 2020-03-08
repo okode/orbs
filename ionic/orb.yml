@@ -34,13 +34,10 @@ jobs:
       custom-npm-login:
         type: boolean
         default: false
-      build-params:
-        type: string
-        default: "--prod"
     environment:
       NODE_OPTIONS: --max_old_space_size=4096
     docker:
-      - image: circleci/openjdk:8-node-browsers
+      - image: circleci/node:browsers
     steps:
       - checkout
       - when: 
@@ -53,7 +50,7 @@ jobs:
       - common/npm-install
       - run:
           name: Building
-          command: npm run build -- --progress false << parameters.build-params >>
+          command: npm run build -- --progress false --aot
       - unless:
           condition: << parameters.skip-tests >>
           steps:

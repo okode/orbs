@@ -121,11 +121,20 @@ commands:
             for FILE in *.apk; do mv ${FILE} $(basename ${FILE} .apk)-<< parameters.tag >>.apk; done
             for FILE in *; do curl -X POST "https://<< parameters.auth-string >>@api.bitbucket.org/2.0/repositories/<< parameters.group >>/<< parameters.repo >>/downloads" --form files=@"${FILE}"; done
   sonar:
+    parameters:
+      attach-workspace:
+        type: boolean
+        default: false
     description: Run Sonar scanner
     steps:
+      - when:
+        condition: << parameters.attach-workspace >>
+        steps:
+          - attach_workspace:
+              at: .
       - run:
           name: Downloading Sonar scanner
-          command: curl -L https://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/3.3.0.1492/sonar-scanner-cli-3.3.0.1492.jar > sonar-scanner.jar
+          command: curl -L https://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/4.2.0.1873/sonar-scanner-cli-4.2.0.1873.jar > sonar-scanner.jar
       - restore_cache:
           << : *cache-key-sonar
       - run:
