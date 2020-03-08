@@ -34,7 +34,7 @@ jobs:
     environment:
       NODE_OPTIONS: --max_old_space_size=4096
     docker:
-      - image: circleci/node:browsers
+      - image: circleci/node:latest-browsers
     steps:
       - checkout
       - when: 
