@@ -91,13 +91,12 @@ jobs:
       web-path:
         type: string
         default: "www"
-    environment:
-      NODE_OPTIONS: --max_old_space_size=4096
-    docker:
-      - image: circleci/node
+    machine:
+      image: ubuntu-1604:201903-01
     steps:
       - checkout
-      - when: 
+      - common/node-upgrade
+      - when:
           condition: << parameters.custom-npm-login >>
           steps:
             - common/custom-npm-login

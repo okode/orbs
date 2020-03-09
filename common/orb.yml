@@ -160,6 +160,18 @@ commands:
           << : *cache-key-npm
           paths:
             - node_modules
+  node-upgrade:
+    description: Upgrades Node
+    parameters:
+      version:
+        type: string
+        default: "13"
+    steps:
+      - run:
+          name: Upgrading Node version << parameters.version >>
+          command: |
+            sudo npm install -g n
+            sudo n << parameters.version >>
   chrome-upgrade:
     description: "Upgrades Chrome"
     steps:
