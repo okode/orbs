@@ -16,7 +16,7 @@ executors:
       - image: circleci/node
   java:
     docker:
-      - image: circleci/openjdk:8
+      - image: circleci/openjdk:latest-node
 
 commands:
   install-ios:
