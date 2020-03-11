@@ -39,7 +39,7 @@ jobs:
         default: false
       build-params:
         type: string
-        default: ""
+        default: "--aot"
     docker:
       - image: circleci/openjdk:8-node-browsers
     steps:
