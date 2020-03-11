@@ -51,7 +51,6 @@ jobs:
       - unless:
           condition: << parameters.skip-tests >>
           steps:
-            - common/chrome-upgrade
             - run:
                 name: Running unit tests
                 command: npm run test -- --configuration ci
