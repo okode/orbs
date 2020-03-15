@@ -118,7 +118,7 @@ jobs:
           root: .
           paths:
             - << parameters.pwa-path >>
-            - << parameters.package-path >>
+            - << parameters.package-path >>/pwa.zip
   ios:
     parameters:
       package-name:
@@ -223,7 +223,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - output
+            - output/*.ipa
       - when:
           condition: << parameters.cocoapods-lock-path >>
           steps:
@@ -297,7 +297,8 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - output
+            - output/*.apk
+            - output/*.aab
       - run:
           name: Restoring package-lock.json
           command: git checkout package-lock.json
