@@ -16,13 +16,13 @@ orbs:
 executors:
   node:
     docker:
-      - image: cimg/node
+      - image: cimg/node:13
   java:
     docker:
       - image: circleci/openjdk:latest-node
   python:
     docker:
-      - image: cimg/python
+      - image: cimg/python:3.8
 
 commands:
   install-ios:
