@@ -10,13 +10,19 @@ cache-key-npm: &cache-key-npm
 cache-key-sonar: &cache-key-sonar
   key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "sonar-project.properties" }}
 
+orbs:
+  aws-s3: circleci/aws-s3@1.0.15
+
 executors:
   node:
     docker:
-      - image: circleci/node
+      - image: cimg/node
   java:
     docker:
       - image: circleci/openjdk:latest-node
+  python:
+    docker:
+      - image: cimg/python
 
 commands:
   install-ios:
@@ -384,3 +390,29 @@ jobs:
           config: << parameters.config >>
       - sonar:
           attach-workspace: << parameters.attach-workspace >>
+  s3-sync:
+    description: Publish contents to AWS S3
+    parameters:
+      from:
+        type: string
+        default: 'www'
+      to:
+        type: string
+      ssh-permission-fingerprint:
+        type: string
+        default: ''
+      arguments:
+        type: string
+        default: '--acl public-read'
+      overwrite:
+        type: boolean
+        default: true
+    executor: python
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - aws-s3/sync:
+          from: /tmp/workspace/<< parameters.from >>
+          to: << parameters.to >>
+          arguments: << parameters.arguments >>
+          overwrite: << parameters.overwrite >>
