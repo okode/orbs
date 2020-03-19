@@ -43,7 +43,7 @@ commands:
           command: |
             sudo gem install cocoapods -v << parameters.cocoapods-version >>
             sudo gem install fastlane -v << parameters.fastlane-version >>
-            npm install --quiet -g cordova@<< parameters.cordova-version >>
+            npm install --quiet -g @ionic/cli cordova@<< parameters.cordova-version >>
       - run:
           name: Installing Firebase CLI
           command: npm install -g firebase-tools
@@ -60,7 +60,7 @@ commands:
       - run:
           name: Installing Android requirements
           command: |
-            sudo npm install --quiet -g cordova@<< parameters.cordova-version >>
+            sudo npm install --quiet -g @ionic/cli cordova@<< parameters.cordova-version >>
             yes | sdkmanager --licenses || true
             yes | sdkmanager "platforms;android-28" || true
             yes | sdkmanager "platform-tools" || true
