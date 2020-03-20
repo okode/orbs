@@ -140,7 +140,7 @@ commands:
                 at: .
       - run:
           name: Downloading Sonar scanner
-          command: curl -L https://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/4.2.0.1873/sonar-scanner-cli-4.2.0.1873.jar > sonar-scanner.jar
+          command: curl -L https://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/4.3.0.2102/sonar-scanner-cli-4.3.0.2102.jar > sonar-scanner.jar
       - restore_cache:
           << : *cache-key-sonar
       - run:
