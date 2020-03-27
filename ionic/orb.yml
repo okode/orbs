@@ -154,7 +154,7 @@ jobs:
         default: "'>= 0'"
       xcode-version:
         type: string
-        default: "11.3.1"
+        default: "11.4.0"
       dev-certs-repo-url:
         type: string
         default: ''
