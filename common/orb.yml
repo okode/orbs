@@ -55,7 +55,7 @@ commands:
         default: "latest"
       gradle-version:
         type: string
-        default: "6.2.2"
+        default: "6.3"
     steps:
       - run:
           name: Installing Android requirements
