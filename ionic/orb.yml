@@ -47,7 +47,7 @@ jobs:
       - common/npm-install
       - run:
           name: Building
-          command: npm run build -- --progress false
+          command: npm run build -- --configuration=ci
       - unless:
           condition: << parameters.skip-tests >>
           steps:
