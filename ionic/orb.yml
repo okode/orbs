@@ -47,6 +47,12 @@ jobs:
           name: Type checking
           command: npx tsc --noEmit
       - unless:
+          condition: << parameters.skip-lint >>
+          steps:
+            - run:
+                name: Linting
+                command: npm run lint -- --force --format=json > lint-results.json
+      - unless:
           condition: << parameters.skip-tests >>
           steps:
             - run:
@@ -60,12 +66,6 @@ jobs:
                       command: npm run e2e
             - store_test_results:
                 path: test-results
-      - unless:
-          condition: << parameters.skip-lint >>
-          steps:
-            - run:
-                name: Linting
-                command: npm run lint -- --force --format=json > lint-results.json
       - when:
           condition: << parameters.persist-results >>
           steps:
