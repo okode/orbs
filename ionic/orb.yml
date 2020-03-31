@@ -31,8 +31,6 @@ jobs:
       custom-npm-login:
         type: boolean
         default: false
-    environment:
-      NODE_OPTIONS: --max_old_space_size=4096
     docker:
       - image: circleci/node:latest-browsers
     steps:
@@ -47,19 +45,19 @@ jobs:
       - common/npm-install
       - run:
           name: Building
-          command: npm run build -- --configuration=ci
+          command: npm run build --max-old-space-size=4096 -- --configuration=ci
       - unless:
           condition: << parameters.skip-tests >>
           steps:
             - run:
                 name: Running unit tests
-                command: npm run test -- --configuration=ci
+                command: npm run test --max-old-space-size=4096 -- --configuration=ci
             - unless:
                 condition: << parameters.skip-e2e >>
                 steps:
                   - run:
                       name: Running e2e tests
-                      command: npm run e2e
+                      command: npm run e2e --max-old-space-size=4096
             - store_test_results:
                 path: test-results
       - unless:
@@ -93,8 +91,6 @@ jobs:
       package-path:
         type: string
         default: "output"
-    environment:
-      NODE_OPTIONS: --max_old_space_size=6144
     machine:
       image: ubuntu-1604:201903-01
     steps:
@@ -109,7 +105,7 @@ jobs:
       - common/npm-install
       - run:
           name: Building
-          command: npm run build -- --progress false << parameters.build-params >>
+          command: npm run build --max-old-space-size=6144 -- --progress false << parameters.build-params >>
           no_output_timeout: 20m
       - run:
           name: Packaging
