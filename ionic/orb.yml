@@ -91,6 +91,8 @@ jobs:
       package-path:
         type: string
         default: "output"
+    environment:
+      NODE_OPTIONS: --max_old_space_size=6144
     machine:
       image: ubuntu-1604:201903-01
     steps:
