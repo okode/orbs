@@ -44,20 +44,20 @@ jobs:
             - common/custom-npm-login
       - common/npm-install
       - run:
-          name: Building
-          command: npm run build --max-old-space-size=4096 -- --configuration=ci
+          name: Linting
+          command: npm run lint
       - unless:
           condition: << parameters.skip-tests >>
           steps:
             - run:
                 name: Running unit tests
-                command: npm run test --max-old-space-size=4096 -- --configuration=ci
+                command: npm run test -- --configuration=ci
             - unless:
                 condition: << parameters.skip-e2e >>
                 steps:
                   - run:
                       name: Running e2e tests
-                      command: npm run e2e --max-old-space-size=4096
+                      command: npm run e2e
             - store_test_results:
                 path: test-results
       - unless:
@@ -105,7 +105,7 @@ jobs:
       - common/npm-install
       - run:
           name: Building
-          command: npm run build --max-old-space-size=6144 -- --progress false << parameters.build-params >>
+          command: npm run build -- --progress false << parameters.build-params >>
           no_output_timeout: 20m
       - run:
           name: Packaging
