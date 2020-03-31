@@ -44,19 +44,19 @@ jobs:
             - common/custom-npm-login
       - common/npm-install
       - run:
-          name: Linting
-          command: npm run lint
+          name: Type checking
+          command: npx tsc --noEmit
       - unless:
           condition: << parameters.skip-tests >>
           steps:
             - run:
-                name: Running unit tests
+                name: Unit testing
                 command: npm run test -- --configuration=ci
             - unless:
                 condition: << parameters.skip-e2e >>
                 steps:
                   - run:
-                      name: Running e2e tests
+                      name: E2E testing
                       command: npm run e2e
             - store_test_results:
                 path: test-results
@@ -64,7 +64,7 @@ jobs:
           condition: << parameters.skip-lint >>
           steps:
             - run:
-                name: Running lint
+                name: Linting
                 command: npx ng lint --force --format=json app > lint-results.json
       - when:
           condition: << parameters.persist-results >>
@@ -103,9 +103,6 @@ jobs:
           steps:
             - common/custom-npm-login
       - common/npm-install
-      - run:
-          name: Linting
-          command: npm run lint
       - run:
           name: Building
           command: npm run build -- --progress false << parameters.build-params >>
