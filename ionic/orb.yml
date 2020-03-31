@@ -104,6 +104,9 @@ jobs:
             - common/custom-npm-login
       - common/npm-install
       - run:
+          name: Linting
+          command: npm run lint
+      - run:
           name: Building
           command: npm run build -- --progress false << parameters.build-params >>
           no_output_timeout: 20m
