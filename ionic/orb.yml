@@ -65,7 +65,7 @@ jobs:
           steps:
             - run:
                 name: Linting
-                command: npx ng lint --force --format=json app > lint-results.json
+                command: npm run lint -- --force --format=json > lint-results.json
       - when:
           condition: << parameters.persist-results >>
           steps:
