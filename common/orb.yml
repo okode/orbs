@@ -16,7 +16,7 @@ orbs:
 executors:
   node:
     docker:
-      - image: cimg/node:13.11
+      - image: cimg/node:13.12
   java:
     docker:
       - image: circleci/openjdk:latest-node
