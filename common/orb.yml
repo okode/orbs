@@ -144,6 +144,9 @@ commands:
       - restore_cache:
           << : *cache-key-sonar
       - run:
+          name: Upgrading TypeScript
+          command: npm i typescript@latest
+      - run:
           name: Scanning
           command: java -jar sonar-scanner.jar
       - save_cache:
