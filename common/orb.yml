@@ -146,7 +146,7 @@ commands:
       - run:
           name: Upgrading TypeScript
           command: |
-            ssh -o StrictHostKeyChecking=no git@github.com
+            ssh -o StrictHostKeyChecking=no git@github.com || true
             npm i typescript@latest
       - run:
           name: Scanning
