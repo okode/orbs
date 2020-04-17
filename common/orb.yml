@@ -145,9 +145,7 @@ commands:
           << : *cache-key-sonar
       - run:
           name: Upgrading TypeScript
-          command: |
-            ssh -o StrictHostKeyChecking=no git@github.com
-            npm i typescript@latest
+          command: npm i typescript@latest
       - run:
           name: Scanning
           command: java -jar sonar-scanner.jar
