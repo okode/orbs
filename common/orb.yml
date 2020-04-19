@@ -11,7 +11,7 @@ cache-key-sonar: &cache-key-sonar
   key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "sonar-project.properties" }}
 
 orbs:
-  aws-s3: circleci/aws-s3@1.0.15
+  aws-cli: circleci/aws-cli@1.0.0
 
 executors:
   node:
@@ -393,28 +393,33 @@ jobs:
       - sonar:
           attach-workspace: << parameters.attach-workspace >>
   s3-sync:
-    description: Publish contents to AWS S3
+    description: Publish contents to AWS S3 and optionally invalidate CloudFront
     parameters:
       from:
         type: string
         default: 'www'
       to:
         type: string
-      ssh-permission-fingerprint:
+      distribution-id:
         type: string
         default: ''
-      arguments:
+      invalidate-paths:
         type: string
-        default: '--acl public-read'
-      overwrite:
-        type: boolean
-        default: true
-    executor: python
+        default: "\"/index.html\" \"/assets/environments.json\""
+    executor: aws-cli/default
     steps:
+      - aws-cli/setup
       - attach_workspace:
           at: /tmp/workspace
-      - aws-s3/sync:
-          from: /tmp/workspace/<< parameters.from >>
-          to: << parameters.to >>
-          arguments: << parameters.arguments >>
-          overwrite: << parameters.overwrite >>
+      - run:
+          name: Syncing contents to S3
+          command: aws s3 sync /tmp/workspace/<< parameters.from >> << parameters.to >> --delete
+      - when:
+          condition: << parameters.distribution-id >>
+          steps:
+            - run:
+                name: Invalidating CloudFront cache
+                command: |
+                  aws cloudfront create-invalidation \
+                  --distribution-id << parameters.distribution-id >> \
+                  --paths << parameters.invalidate-paths >>
