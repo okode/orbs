@@ -251,7 +251,7 @@ jobs:
         default: "29"
       gradle-version:
         type: string
-        default: "6.2.2"
+        default: ""
       dist-certs-repo-url:
         type: string
         default: ''
