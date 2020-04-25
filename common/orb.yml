@@ -43,10 +43,7 @@ commands:
           command: |
             sudo gem install cocoapods -v << parameters.cocoapods-version >>
             sudo gem install fastlane -v << parameters.fastlane-version >>
-            npm install --quiet -g @ionic/cli cordova@<< parameters.cordova-version >>
-      - run:
-          name: Installing Firebase CLI
-          command: npm install -g firebase-tools
+            npm install --quiet -g @ionic/cli cordova@<< parameters.cordova-version >> firebase-tools
   install-android:
     description: Install Android requirements
     parameters:
@@ -55,24 +52,27 @@ commands:
         default: "latest"
       gradle-version:
         type: string
-        default: "6.3"
+        default: ""
     steps:
       - run:
-          name: Installing Android requirements
+          name: Installing SDKMAN!
           command: |
-            sudo npm install --quiet -g @ionic/cli cordova@<< parameters.cordova-version >>
-            yes | sdkmanager --licenses || true
-            yes | sdkmanager "platforms;android-28" || true
-            yes | sdkmanager "platform-tools" || true
-            yes | sdkmanager "tools" || true
-            curl https://downloads.gradle.org/distributions/gradle-<< parameters.gradle-version >>-bin.zip > /tmp/gradle-<< parameters.gradle-version >>-bin.zip
-            sudo unzip -qq /tmp/gradle-<< parameters.gradle-version >>-bin.zip -d /tmp && rm /tmp/gradle-<< parameters.gradle-version >>-bin.zip
-            sudo mv /tmp/gradle-<< parameters.gradle-version >> /opt/gradle
-            sudo ln -s /opt/gradle/bin/gradle /usr/local/bin/gradle
-            gem install fastlane -NV
+            curl -s "https://get.sdkman.io?rcupdate=false" | bash
+            echo -e '\nsource "/home/circleci/.sdkman/bin/sdkman-init.sh"' >> $BASH_ENV
       - run:
-          name: Installing Firebase CLI
-          command: sudo npm install -g firebase-tools
+          name: Installing Gradle
+          command: |
+            sdk install gradle << parameters.gradle-version >>
+      - run:
+          name: Installing Android Platform 28
+          command: |
+            yes | sdkmanager "platforms;android-28" || true
+      - run:
+          name: Installing Ionic, Cordova and Firebase
+          command: sudo npm install --quiet -g @ionic/cli cordova@<< parameters.cordova-version >> firebase-tools
+      - run:
+          name: Installing Fastlane
+          command: gem install fastlane -NV
   vpn:
     description: Start VPN connection
     parameters:

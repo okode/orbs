@@ -12,6 +12,7 @@ cache-key-cocoapods: &cache-key-cocoapods
 
 orbs:
   common: okode/common@volatile
+  android: circleci/android@0.2.1
 
 jobs:
   test:
@@ -250,7 +251,7 @@ jobs:
         default: "29"
       gradle-version:
         type: string
-        default: "6.2.2"
+        default: ""
       dist-certs-repo-url:
         type: string
         default: ''
@@ -263,8 +264,10 @@ jobs:
       pwa-path:
         type: string
         default: "www"
-    docker:
-      - image: circleci/android:api-<< parameters.api-version >>-node
+    executor:
+      name: android/android
+      sdk-version: '29'
+      variant: 'node'
     steps:
       - checkout
       - when:
