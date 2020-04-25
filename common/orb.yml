@@ -61,7 +61,6 @@ commands:
           name: Installing Android requirements
           command: |
             sudo npm install --quiet -g @ionic/cli cordova@<< parameters.cordova-version >>
-            yes | sdkmanager --licenses || true
             yes | sdkmanager "platforms;android-28" || true
             yes | sdkmanager "platform-tools" || true
             yes | sdkmanager "tools" || true
