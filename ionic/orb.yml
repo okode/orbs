@@ -270,7 +270,6 @@ jobs:
       variant: 'node'
     steps:
       - checkout
-      - android/accept-licenses
       - when:
           condition: << parameters.custom-npm-login >>
           steps:
