@@ -58,11 +58,9 @@ commands:
           name: Installing SDKMAN!
           command: curl -s "https://get.sdkman.io" | bash
       - run:
-          name: Installing Android Platforms and Tools
+          name: Installing Android Platform 28
           command: |
             yes | sdkmanager "platforms;android-28" || true
-            yes | sdkmanager "platform-tools" || true
-            yes | sdkmanager "tools" || true
       - run:
           name: Installing Gradle
           command: |
