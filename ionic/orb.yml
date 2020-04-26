@@ -4,15 +4,13 @@ description: |
   Build and publish hybrid Apps for iOS / Android
   Repository: https://github.com/okode/orbs
 
-cache-key-gradle: &cache-key-gradle
-  key: cache-gradle-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "package-lock.json" }}
-
 cache-key-cocoapods: &cache-key-cocoapods
   key: cache-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "<< parameters.cocoapods-lock-path >>" }}
 
 orbs:
   common: okode/common@volatile
   android: circleci/android@0.2.1
+  gradle: circleci/gradle@2.1.0
 
 jobs:
   test:
@@ -280,8 +278,6 @@ jobs:
       - common/install-android:
           gradle-version: << parameters.gradle-version >>
           cordova-version: << parameters.cordova-version >>
-      - restore_cache:
-          << : *cache-key-gradle
       - when:
           condition: << parameters.attach-workspace >>
           steps:
@@ -293,22 +289,17 @@ jobs:
       - common/keystores:
           dist-certs-repo-url: << parameters.dist-certs-repo-url >>
           ssh-permission-fingerprint: << parameters.ssh-permission-fingerprint >>
-      - run:
-          name: Building
-          command: scripts/build.sh
-          no_output_timeout: 30m
+      - gradle/with_cache:
+          steps:
+            - run:
+                name: Building
+                command: scripts/build.sh
+                no_output_timeout: 30m
       - persist_to_workspace:
           root: .
           paths:
             - output/*.apk
             - output/*.aab
-      - run:
-          name: Restoring package-lock.json
-          command: git checkout package-lock.json
-      - save_cache:
-          << : *cache-key-gradle
-          paths:
-            - ~/.gradle/caches
       - run:
           name: Deploying
           command: scripts/deploy.sh
