@@ -189,11 +189,8 @@ jobs:
           condition: << parameters.node-version >>
           steps:
             - run:
-                name: Upgrading Node v<< parameters.node-version >>
-                command: |
-                  brew install node@<< parameters.node-version >>
-                  brew unlink node
-                  brew link --force --overwrite node@<< parameters.node-version >>
+                name: Upgrading Node v14
+                command: brew upgrade node
       - when:
           condition: << parameters.custom-npm-login >>
           steps:
