@@ -234,6 +234,9 @@ jobs:
       attach-workspace:
         type: boolean
         default: false
+      node-version:
+        type: string
+        default: "13"
       cordova-version:
         type: string
         default: "latest"
@@ -261,6 +264,11 @@ jobs:
       variant: 'node'
     steps:
       - checkout
+      - run:
+          name: Upgrading Node v<< parameters.node-version >>
+          command: |
+            sudo npm i -g n
+            sudo n << parameters.node-version >>
       - when:
           condition: << parameters.custom-npm-login >>
           steps:
