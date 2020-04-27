@@ -4,9 +4,6 @@ description: |
   Build and publish hybrid Apps for iOS / Android
   Repository: https://github.com/okode/orbs
 
-cache-key-cocoapods: &cache-key-cocoapods
-  key: cache-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "<< parameters.cocoapods-lock-path >>" }}
-
 orbs:
   common: okode/common@volatile
   android: circleci/android@0.2.1
@@ -78,6 +75,10 @@ jobs:
                   - www
   pwa:
     parameters:
+      node-version:
+        type: enum
+        default: "13"
+        enum: [ "13", "14" ]
       custom-npm-login:
         type: boolean
         default: false
@@ -97,8 +98,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Upgrading Node v13
-          command: echo "source /opt/circleci/.nvm/nvm.sh &>/dev/null && nvm install 13" >> ${BASH_ENV}
+          name: Upgrading Node v<< parameters.node-version >>
+          command: echo "source /opt/circleci/.nvm/nvm.sh &>/dev/null && nvm install << parameters.node-version >>" >> ${BASH_ENV}
       - when:
           condition: << parameters.custom-npm-login >>
           steps:
@@ -137,9 +138,10 @@ jobs:
       distribution-signing-password:
         type: string
         default: ''
-      cocoapods-lock-path:
-        type: string
-        default: ''
+      node-version:
+        type: enum
+        default: ""
+        enum: [ "", "14" ]
       cordova-version:
         type: string
         default: "latest"
@@ -181,6 +183,15 @@ jobs:
                 name: Updating Homebrew
                 command: brew update
       - when:
+          condition: << parameters.node-version >>
+          steps:
+            - run:
+                name: Upgrading Node v<< parameters.node-version >>
+                command: |
+                  brew install node@<< parameters.node-version >>
+                  brew unlink node
+                  brew link --force --overwrite node@<< parameters.node-version >>
+      - when:
           condition: << parameters.custom-npm-login >>
           steps:
             - common/custom-npm-login
@@ -200,14 +211,6 @@ jobs:
           dist-certs-repo-url: << parameters.dist-certs-repo-url >>
           ssh-permission-fingerprint: << parameters.ssh-permission-fingerprint >>
       - when:
-          condition: << parameters.cocoapods-lock-path >>
-          steps:
-            - restore_cache:
-                << : *cache-key-cocoapods
-            - run:
-                name: Installing Cocoapods dependencies
-                command: pod setup
-      - when:
           condition: << parameters.attach-workspace >>
           steps:
             - attach_workspace:
@@ -223,16 +226,6 @@ jobs:
           root: .
           paths:
             - output/*.ipa
-      - when:
-          condition: << parameters.cocoapods-lock-path >>
-          steps:
-            - run:
-                name: Restoring << parameters.cocoapods-lock-path >>
-                command: git checkout << parameters.cocoapods-lock-path >>
-            - save_cache:
-                << : *cache-key-cocoapods
-                paths:
-                  - ~/.cocoapods
       - run:
           name: Deploying
           command: scripts/deploy.sh

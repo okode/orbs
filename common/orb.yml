@@ -15,14 +15,18 @@ orbs:
 
 executors:
   node:
+    parameters:
+      node-version:
+        type: string
+        default: "13.13"
     docker:
-      - image: cimg/node:13.12
+      - image: cimg/node:<< parameters.node-version >>
   java:
     docker:
-      - image: circleci/openjdk:latest-node
+      - image: cimg/openjdk:11.0.7-node
   python:
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.8.2
 
 commands:
   install-ios:
