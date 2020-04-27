@@ -12,6 +12,9 @@ orbs:
 jobs:
   test:
     parameters:
+      node-version:
+        type: string
+        default: "13"
       skip-tests:
         type: boolean
         default: false
@@ -28,7 +31,7 @@ jobs:
         type: boolean
         default: false
     docker:
-      - image: circleci/node:latest-browsers
+      - image: circleci/node:<< parameters.node-version >>-browsers
     steps:
       - checkout
       - when: 
