@@ -14,7 +14,7 @@ jobs:
     parameters:
       node-version:
         type: string
-        default: "13"
+        default: "14"
       skip-tests:
         type: boolean
         default: false
@@ -79,9 +79,8 @@ jobs:
   pwa:
     parameters:
       node-version:
-        type: enum
-        default: "13"
-        enum: [ "13", "14" ]
+        type: string
+        default: "14"
       custom-npm-login:
         type: boolean
         default: false
@@ -144,7 +143,7 @@ jobs:
       node-version:
         type: enum
         default: ""
-        enum: [ "", "14" ]
+        enum: [ "12", "" ]
       cordova-version:
         type: string
         default: "latest"
@@ -189,7 +188,16 @@ jobs:
           condition: << parameters.node-version >>
           steps:
             - run:
-                name: Upgrading Node v14
+                name: Using Node v<< parameters.node-version >>
+                command: |
+                  brew unlink node
+                  brew install node@<< parameters.node-version >>
+                  brew link --overwrite --force node@<< parameters.node-version >>
+      - unless:
+          condition: << parameters.node-version >>
+          steps:
+            - run:
+                name: Upgrading Node to latest version
                 command: brew upgrade node
       - when:
           condition: << parameters.custom-npm-login >>
@@ -236,7 +244,7 @@ jobs:
         default: false
       node-version:
         type: string
-        default: "13"
+        default: "14"
       cordova-version:
         type: string
         default: "latest"
