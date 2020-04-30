@@ -35,7 +35,7 @@ jobs:
         default: false
       build-params:
         type: string
-        default: ''
+        default: 'deprecated'
     docker:
       - image: circleci/node:<< parameters.node-version >>-browsers
     steps:
@@ -52,7 +52,7 @@ jobs:
                   requires:
                     - test";
             fi
-            if [[ -n << parameters.build-params >> ]]; then
+            if [[ << parameters.build-params >> != "deprecated" ]]; then
               echo "Parameter build-params is deprecated";
             fi
       - when: 
@@ -205,7 +205,7 @@ jobs:
       - run:
           name: Check deprecated parameters
           command: |
-            if [[ -n << parameters.cocoapods-lock-path >> ]]; then
+            if [[ << parameters.cocoapods-lock-path >> != "deprecated" ]]; then
               echo "Parameter cocoapods-lock-path is deprecated";
             fi
       - when:
