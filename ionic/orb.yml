@@ -46,7 +46,7 @@ jobs:
             if [[ << parameters.skip-sonar >> ]]; then
               echo "Parameter skip-sonar is deprecated, use sonar job instead:       
               - common/sonar:
-                  <<: *test
+                  \<\<: *test
                   name: sonar
                   attach-workspace: true
                   requires:
