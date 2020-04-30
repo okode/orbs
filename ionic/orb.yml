@@ -30,10 +30,19 @@ jobs:
       custom-npm-login:
         type: boolean
         default: false
+      skip-sonar:
+        type: boolean
+        default: false
+      build-params:
+        type: string
+        default: ''
     docker:
       - image: circleci/node:<< parameters.node-version >>-browsers
     steps:
       - checkout
+      - run:
+          name: Check deprecated parameters
+          command: echo "Deprecated params"
       - when: 
           condition: << parameters.custom-npm-login >>
           steps:
@@ -150,6 +159,9 @@ jobs:
       cocoapods-version:
         type: string
         default: "'>= 0'"
+      cocoapods-lock-path:
+        type: string
+        default: "deprecated"
       fastlane-version:
         type: string
         default: "'>= 0'"
