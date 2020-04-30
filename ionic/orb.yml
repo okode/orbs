@@ -42,7 +42,19 @@ jobs:
       - checkout
       - run:
           name: Check deprecated parameters
-          command: echo "Deprecated params"
+          command: |
+            if [[ << parameters.skip-sonar >> ]]; then
+              echo "Parameter skip-sonar is deprecated, use sonar job instead:       
+              - common/sonar:
+                  <<: *test
+                  name: sonar
+                  attach-workspace: true
+                  requires:
+                    - test";
+            fi
+            if [[ -n << parameters.build-params >> ]]; then
+              echo "Parameter build-params is deprecated";
+            fi
       - when: 
           condition: << parameters.custom-npm-login >>
           steps:
@@ -190,6 +202,12 @@ jobs:
       xcode: "<< parameters.xcode-version >>"
     steps:
       - checkout
+      - run:
+          name: Check deprecated parameters
+          command: |
+            if [[ -n << parameters.cocoapods-lock-path >> ]]; then
+              echo "Parameter cocoapods-lock-path is deprecated";
+            fi
       - when:
           condition: << parameters.update-brew >>
           steps:
