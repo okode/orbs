@@ -14,7 +14,7 @@ jobs:
     parameters:
       node-version:
         type: string
-        default: "14"
+        default: '14'
       skip-tests:
         type: boolean
         default: false
@@ -31,30 +31,31 @@ jobs:
         type: boolean
         default: false
       skip-sonar:
+        description: Deprecated
         type: boolean
         default: false
       build-params:
+        description: Deprecated
         type: string
         default: 'deprecated'
     docker:
       - image: circleci/node:<< parameters.node-version >>-browsers
     steps:
-      - checkout
       - run:
-          name: Check deprecated parameters
+          name: Checking deprecated parameters
           command: |
             if [[ << parameters.skip-sonar >> ]]; then
-              echo "Parameter skip-sonar is deprecated, use sonar job instead:       
+              echo "
+              Parameter skip-sonar is deprecated, use sonar job instead:
               - common/sonar:
-                  \<\<: *test
                   name: sonar
                   attach-workspace: true
-                  requires:
-                    - test";
+              "
             fi
-            if [[ << parameters.build-params >> != "deprecated" ]]; then
-              echo "Parameter build-params is deprecated";
+            if [[ "<< parameters.build-params >>" != "deprecated" ]]; then
+              echo "Parameter build-params is deprecated"
             fi
+      - checkout
       - when: 
           condition: << parameters.custom-npm-login >>
           steps:
@@ -101,24 +102,31 @@ jobs:
     parameters:
       node-version:
         type: string
-        default: "14"
+        default: '14'
       custom-npm-login:
         type: boolean
         default: false
       build-params:
         type: string
-        default: "--prod"
+        default: '--prod'
       pwa-path:
         type: string
-        default: "www"
+        default: 'www'
       package-path:
+        description: Deprecated
         type: string
-        default: "output"
+        default: 'deprecated'
     environment:
       NODE_OPTIONS: --max_old_space_size=6144
     machine:
       image: ubuntu-1604:202004-01
     steps:
+      - run:
+          name: Checking deprecated parameters
+          command: |
+            if [[ "<< parameters.package-path >>" != "deprecated" ]]; then
+              echo "Parameter package-path is deprecated"
+            fi
       - checkout
       - run:
           name: Upgrading Node v<< parameters.node-version >>
@@ -135,13 +143,13 @@ jobs:
       - run:
           name: Packaging
           command: |
-            mkdir -p << parameters.package-path >>
-            zip -r << parameters.package-path >>/pwa.zip << parameters.pwa-path >>
+            mkdir -p output
+            zip -r output/pwa.zip << parameters.pwa-path >>
       - persist_to_workspace:
           root: .
           paths:
             - << parameters.pwa-path >>
-            - << parameters.package-path >>/pwa.zip
+            - output/pwa.zip
   ios:
     parameters:
       package-name:
@@ -163,23 +171,20 @@ jobs:
         default: ''
       node-version:
         type: enum
-        default: ""
-        enum: [ "12", "" ]
+        default: ''
+        enum: [ '12', '' ]
       cordova-version:
         type: string
-        default: "latest"
+        default: 'latest'
       cocoapods-version:
         type: string
         default: "'>= 0'"
-      cocoapods-lock-path:
-        type: string
-        default: "deprecated"
       fastlane-version:
         type: string
         default: "'>= 0'"
       xcode-version:
         type: string
-        default: "11.4.1"
+        default: '11.4.1'
       dev-certs-repo-url:
         type: string
         default: ''
@@ -197,17 +202,21 @@ jobs:
         default: false
       pwa-path:
         type: string
-        default: "www"
+        default: 'www'
+      cocoapods-lock-path:
+        description: Deprecated
+        type: string
+        default: 'deprecated'
     macos:
       xcode: "<< parameters.xcode-version >>"
     steps:
-      - checkout
       - run:
-          name: Check deprecated parameters
+          name: Checking deprecated parameters
           command: |
-            if [[ << parameters.cocoapods-lock-path >> != "deprecated" ]]; then
+            if [[ "<< parameters.cocoapods-lock-path >>" != "deprecated" ]]; then
               echo "Parameter cocoapods-lock-path is deprecated";
             fi
+      - checkout
       - when:
           condition: << parameters.update-brew >>
           steps:
@@ -274,16 +283,13 @@ jobs:
         default: false
       node-version:
         type: string
-        default: "14"
+        default: '14'
       cordova-version:
         type: string
-        default: "latest"
-      api-version:
-        type: string
-        default: "29"
+        default: 'latest'
       gradle-version:
         type: string
-        default: ""
+        default: ''
       dist-certs-repo-url:
         type: string
         default: ''
@@ -295,12 +301,22 @@ jobs:
         default: false
       pwa-path:
         type: string
-        default: "www"
+        default: 'www'
+      api-version:
+        description: Deprecated
+        type: string
+        default: 'deprecated'
     executor:
       name: android/android
       sdk-version: '29'
       variant: 'node'
     steps:
+      - run:
+          name: Checking deprecated parameters
+          command: |
+            if [[ "<< parameters.api-version >>" != "deprecated" ]]; then
+              echo "Parameter api-version is deprecated"
+            fi
       - checkout
       - run:
           name: Upgrading Node v<< parameters.node-version >>

@@ -18,15 +18,15 @@ executors:
     parameters:
       node-version:
         type: string
-        default: "13.13"
+        default: '14.1'
     docker:
       - image: cimg/node:<< parameters.node-version >>
   java:
     docker:
-      - image: cimg/openjdk:11.0.7-node
+      - image: cimg/openjdk:11.0-node
   python:
     docker:
-      - image: cimg/python:3.8.2
+      - image: cimg/python:3.8
 
 commands:
   install-ios:
@@ -34,7 +34,7 @@ commands:
     parameters:
       cordova-version:
         type: string
-        default: "latest"
+        default: 'latest'
       cocoapods-version:
         type: string
         default: "'>= 0'"
@@ -53,10 +53,10 @@ commands:
     parameters:
       cordova-version:
         type: string
-        default: "latest"
+        default: 'latest'
       gradle-version:
         type: string
-        default: ""
+        default: ''
     steps:
       - run:
           name: Installing SDKMAN!
@@ -124,7 +124,7 @@ commands:
       - attach_workspace:
           at: /tmp/workspace
       - run:
-          name: Upload "Upload artifacts to BitBucket Downloads"
+          name: Uploading artifacts to BitBucket Downloads
           command: |
             cd /tmp/workspace/<< parameters.path >>
             for FILE in *.ipa; do mv ${FILE} $(basename ${FILE} .ipa)-<< parameters.tag >>.ipa; done
@@ -135,7 +135,7 @@ commands:
       attach-workspace:
         type: boolean
         default: false
-    description: Run Sonar scanner
+    description: Running Sonar scanner
     steps:
       - when:
           condition: << parameters.attach-workspace >>
@@ -158,7 +158,7 @@ commands:
           paths:
             - ~/.sonar
   npm-install:
-    description: Run npm install
+    description: Running npm install
     steps:
       - restore_cache:
           << : *cache-key-npm
@@ -173,7 +173,7 @@ commands:
           paths:
             - node_modules
   chrome-upgrade:
-    description: "Upgrades Chrome"
+    description: Upgrading Chrome
     steps:
       - run:
           name: Upgrading Chrome
@@ -238,9 +238,12 @@ commands:
         type: string
         default: ''
     steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "<< parameters.ssh-permission-fingerprint >>"
+      - when:
+          condition: << parameters.ssh-permission-fingerprint >>
+          steps:
+            - add_ssh_keys:
+                fingerprints:
+                  - "<< parameters.ssh-permission-fingerprint >>"
       - run:
           name: Installing iOS certificates
           command: |
@@ -302,9 +305,12 @@ commands:
         type: string
         default: ''
     steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "<< parameters.ssh-permission-fingerprint >>"
+      - when:
+          condition: << parameters.ssh-permission-fingerprint >>
+          steps:
+            - add_ssh_keys:
+                fingerprints:
+                  - "<< parameters.ssh-permission-fingerprint >>"
       - run:
           name: Getting Android distribution keystore (if needed)
           command: |
@@ -409,7 +415,7 @@ jobs:
         default: ''
       invalidate-paths:
         type: string
-        default: "\"/index.html\" \"/assets/environments.json\""
+        default: '"/index.html" "/assets/environments.json"'
     executor: aws-cli/default
     steps:
       - aws-cli/setup
