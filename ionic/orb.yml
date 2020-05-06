@@ -24,10 +24,11 @@ jobs:
       skip-e2e:
         type: boolean
         default: false
-      persist-results:
+      custom-npm-login:
         type: boolean
         default: false
-      custom-npm-login:
+      persist-results:
+        description: Deprecated
         type: boolean
         default: false
       skip-sonar:
@@ -54,6 +55,9 @@ jobs:
             fi
             if [[ "<< parameters.build-params >>" != "deprecated" ]]; then
               echo "Parameter build-params is deprecated"
+            fi
+            if [[ << parameters.persist-results >> ]]; then
+              echo "Parameter persist-results is deprecated"
             fi
       - checkout
       - when: 
@@ -87,17 +91,14 @@ jobs:
                       command: npm run e2e
             - store_test_results:
                 path: test-results
-      - when:
-          condition: << parameters.persist-results >>
-          steps:
-            - persist_to_workspace:
-                root: .
-                paths:
-                  - node_modules
-                  - test-results
-                  - lint-results.json
-                  - coverage
-                  - www
+      - persist_to_workspace:
+          root: .
+          paths:
+            - node_modules
+            - test-results
+            - lint-results.json
+            - coverage
+            - www
   pwa:
     parameters:
       node-version:
