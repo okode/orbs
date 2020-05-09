@@ -18,7 +18,7 @@ executors:
     parameters:
       node-version:
         type: string
-        default: '14.1'
+        default: '14.2'
     docker:
       - image: cimg/node:<< parameters.node-version >>
   java:
