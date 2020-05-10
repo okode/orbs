@@ -324,7 +324,7 @@ commands:
               sed -i 's/KEYSTORE_PASS_PLACEHOLDER/'"$KEYSTORE_PASS"'/' build.json
             fi
   custom-npm-login:
-    description: Logging into custom NPM registry
+    description: Logins with custom NPM registry
     steps:
       - run:
           name: Installing NPM CLI Login
@@ -332,6 +332,16 @@ commands:
       - run:
           name: Authenticating NPM
           command: npm-cli-adduser
+  force-angular-devkit-parallel:
+    description: Force parallel value for Angular DevKit
+    parameters:
+      parallel:
+        type: string
+    steps:
+      - run:
+          name: Forcing parallel value to << parameters.parallel >>
+          command: |
+            npx replace-in-files-cli --string='parallel: true' --replacement='parallel: << parameters.parallel >>' 'node_modules/@angular-devkit/**/*'
 
 jobs:
   sentry-release:

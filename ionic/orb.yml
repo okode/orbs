@@ -114,8 +114,8 @@ jobs:
         type: string
         default: 'www'
       parallel:
-        type: integer
-        default: 0
+        type: string
+        default: '2'
       package-path:
         description: Deprecated
         type: string
@@ -141,10 +141,8 @@ jobs:
       - when:
           condition: << parameters.parallel >>
           steps:
-            - run:
-                name: Forcing parallel value to << parameters.parallel >>
-                command: |
-                  npx replace-in-files-cli --string='parallel: true' --replacement='parallel: << parameters.parallel >>' 'node_modules/@angular-devkit/**/*'
+            - common/force-angular-devkit-parallel:
+                parallel: << parameters.parallel >>
       - run:
           name: Building
           command: npm run build -- --progress false << parameters.build-params >>
