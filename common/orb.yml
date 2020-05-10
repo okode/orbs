@@ -341,7 +341,8 @@ commands:
       - run:
           name: Forcing parallel value to << parameters.parallel >>
           command: |
-            npx replace-in-files-cli --string='parallel: true' --replacement='parallel: << parameters.parallel >>' 'node_modules/@angular-devkit/**/*'
+            npx replace-in-files-cli --string='parallel: true' --replacement='parallel: << parameters.parallel >>' 'node_modules/**/*webpack*/**/*'
+            grep -Ri "parallel: " node_modules
 
 jobs:
   sentry-release:
