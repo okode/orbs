@@ -68,9 +68,11 @@ jobs:
                 command: sudo chown -R $(whoami) /usr/local/lib/node_modules && sudo chown -R $(whoami) /usr/local/bin/
             - common/custom-npm-login
       - common/npm-install
+      - common/force-angular-devkit-parallel:
+          parallel: '2'
       - run:
           name: Type checking
-          command: npx tsc --noEmit
+          command: npm run build -- --aot --progress=false
       - unless:
           condition: << parameters.skip-lint >>
           steps:
