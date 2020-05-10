@@ -11,7 +11,7 @@ cache-key-sonar: &cache-key-sonar
   key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "sonar-project.properties" }}
 
 node-options: &node-options
-  NODE_OPTIONS: --max_old_space_size=4096
+  NODE_OPTIONS: --max_old_space_size=3072
 
 orbs:
   aws-cli: circleci/aws-cli@1.0.0
