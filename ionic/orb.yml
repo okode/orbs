@@ -69,7 +69,7 @@ jobs:
             - common/custom-npm-login
       - common/npm-install
       - common/force-angular-devkit-parallel:
-          parallel: '2'
+          parallel: 'false'
       - run:
           name: Type checking
           command: npm run build -- --aot --progress=false
@@ -117,7 +117,7 @@ jobs:
         default: 'www'
       parallel:
         type: string
-        default: '2'
+        default: 'false'
       package-path:
         description: Deprecated
         type: string
