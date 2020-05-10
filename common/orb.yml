@@ -10,6 +10,9 @@ cache-key-npm: &cache-key-npm
 cache-key-sonar: &cache-key-sonar
   key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "sonar-project.properties" }}
 
+node-options: &node-options
+  NODE_OPTIONS: --max_old_space_size=6144
+
 orbs:
   aws-cli: circleci/aws-cli@1.0.0
 
@@ -21,6 +24,17 @@ executors:
         default: '14.2'
     docker:
       - image: cimg/node:<< parameters.node-version >>
+    environment:
+      << : *node-options
+  node-browsers:
+    parameters:
+      node-version:
+        type: string
+        default: '14'
+    docker:
+      - image: circleci/node:<< parameters.node-version >>-browsers
+    environment:
+      << : *node-options
   java:
     docker:
       - image: cimg/openjdk:11.0-node

@@ -39,8 +39,9 @@ jobs:
         description: Deprecated
         type: string
         default: 'deprecated'
-    docker:
-      - image: circleci/node:<< parameters.node-version >>-browsers
+    executor:
+      name: common/node-browsers
+      node-version: << parameters.node-version >>
     steps:
       - run:
           name: Checking deprecated parameters
@@ -122,8 +123,6 @@ jobs:
         description: Deprecated
         type: string
         default: 'deprecated'
-    environment:
-      NODE_OPTIONS: --max_old_space_size=6144
     executor:
       name: common/node
       node-version: << parameters.node-version >>
