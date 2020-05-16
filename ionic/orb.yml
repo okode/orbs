@@ -267,7 +267,12 @@ jobs:
                 command: find << parameters.pwa-path  >> -name *.map -type f -delete
       - run:
           name: Building
-          command: scripts/build.sh
+          command: |
+            if [[ -f "scripts/build.sh" ]]; then
+              scripts/build.sh
+            else
+              npm run ci:build
+            fi
           no_output_timeout: 30m
       - persist_to_workspace:
           root: .
@@ -275,7 +280,12 @@ jobs:
             - output/*.ipa
       - run:
           name: Deploying
-          command: scripts/deploy.sh
+          command: |
+            if [[ -f "scripts/deploy.sh" ]]; then
+              scripts/deploy.sh
+            else
+              npm run ci:deploy
+            fi
   android:
     parameters:
       attach-workspace:
@@ -348,7 +358,12 @@ jobs:
           steps:
             - run:
                 name: Building
-                command: scripts/build.sh
+                command: |
+                  if [[ -f "scripts/build.sh" ]]; then
+                    scripts/build.sh
+                  else
+                    npm run ci:build
+                  fi
                 no_output_timeout: 30m
       - persist_to_workspace:
           root: .
@@ -357,5 +372,10 @@ jobs:
             - output/*.aab
       - run:
           name: Deploying
-          command: scripts/deploy.sh
+          command: |
+            if [[ -f "scripts/deploy.sh" ]]; then
+              scripts/deploy.sh
+            else
+              npm run ci:deploy
+            fi
           no_output_timeout: 20m
