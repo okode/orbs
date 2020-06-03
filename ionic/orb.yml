@@ -64,7 +64,8 @@ jobs:
             if [[ << parameters.persist-results >> ]]; then
               echo "Parameter persist-results is deprecated"
             fi
-      - checkout
+      - checkout:
+          path: ~/project
       - when: 
           condition: << parameters.custom-npm-login >>
           steps:
@@ -135,7 +136,8 @@ jobs:
             if [[ "<< parameters.package-path >>" != "deprecated" ]]; then
               echo "Parameter package-path is deprecated"
             fi
-      - checkout
+      - checkout:
+          path: ~/project
       - run:
           name: Upgrading Node v<< parameters.node-version >>
           command: echo "source /opt/circleci/.nvm/nvm.sh &>/dev/null && nvm install << parameters.node-version >>" >> ${BASH_ENV}
@@ -228,7 +230,8 @@ jobs:
             if [[ "<< parameters.cocoapods-lock-path >>" != "deprecated" ]]; then
               echo "Parameter cocoapods-lock-path is deprecated";
             fi
-      - checkout
+      - checkout:
+          path: ~/project
       - when:
           condition: << parameters.update-brew >>
           steps:
@@ -343,7 +346,8 @@ jobs:
             if [[ "<< parameters.api-version >>" != "deprecated" ]]; then
               echo "Parameter api-version is deprecated"
             fi
-      - checkout
+      - checkout:
+          path: ~/project
       - run:
           name: Upgrading Node v<< parameters.node-version >>
           command: |
