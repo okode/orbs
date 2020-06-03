@@ -39,6 +39,10 @@ jobs:
         description: Deprecated
         type: string
         default: 'deprecated'
+      working-directory:
+        type: string
+        deafult: ~/project
+    working_directory: << parameters.working-directory >>
     executor:
       name: common/node-browsers
       node-version: << parameters.node-version >>
@@ -118,6 +122,10 @@ jobs:
         description: Deprecated
         type: string
         default: 'deprecated'
+      working-directory:
+        type: string
+        deafult: ~/project
+    working_directory: << parameters.working-directory >>
     executor:
       name: common/node-machine
     steps:
@@ -207,6 +215,10 @@ jobs:
         description: Deprecated
         type: string
         default: 'deprecated'
+      working-directory:
+        type: string
+        deafult: ~/project
+    working_directory: << parameters.working-directory >>
     macos:
       xcode: "<< parameters.xcode-version >>"
     steps:
@@ -320,6 +332,10 @@ jobs:
       name: android/android
       sdk-version: '29'
       variant: 'node'
+    working-directory:
+        type: string
+        deafult: ~/project
+    working_directory: << parameters.working-directory >>
     steps:
       - run:
           name: Checking deprecated parameters
