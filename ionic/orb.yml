@@ -328,14 +328,14 @@ jobs:
         description: Deprecated
         type: string
         default: 'deprecated'
+      working-directory:
+        type: string
+        default: ~/project
+    working_directory: << parameters.working-directory >>
     executor:
       name: android/android
       sdk-version: '29'
       variant: 'node'
-    working-directory:
-        type: string
-        default: ~/project
-    working_directory: << parameters.working-directory >>
     steps:
       - run:
           name: Checking deprecated parameters
