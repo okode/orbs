@@ -5,7 +5,7 @@ description: |
   Repository: https://github.com/okode/orbs
 
 orbs:
-  common: fwmovilidad/common@dev:first
+  common: fwmovilidad/common@volatile
   android: circleci/android@0.2.1
   gradle: circleci/gradle@2.1.0
 
