@@ -5,7 +5,7 @@ description: |
   Repository: https://github.com/okode/orbs
 
 orbs:
-  common: fwmovilidad/common@volatile
+  common: okode/common@volatile
   android: circleci/android@0.2.1
   gradle: circleci/gradle@2.1.0
 
@@ -39,10 +39,6 @@ jobs:
         description: Deprecated
         type: string
         default: 'deprecated'
-      working-directory:
-        type: string
-        default: ~/project
-    working_directory: << parameters.working-directory >>
     executor:
       name: common/node-browsers
       node-version: << parameters.node-version >>
@@ -64,8 +60,7 @@ jobs:
             if [[ << parameters.persist-results >> ]]; then
               echo "Parameter persist-results is deprecated"
             fi
-      - checkout:
-          path: ~/project
+      - checkout
       - when: 
           condition: << parameters.custom-npm-login >>
           steps:
@@ -123,10 +118,6 @@ jobs:
         description: Deprecated
         type: string
         default: 'deprecated'
-      working-directory:
-        type: string
-        default: ~/project
-    working_directory: << parameters.working-directory >>
     executor:
       name: common/node-machine
     steps:
@@ -136,8 +127,7 @@ jobs:
             if [[ "<< parameters.package-path >>" != "deprecated" ]]; then
               echo "Parameter package-path is deprecated"
             fi
-      - checkout:
-          path: ~/project
+      - checkout
       - run:
           name: Upgrading Node v<< parameters.node-version >>
           command: echo "source /opt/circleci/.nvm/nvm.sh &>/dev/null && nvm install << parameters.node-version >>" >> ${BASH_ENV}
@@ -217,10 +207,6 @@ jobs:
         description: Deprecated
         type: string
         default: 'deprecated'
-      working-directory:
-        type: string
-        default: ~/project
-    working_directory: << parameters.working-directory >>
     macos:
       xcode: "<< parameters.xcode-version >>"
     steps:
@@ -230,8 +216,7 @@ jobs:
             if [[ "<< parameters.cocoapods-lock-path >>" != "deprecated" ]]; then
               echo "Parameter cocoapods-lock-path is deprecated";
             fi
-      - checkout:
-          path: ~/project
+      - checkout
       - when:
           condition: << parameters.update-brew >>
           steps:
@@ -331,10 +316,6 @@ jobs:
         description: Deprecated
         type: string
         default: 'deprecated'
-      working-directory:
-        type: string
-        default: ~/project
-    working_directory: << parameters.working-directory >>
     executor:
       name: android/android
       sdk-version: '29'
@@ -346,8 +327,7 @@ jobs:
             if [[ "<< parameters.api-version >>" != "deprecated" ]]; then
               echo "Parameter api-version is deprecated"
             fi
-      - checkout:
-          path: ~/project
+      - checkout
       - run:
           name: Upgrading Node v<< parameters.node-version >>
           command: |
