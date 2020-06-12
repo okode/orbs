@@ -95,7 +95,10 @@ jobs:
       copy-static-resources:
         type: boolean
         default: true
-    executor: java-node
+      executor:
+        type: executor
+        default: java-node
+    executor: << parameters.executor >>
     working_directory: ~/project/<< parameters.path >>
     steps:
       - checkout:
