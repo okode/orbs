@@ -88,8 +88,14 @@ commands:
           command: |
             yes | sdkmanager "platforms;android-28" || true
       - run:
-          name: Installing Ionic, Cordova and Firebase
-          command: sudo npm install --quiet -g @ionic/cli cordova@<< parameters.cordova-version >> firebase-tools
+          name: Installing Ionic and Cordova
+          command: sudo npm i --quiet -g @ionic/cli cordova@<< parameters.cordova-version >>
+      - run:
+          name: Installing Firebase
+          command: |
+            sudo chown -R $(whoami) /usr/local/lib/node_modules
+            sudo chown -R $(whoami) /usr/local/bin
+            npm i --quiet -g firebase-tools
       - run:
           name: Installing Fastlane
           command: gem install fastlane -NV
