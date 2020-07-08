@@ -154,6 +154,12 @@ commands:
             for FILE in *; do curl -X POST "https://<< parameters.auth-string >>@api.bitbucket.org/2.0/repositories/<< parameters.group >>/<< parameters.repo >>/downloads" --form files=@"${FILE}"; done
   sonar:
     parameters:
+      project-base-dir:
+        type: string
+        default: .
+      project-properties-file:
+        type: string
+        default: ./sonar-project.properties
       attach-workspace:
         type: boolean
         default: false
@@ -174,7 +180,7 @@ commands:
           command: npm i typescript@latest
       - run:
           name: Scanning
-          command: java -jar sonar-scanner.jar
+          command: java -jar sonar-scanner.jar -Dproject.settings=<< parameters.project-properties-file >> -Dsonar.projectBaseDir=<< parameters.project-base-dir >>
       - save_cache:
           << : *cache-key-sonar
           paths:
