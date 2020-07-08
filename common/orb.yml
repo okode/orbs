@@ -412,6 +412,12 @@ jobs:
   sonar:
     description: Run Sonar scanner
     parameters:
+      project-base-dir:
+        type: string
+        default: .
+      project-properties-file:
+        type: string
+        default: ./sonar-project.properties
       attach-workspace:
         type: boolean
         default: false
@@ -419,6 +425,8 @@ jobs:
     steps:
       - checkout
       - sonar:
+          project-base-dir: << parameters.project-base-dir >>
+          project-properties-file: << parameters.project-properties-file >>
           attach-workspace: << parameters.attach-workspace >>
   sonar-vpn:
     description: Run Sonar scanner with VPN
@@ -430,6 +438,12 @@ jobs:
         type: string
       config:
         type: string
+      project-base-dir:
+        type: string
+        default: .
+      project-properties-file:
+        type: string
+        default: ./sonar-project.properties
       attach-workspace:
         type: boolean
         default: false
@@ -440,6 +454,8 @@ jobs:
           password: << parameters.password >>
           config: << parameters.config >>
       - sonar:
+          project-base-dir: << parameters.project-base-dir >>
+          project-properties-file: << parameters.project-properties-file >>
           attach-workspace: << parameters.attach-workspace >>
   s3-sync:
     description: Publish contents to AWS S3 and optionally invalidate CloudFront
