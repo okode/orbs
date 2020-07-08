@@ -128,7 +128,8 @@ jobs:
           steps:
             - run:
                 name: Building
-                command: ./gradlew build jacocoTestReport sonarqube
+                command: ./gradlew build jacocoTestReport
+            - common/sonar
             - store_test_results:
                 path: build/test-results
       - save_cache:
