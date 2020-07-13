@@ -8,10 +8,10 @@ cache-key-npm: &cache-key-npm
   key: cache-npm-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "package-lock.json" }}
 
 cache-key-sonar-standalone: &cache-key-sonar-standalone
-  key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "sonar-project.properties" }}
+  key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "<< parameters.path >>/sonar-project.properties" }}
 
 cache-key-sonar-gradle: &cache-key-sonar-gradle
-  key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "build.gradle" }}
+  key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "<< parameters.path >>/build.gradle" }}
 
 orbs:
   aws-cli: circleci/aws-cli@1.0.0
@@ -183,7 +183,7 @@ commands:
           steps:
             - run:
                 name: Standalone Scanner
-                command: echo "Standalone scanner selected running on ${pwd}"
+                command: echo "Standalone scanner selected running on $(pwd)"
                 working_directory: << parameters.path >>
             - run:
                 name: Downloading Sonar scanner
@@ -209,13 +209,13 @@ commands:
           steps:
             - run:
                 name: Gradle Scanner
-                command: echo "Gradle scanner selected running on ${pwd}"
+                command: echo "Gradle scanner selected running on $(pwd)"
                 working_directory: << parameters.path >>
             - restore_cache:
                 << : *cache-key-sonar-gradle
             - run:
                 name: Scanning
-                command: ./gradlew sonarqube
+                command: ./gradlew sonarqube -x test
                 working_directory: << parameters.path >>
             - save_cache:
                 << : *cache-key-sonar-gradle
