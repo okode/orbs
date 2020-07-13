@@ -7,8 +7,11 @@ description: |
 cache-key-npm: &cache-key-npm
   key: cache-npm-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "package-lock.json" }}
 
-cache-key-sonar: &cache-key-sonar
+cache-key-sonar-standalone: &cache-key-sonar-standalone
   key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "sonar-project.properties" }}
+
+cache-key-sonar-gradle: &cache-key-sonar-gradle
+  key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "build.gradle" }}
 
 orbs:
   aws-cli: circleci/aws-cli@1.0.0
@@ -154,15 +157,19 @@ commands:
             for FILE in *; do curl -X POST "https://<< parameters.auth-string >>@api.bitbucket.org/2.0/repositories/<< parameters.group >>/<< parameters.repo >>/downloads" --form files=@"${FILE}"; done
   sonar:
     parameters:
-      project-base-dir:
+      scanner:
+        type: enum
+        default: "standalone"
+        description: The way of running the Sonar analysis. It could be 'standalone' (running the analysis using the sonar-scanner.jar) or 'gradle' (using the 'sonarqube' gradle plugin of a build.gradle file).
+        enum: ["standalone", "gradle"]
+      path:
         type: string
-        default: .
-      project-properties-file:
-        type: string
-        default: ./sonar-project.properties
+        default: ~/project
+        description: The path to run the Sonar analysis on. This will set the 'working_directory' of the Sonar analysis steps, not the entire job one. That is, the 'attach-workspace' parameter will not be affected.
       attach-workspace:
         type: boolean
         default: false
+        description: This will attach the workspace on the job 'working_directory' (default '~/project').
     description: Running Sonar scanner
     steps:
       - when:
@@ -170,21 +177,50 @@ commands:
           steps:
             - attach_workspace:
                 at: .
-      - run:
-          name: Downloading Sonar scanner
-          command: curl -L https://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/4.3.0.2102/sonar-scanner-cli-4.3.0.2102.jar > sonar-scanner.jar
-      - restore_cache:
-          << : *cache-key-sonar
-      - run:
-          name: Upgrading TypeScript
-          command: npm i typescript@latest
-      - run:
-          name: Scanning
-          command: java -jar sonar-scanner.jar -Dproject.settings=<< parameters.project-properties-file >> -Dsonar.projectBaseDir=<< parameters.project-base-dir >>
-      - save_cache:
-          << : *cache-key-sonar
-          paths:
-            - ~/.sonar
+      - when:
+          condition: 
+            equal: [ "standalone", << parameters.scanner >> ]
+          steps:
+            - run:
+                name: Standalone Scanner
+                command: echo "Standalone scanner selected running on ${pwd}"
+                working_directory: << parameters.path >>
+            - run:
+                name: Downloading Sonar scanner
+                command: curl -L https://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/4.3.0.2102/sonar-scanner-cli-4.3.0.2102.jar > sonar-scanner.jar
+                working_directory: << parameters.path >>
+            - restore_cache:
+                << : *cache-key-sonar-standalone
+            - run:
+                name: Upgrading TypeScript
+                command: npm i typescript@latest
+                working_directory: << parameters.path >>
+            - run:
+                name: Scanning
+                command: java -jar sonar-scanner.jar
+                working_directory: << parameters.path >>
+            - save_cache:
+                << : *cache-key-sonar-standalone
+                paths:
+                  - ~/.sonar
+      - when:
+          condition: 
+            equal: [ "gradle", << parameters.scanner >> ]
+          steps:
+            - run:
+                name: Gradle Scanner
+                command: echo "Gradle scanner selected running on ${pwd}"
+                working_directory: << parameters.path >>
+            - restore_cache:
+                << : *cache-key-sonar-gradle
+            - run:
+                name: Scanning
+                command: ./gradlew sonarqube
+                working_directory: << parameters.path >>
+            - save_cache:
+                << : *cache-key-sonar-gradle
+                paths:
+                  - ~/.sonar
   npm-install:
     description: Running npm install
     steps:
@@ -412,21 +448,25 @@ jobs:
   sonar:
     description: Run Sonar scanner
     parameters:
-      project-base-dir:
+      scanner:
+        type: enum
+        default: "standalone"
+        description: The way of running the Sonar analysis. It could be 'standalone' (running the analysis using the sonar-scanner.jar) or 'gradle' (using the 'sonarqube' gradle plugin of a build.gradle file).
+        enum: ["standalone", "gradle"]
+      path:
         type: string
-        default: .
-      project-properties-file:
-        type: string
-        default: ./sonar-project.properties
+        default: ~/project
+        description: The path to run the Sonar analysis on. This will set the 'working_directory' of the Sonar analysis steps, not the entire job one. That is, the 'attach-workspace' parameter will not be affected.
       attach-workspace:
         type: boolean
         default: false
+        description: This will attach the workspace on the job 'working_directory' (default '~/project').
     executor: java
     steps:
       - checkout
       - sonar:
-          project-base-dir: << parameters.project-base-dir >>
-          project-properties-file: << parameters.project-properties-file >>
+          scanner: << parameters.scanner >>
+          path: << parameters.path >>
           attach-workspace: << parameters.attach-workspace >>
   sonar-vpn:
     description: Run Sonar scanner with VPN
@@ -438,15 +478,19 @@ jobs:
         type: string
       config:
         type: string
-      project-base-dir:
+      scanner:
+        type: enum
+        default: "standalone"
+        description: The way of running the Sonar analysis. It could be 'standalone' (running the analysis using the sonar-scanner.jar) or 'gradle' (using the 'sonarqube' gradle plugin of a build.gradle file).
+        enum: ["standalone", "gradle"]
+      path:
         type: string
-        default: .
-      project-properties-file:
-        type: string
-        default: ./sonar-project.properties
+        default: ~/project
+        description: The path to run the Sonar analysis on. This will set the 'working_directory' of the Sonar analysis steps, not the entire job one. That is, the 'attach-workspace' parameter will not be affected.
       attach-workspace:
         type: boolean
         default: false
+        description: This will attach the workspace on the job 'working_directory' (default '~/project').
     steps:
       - checkout
       - vpn:
@@ -454,8 +498,8 @@ jobs:
           password: << parameters.password >>
           config: << parameters.config >>
       - sonar:
-          project-base-dir: << parameters.project-base-dir >>
-          project-properties-file: << parameters.project-properties-file >>
+          scanner: << parameters.scanner >>
+          path: << parameters.path >>
           attach-workspace: << parameters.attach-workspace >>
   s3-sync:
     description: Publish contents to AWS S3 and optionally invalidate CloudFront
