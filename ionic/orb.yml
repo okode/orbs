@@ -139,7 +139,7 @@ jobs:
       - run:
           name: Building
           command: npm run build -- --progress false << parameters.build-params >>
-          no_output_timeout: 20m
+          no_output_timeout: 30m
       - run:
           name: Packaging
           command: |
