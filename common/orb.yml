@@ -179,11 +179,11 @@ commands:
                 at: .
       - when:
           condition: 
-            equal: [ "standalone", << parameters.scanner >> ]
+            equal: [ 'standalone', << parameters.scanner >> ]
           steps:
             - run:
                 name: Standalone Scanner
-                command: echo "Standalone scanner selected running on $(pwd)"
+                command: echo "Standalone scanner selected running on << parameters.path >>"
                 working_directory: << parameters.path >>
             - run:
                 name: Downloading Sonar scanner
@@ -205,11 +205,11 @@ commands:
                   - ~/.sonar
       - when:
           condition: 
-            equal: [ "gradle", << parameters.scanner >> ]
+            equal: [ 'gradle', << parameters.scanner >> ]
           steps:
             - run:
                 name: Gradle Scanner
-                command: echo "Gradle scanner selected running on $(pwd)"
+                command: echo "Gradle scanner selected running on << parameters.path >>"
                 working_directory: << parameters.path >>
             - restore_cache:
                 << : *cache-key-sonar-gradle
@@ -450,9 +450,9 @@ jobs:
     parameters:
       scanner:
         type: enum
-        default: "standalone"
+        default: 'standalone'
         description: The way of running the Sonar analysis. It could be 'standalone' (running the analysis using the sonar-scanner.jar) or 'gradle' (using the 'sonarqube' gradle plugin of a build.gradle file).
-        enum: ["standalone", "gradle"]
+        enum: [ 'standalone', 'gradle' ]
       path:
         type: string
         default: ~/project
@@ -480,9 +480,9 @@ jobs:
         type: string
       scanner:
         type: enum
-        default: "standalone"
+        default: 'standalone'
         description: The way of running the Sonar analysis. It could be 'standalone' (running the analysis using the sonar-scanner.jar) or 'gradle' (using the 'sonarqube' gradle plugin of a build.gradle file).
-        enum: ["standalone", "gradle"]
+        enum: [ 'standalone', 'gradle' ]
       path:
         type: string
         default: ~/project
