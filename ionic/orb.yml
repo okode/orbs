@@ -138,7 +138,7 @@ jobs:
       - common/npm-install
       - run:
           name: Building
-          command: npm run build -- << parameters.build-params >>
+          command: npm run build -- --progress false << parameters.build-params >>
           no_output_timeout: 30m
       - run:
           name: Packaging
