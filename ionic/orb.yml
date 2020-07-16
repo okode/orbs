@@ -114,12 +114,16 @@ jobs:
       pwa-path:
         type: string
         default: 'www'
+      executor:
+        type: enum
+        default: 'node-machine'
+        enum: [ 'node-machine', 'node' ]
       package-path:
         description: Deprecated
         type: string
         default: 'deprecated'
     executor:
-      name: common/node-machine
+      name: common/<< parameters.executor >>
     steps:
       - run:
           name: Checking deprecated parameters
@@ -128,12 +132,23 @@ jobs:
               echo "Parameter package-path is deprecated"
             fi
       - checkout
-      - run:
-          name: Upgrading Node v<< parameters.node-version >>
-          command: echo "source /opt/circleci/.nvm/nvm.sh &>/dev/null && nvm install << parameters.node-version >>" >> ${BASH_ENV}
+      - when:
+          condition:
+            equal: [ 'node-machine', << parameters.executor >> ]
+          steps:
+            - run:
+                name: Upgrading Node v<< parameters.node-version >>
+                command: echo "source /opt/circleci/.nvm/nvm.sh &>/dev/null && nvm install << parameters.node-version >>" >> ${BASH_ENV}      
       - when:
           condition: << parameters.custom-npm-login >>
           steps:
+            - when:
+                condition:
+                  equal: [ 'node', << parameters.executor >> ]
+                steps:
+                  - run:
+                      name: Fixing node_modules writting access
+                      command: sudo chown -R $(whoami) /usr/local/lib/node_modules && sudo chown -R $(whoami) /usr/local/bin/
             - common/custom-npm-login
       - common/npm-install
       - run:
