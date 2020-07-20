@@ -164,12 +164,12 @@ commands:
         enum: ["standalone", "gradle"]
       path:
         type: string
-        default: ~/project
+        default: .
         description: The path to run the Sonar analysis on. This will set the 'working_directory' of the Sonar analysis steps, not the entire job one. The 'attach_workspace' step will be set at this path.
       attach-workspace:
         type: boolean
         default: false
-        description: This will attach the workspace on the 'path' parameter (default '~/project').
+        description: This will attach the workspace on the 'path' parameter.
     description: Running Sonar scanner
     steps:
       - when:
@@ -455,12 +455,12 @@ jobs:
         enum: [ 'standalone', 'gradle' ]
       path:
         type: string
-        default: ~/project
+        default: .
         description: The path to run the Sonar analysis on. This will set the 'working_directory' of the Sonar analysis steps, not the entire job one. The 'attach_workspace' step will be set at this path.
       attach-workspace:
         type: boolean
         default: false
-        description: This will attach the workspace on the 'path' parameter (default '~/project').
+        description: This will attach the workspace on the 'path' parameter.
     executor: java
     steps:
       - checkout
@@ -485,12 +485,12 @@ jobs:
         enum: [ 'standalone', 'gradle' ]
       path:
         type: string
-        default: ~/project
+        default: .
         description: The path to run the Sonar analysis on. This will set the 'working_directory' of the Sonar analysis steps, not the entire job one. The 'attach_workspace' step will be set at this path.
       attach-workspace:
         type: boolean
         default: false
-        description: This will attach the workspace on the 'path' parameter (default '~/project').
+        description: This will attach the workspace on the 'path' parameter.
     steps:
       - checkout
       - vpn:
