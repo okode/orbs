@@ -8,10 +8,10 @@ cache-key-npm: &cache-key-npm
   key: cache-npm-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "package-lock.json" }}
 
 cache-key-sonar-standalone: &cache-key-sonar-standalone
-  key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "sonar-project.properties" }}
+  key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "<< parameters.path >>/sonar-project.properties" }}
 
 cache-key-sonar-gradle: &cache-key-sonar-gradle
-  key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "build.gradle" }}
+  key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "<< parameters.path >>/build.gradle" }}
 
 orbs:
   aws-cli: circleci/aws-cli@1.0.0
@@ -162,6 +162,10 @@ commands:
         default: "standalone"
         description: The way of running the Sonar analysis. It could be 'standalone' (running the analysis using the sonar-scanner.jar) or 'gradle' (using the 'sonarqube' gradle plugin of a build.gradle file).
         enum: ["standalone", "gradle"]
+      path:
+        type: string
+        default: ~/project
+        description: The path to run the Sonar analysis on. This will set the 'working_directory' of the Sonar analysis steps, not the entire job one. That is, the 'attach-workspace' parameter will not be affected.
       attach-workspace:
         type: boolean
         default: false
@@ -172,25 +176,29 @@ commands:
           condition: << parameters.attach-workspace >>
           steps:
             - attach_workspace:
-                at: .
+                at: << parameters.path >>
       - when:
           condition: 
             equal: [ 'standalone', << parameters.scanner >> ]
           steps:
             - run:
                 name: Standalone Scanner
-                command: echo "Standalone scanner selected running on $(pwd)"
+                command: echo "Standalone scanner selected running on << parameters.path >>"
+                working_directory: << parameters.path >>
             - run:
                 name: Downloading Sonar scanner
                 command: curl -L https://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/4.3.0.2102/sonar-scanner-cli-4.3.0.2102.jar > sonar-scanner.jar
+                working_directory: << parameters.path >>
             - restore_cache:
                 << : *cache-key-sonar-standalone
             - run:
                 name: Upgrading TypeScript
                 command: npm i typescript@latest
+                working_directory: << parameters.path >>
             - run:
                 name: Scanning
                 command: java -jar sonar-scanner.jar
+                working_directory: << parameters.path >>
             - save_cache:
                 << : *cache-key-sonar-standalone
                 paths:
@@ -201,15 +209,18 @@ commands:
           steps:
             - run:
                 name: Gradle Scanner
-                command: echo "Gradle scanner selected running on $(pwd)"
+                command: echo "Gradle scanner selected running on << parameters.path >>"
+                working_directory: << parameters.path >>
             - run:
                 name: Check workspace
                 command: ls -la
+                working_directory: << parameters.path >>
             - restore_cache:
                 << : *cache-key-sonar-gradle
             - run:
                 name: Scanning
                 command: ./gradlew sonarqube -x test
+                working_directory: << parameters.path >>
             - save_cache:
                 << : *cache-key-sonar-gradle
                 paths:
@@ -454,12 +465,12 @@ jobs:
         type: boolean
         default: false
         description: This will attach the workspace on the job 'working_directory' (default '~/project').
-    working_directory: << parameters.path >>
     executor: java
     steps:
       - checkout
       - sonar:
           scanner: << parameters.scanner >>
+          path: << parameters.path >>
           attach-workspace: << parameters.attach-workspace >>
   sonar-vpn:
     description: Run Sonar scanner with VPN
@@ -484,7 +495,6 @@ jobs:
         type: boolean
         default: false
         description: This will attach the workspace on the job 'working_directory' (default '~/project').
-    working_directory: << parameters.path >>
     steps:
       - checkout
       - vpn:
@@ -493,6 +503,7 @@ jobs:
           config: << parameters.config >>
       - sonar:
           scanner: << parameters.scanner >>
+          path: << parameters.path >>
           attach-workspace: << parameters.attach-workspace >>
   s3-sync:
     description: Publish contents to AWS S3 and optionally invalidate CloudFront
