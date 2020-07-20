@@ -134,10 +134,8 @@ jobs:
             - persist_to_workspace:
                 root: .
                 paths:
-                  - src
-                  - build
+                  - .
       - save_cache:
           <<: *cache-key-gradle
           paths:
             - ~/.gradle
-
