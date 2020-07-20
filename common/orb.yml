@@ -165,11 +165,11 @@ commands:
       path:
         type: string
         default: ~/project
-        description: The path to run the Sonar analysis on. This will set the 'working_directory' of the Sonar analysis steps, not the entire job one. That is, the 'attach-workspace' parameter will not be affected.
+        description: The path to run the Sonar analysis on. This will set the 'working_directory' of the Sonar analysis steps, not the entire job one. The 'attach_workspace' step will be set at this path.
       attach-workspace:
         type: boolean
         default: false
-        description: This will attach the workspace on the job 'working_directory' (default '~/project').
+        description: This will attach the workspace on the 'path' parameter (default '~/project').
     description: Running Sonar scanner
     steps:
       - when:
@@ -183,7 +183,7 @@ commands:
           steps:
             - run:
                 name: Standalone Scanner
-                command: echo "Standalone scanner selected running on << parameters.path >>"
+                command: echo "Standalone scanner selected running on $(pwd)"
                 working_directory: << parameters.path >>
             - run:
                 name: Downloading Sonar scanner
@@ -209,11 +209,7 @@ commands:
           steps:
             - run:
                 name: Gradle Scanner
-                command: echo "Gradle scanner selected running on << parameters.path >>"
-                working_directory: << parameters.path >>
-            - run:
-                name: Check workspace
-                command: ls -la
+                command: echo "Gradle scanner selected running on $(pwd)"
                 working_directory: << parameters.path >>
             - restore_cache:
                 << : *cache-key-sonar-gradle
@@ -460,11 +456,11 @@ jobs:
       path:
         type: string
         default: ~/project
-        description: The path to run the Sonar analysis on. This will set the 'working_directory' of the Sonar analysis steps, not the entire job one. That is, the 'attach-workspace' parameter will not be affected.
+        description: The path to run the Sonar analysis on. This will set the 'working_directory' of the Sonar analysis steps, not the entire job one. The 'attach_workspace' step will be set at this path.
       attach-workspace:
         type: boolean
         default: false
-        description: This will attach the workspace on the job 'working_directory' (default '~/project').
+        description: This will attach the workspace on the 'path' parameter (default '~/project').
     executor: java
     steps:
       - checkout
@@ -490,11 +486,11 @@ jobs:
       path:
         type: string
         default: ~/project
-        description: The path to run the Sonar analysis on. This will set the 'working_directory' of the Sonar analysis steps, not the entire job one. That is, the 'attach-workspace' parameter will not be affected.
+        description: The path to run the Sonar analysis on. This will set the 'working_directory' of the Sonar analysis steps, not the entire job one. The 'attach_workspace' step will be set at this path.
       attach-workspace:
         type: boolean
         default: false
-        description: This will attach the workspace on the job 'working_directory' (default '~/project').
+        description: This will attach the workspace on the 'path' parameter (default '~/project').
     steps:
       - checkout
       - vpn:
