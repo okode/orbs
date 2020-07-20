@@ -83,7 +83,6 @@ jobs:
                       command: npm run e2e
             - store_test_results:
                 path: test-results
-            - common/sonar
   server:
     parameters:
       path:
