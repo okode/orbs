@@ -131,10 +131,14 @@ jobs:
                 command: ./gradlew build jacocoTestReport
             - store_test_results:
                 path: build/test-results
+            - run:
+                name: Check workspace
+                command: ls -la
             - persist_to_workspace:
                 root: .
                 paths:
-                  - .
+                  - src
+                  - build
       - save_cache:
           <<: *cache-key-gradle
           paths:
