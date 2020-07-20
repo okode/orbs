@@ -171,6 +171,7 @@ commands:
         default: false
         description: This will attach the workspace on the job 'working_directory' (default '~/project').
     description: Running Sonar scanner
+    working_directory: << parameters.path >>
     steps:
       - when:
           condition: << parameters.attach-workspace >>
@@ -183,22 +184,18 @@ commands:
           steps:
             - run:
                 name: Standalone Scanner
-                command: echo "Standalone scanner selected running on << parameters.path >>"
-                working_directory: << parameters.path >>
+                command: echo "Standalone scanner selected running on $(pwd)"
             - run:
                 name: Downloading Sonar scanner
                 command: curl -L https://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/4.3.0.2102/sonar-scanner-cli-4.3.0.2102.jar > sonar-scanner.jar
-                working_directory: << parameters.path >>
             - restore_cache:
                 << : *cache-key-sonar-standalone
             - run:
                 name: Upgrading TypeScript
                 command: npm i typescript@latest
-                working_directory: << parameters.path >>
             - run:
                 name: Scanning
                 command: java -jar sonar-scanner.jar
-                working_directory: << parameters.path >>
             - save_cache:
                 << : *cache-key-sonar-standalone
                 paths:
@@ -209,18 +206,15 @@ commands:
           steps:
             - run:
                 name: Gradle Scanner
-                command: echo "Gradle scanner selected running on << parameters.path >>"
-                working_directory: << parameters.path >>
+                command: echo "Gradle scanner selected running on $(pwd)"
             - run:
                 name: Check workspace
                 command: ls -la
-                working_directory: << parameters.path >>
             - restore_cache:
                 << : *cache-key-sonar-gradle
             - run:
                 name: Scanning
                 command: ./gradlew sonarqube -x test
-                working_directory: << parameters.path >>
             - save_cache:
                 << : *cache-key-sonar-gradle
                 paths:

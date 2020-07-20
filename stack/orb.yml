@@ -133,7 +133,7 @@ jobs:
                 path: build/test-results
             - run:
                 name: Check workspace
-                command: ls -la
+                command: ls -la build
             - persist_to_workspace:
                 root: .
                 paths:
