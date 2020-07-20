@@ -211,6 +211,10 @@ commands:
                 name: Gradle Scanner
                 command: echo "Gradle scanner selected running on << parameters.path >>"
                 working_directory: << parameters.path >>
+            - run:
+                name: Check workspace
+                command: ls -la
+                working_directory: << parameters.path >>
             - restore_cache:
                 << : *cache-key-sonar-gradle
             - run:
