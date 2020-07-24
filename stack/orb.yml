@@ -83,7 +83,14 @@ jobs:
                       command: npm run e2e
             - store_test_results:
                 path: test-results
-            - common/sonar
+            - persist_to_workspace:
+                root: .
+                paths:
+                  - node_modules
+                  - test-results
+                  - lint-results.json
+                  - coverage
+                  - www
   server:
     parameters:
       path:
@@ -140,4 +147,3 @@ jobs:
           <<: *cache-key-gradle
           paths:
             - ~/.gradle
-
