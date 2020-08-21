@@ -317,8 +317,9 @@ jobs:
         type: string
         default: 'deprecated'
     executor:
-    docker:
-      - image: circleci/android@sha256:77cbfb95bbd7297e34aa15b6fca878c10e8b006e627e5ada4dfc5a35f42ad95b # circleci/android:api-29-node with JDK 1.8
+      name: android/android
+      sdk-version: '29'
+      variant: 'node'
     steps:
       - run:
           name: Checking deprecated parameters
