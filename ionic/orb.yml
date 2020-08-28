@@ -237,7 +237,7 @@ jobs:
           steps:
             - run:
                 name: Upgrading Node to latest version
-                command: brew upgrade node
+                command: brew uninstall node --ignore-dependencies && brew install node
       - when:
           condition: << parameters.custom-npm-login >>
           steps:
