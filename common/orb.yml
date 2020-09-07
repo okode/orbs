@@ -321,7 +321,9 @@ commands:
             security default-keychain -s ${KEY_CHAIN}
             if [ -z "<< parameters.dev-certs-repo-url >>" ] || [ -z "<< parameters.dist-certs-repo-url >>" ]; then
               curl https://developer.apple.com/certificationauthority/AppleWWDRCA.cer > ${CERT_DIR}/AppleWWDRCA.cer
+              curl https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer > ${CERT_DIR}/AppleWWDRCAG3.cer
               security import ${CERT_DIR}/AppleWWDRCA.cer -k ${KEY_CHAIN} -T /usr/bin/codesign
+              security import ${CERT_DIR}/AppleWWDRCAG3.cer -k ${KEY_CHAIN} -T /usr/bin/codesign
               security import ${CERT_DIR}/development.p12 -k ${KEY_CHAIN} -P << parameters.development-signing-password >> -A
               security import ${CERT_DIR}/distribution.p12 -k ${KEY_CHAIN} -P << parameters.distribution-signing-password >> -A
             else
@@ -334,7 +336,9 @@ commands:
                 git clone --quiet --depth=1 << parameters.dev-certs-repo-url >> ${CERT_DIR}
               fi
               curl https://developer.apple.com/certificationauthority/AppleWWDRCA.cer > ${CERT_DIR}/AppleWWDRCA.cer
+              curl https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer > ${CERT_DIR}/AppleWWDRCAG3.cer
               security import ${CERT_DIR}/AppleWWDRCA.cer -k ${KEY_CHAIN} -T /usr/bin/codesign
+              security import ${CERT_DIR}/AppleWWDRCAG3.cer -k ${KEY_CHAIN} -T /usr/bin/codesign
               CERT=$(jq -r --arg teamId "<< parameters.team-id >>" --argjson dist $DIST '.[] | select(.teamId == $teamId and .distribution == $dist) | .name' ${CERT_DIR}/certificates.json)
               CERT_PASS=$(jq -r --arg cert "$CERT" '.[] | select(.name == $cert) | .password' ${CERT_DIR}/certificates.json)
               security import ${CERT_DIR}/${CERT}.p12 -k ${KEY_CHAIN} -P ${CERT_PASS} -A \;
