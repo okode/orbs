@@ -37,7 +37,7 @@ executors:
       NODE_OPTIONS: --max_old_space_size=4096
   node-machine:
     machine:
-      image: ubuntu-1604:202004-01
+      image: ubuntu-2004:202008-01
     environment:
       NODE_OPTIONS: --max_old_space_size=6144
   java:
