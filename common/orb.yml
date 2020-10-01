@@ -107,7 +107,10 @@ commands:
             npm i --quiet -g firebase-tools
       - run:
           name: Installing Fastlane
-          command: gem install fastlane -NV
+          command: |
+            if [[ $CIRCLE_TAG == *-dist ]]; then
+              gem install fastlane -NV
+            fi
   vpn:
     description: Start VPN connection
     parameters:
