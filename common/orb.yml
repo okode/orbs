@@ -24,6 +24,9 @@ executors:
         default: 'current'
     docker:
       - image: cimg/node:<< parameters.node-version >>
+        auth:
+          username: $DOCKER_LOGIN
+          password: $DOCKER_PASSWORD
     environment:
       NODE_OPTIONS: --max_old_space_size=4096
   node-browsers:
@@ -33,6 +36,9 @@ executors:
         default: '14'
     docker:
       - image: circleci/node:<< parameters.node-version >>-browsers
+        auth:
+          username: $DOCKER_LOGIN
+          password: $DOCKER_PASSWORD
     environment:
       NODE_OPTIONS: --max_old_space_size=4096
   node-machine:
@@ -43,9 +49,16 @@ executors:
   java:
     docker:
       - image: cimg/openjdk:11.0-node
+        auth:
+          username: $DOCKER_LOGIN
+          password: $DOCKER_PASSWORD
   python:
     docker:
       - image: cimg/python:3.8
+        auth:
+          username: $DOCKER_LOGIN
+          password: $DOCKER_PASSWORD
+
 
 commands:
   install-ios:

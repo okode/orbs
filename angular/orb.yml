@@ -11,9 +11,15 @@ executors:
   node:
     docker:
       - image: circleci/node
+        auth:
+          username: $DOCKER_LOGIN
+          password: $DOCKER_PASSWORD
   browsers:
     docker:
       - image: circleci/node:browsers
+        auth:
+          username: $DOCKER_LOGIN
+          password: $DOCKER_PASSWORD
 
 jobs:
   test:
