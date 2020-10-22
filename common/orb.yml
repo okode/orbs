@@ -282,7 +282,7 @@ commands:
           at: /tmp/workspace
       - run:
           name: Installing Sentry CLI
-          command: npm i -g @sentry/cli --quiet --unsafe-perm
+          command: sudo npm i -g @sentry/cli --quiet --unsafe-perm
       - run:
           name: Creating Sentry release and uploading sourcemaps
           environment:
@@ -444,7 +444,9 @@ jobs:
         type: string
       auth-token:
         type: string
-    executor: node
+    executor:
+      name: node
+      node-version: '14'
     steps:
       - sentry-release:
           org: << parameters.org >>
