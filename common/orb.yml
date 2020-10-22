@@ -446,7 +446,7 @@ jobs:
         type: string
     executor:
       name: node
-      node-version: '14'
+      node-version: "14.14"
     steps:
       - sentry-release:
           org: << parameters.org >>
