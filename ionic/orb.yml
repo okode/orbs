@@ -141,7 +141,7 @@ jobs:
           command: npm run build -- --progress false << parameters.build-params >>
           no_output_timeout: 30m
       - run:
-          name: Embedding sourcemaps
+          name: Inlining sourcemaps
           command: |
             if [[ $CIRCLE_TAG != *-dist ]]; then
               echo "
@@ -158,12 +158,12 @@ jobs:
                       to: 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + readFileSync(pair.jsmap).toString('base64')
                     })
                       .filter(res => res.hasChanged)
-                      .forEach(res => { console.log('Embedded sourceMappingURL as base64 in ' + res.file); });
+                      .forEach(res => { console.log('Inlined sourceMappingURL as base64 in ' + res.file); });
                   });
                 process.chdir(__dirname);
-              " > attach-source-maps.ts
-              npx tsc attach-source-maps.ts
-              node attach-source-maps.js
+              " > inline-sourcemaps.ts
+              npx tsc inline-sourcemaps.ts
+              node inline-sourcemaps.js
             fi
       - run:
           name: Packaging
