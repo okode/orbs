@@ -141,30 +141,30 @@ jobs:
           command: npm run build -- --progress false << parameters.build-params >>
           no_output_timeout: 30m
       - run:
-        name: Embedding sourcemaps
-        command: |
-          if [[ $CIRCLE_TAG != *-dist ]]; then
-            echo "
-              import { readdirSync, existsSync, readFileSync } from 'fs';
-              import { replaceInFileSync } from 'replace-in-file';
-              process.chdir('www');
-              readdirSync('.')
-                .filter(fname => fname.endsWith('.js') && existsSync(fname + '.map'))
-                .map(fname => { return { js: fname, jsmap: fname + '.map' }; })
-                .forEach(pair => {
-                  replaceInFileSync({
-                    files: pair.js,
-                    from: 'sourceMappingURL=' + pair.js + '.map',
-                    to: 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + readFileSync(pair.jsmap).toString('base64')
-                  })
-                    .filter(res => res.hasChanged)
-                    .forEach(res => { console.log('Embedded sourceMappingURL as base64 in ' + res.file); });
-                });
-              process.chdir(__dirname);
-            " > attach-source-maps.ts
-            npx tsc attach-source-maps.ts
-            node attach-source-maps.js
-          fi
+          name: Embedding sourcemaps
+          command: |
+            if [[ $CIRCLE_TAG != *-dist ]]; then
+              echo "
+                import { readdirSync, existsSync, readFileSync } from 'fs';
+                import { replaceInFileSync } from 'replace-in-file';
+                process.chdir('www');
+                readdirSync('.')
+                  .filter(fname => fname.endsWith('.js') && existsSync(fname + '.map'))
+                  .map(fname => { return { js: fname, jsmap: fname + '.map' }; })
+                  .forEach(pair => {
+                    replaceInFileSync({
+                      files: pair.js,
+                      from: 'sourceMappingURL=' + pair.js + '.map',
+                      to: 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + readFileSync(pair.jsmap).toString('base64')
+                    })
+                      .filter(res => res.hasChanged)
+                      .forEach(res => { console.log('Embedded sourceMappingURL as base64 in ' + res.file); });
+                  });
+                process.chdir(__dirname);
+              " > attach-source-maps.ts
+              npx tsc attach-source-maps.ts
+              node attach-source-maps.js
+            fi
       - run:
           name: Packaging
           command: |
