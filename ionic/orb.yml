@@ -162,6 +162,7 @@ jobs:
                   });
                 process.chdir(__dirname);
               " > inline-sourcemaps.ts
+              npm i --no-save replace-in-file
               npx tsc inline-sourcemaps.ts
               node inline-sourcemaps.js
             fi
