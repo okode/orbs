@@ -255,7 +255,7 @@ jobs:
               - not:
                   equal: [ 'latest', << parameters.node-version >> ]
               - not:
-                equal: [ '', << parameters.node-version >> ]
+                  equal: [ '', << parameters.node-version >> ]
           steps:
             - run:
                 name: Using Node v<< parameters.node-version >>
