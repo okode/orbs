@@ -250,7 +250,12 @@ jobs:
                 name: Updating Homebrew
                 command: brew update
       - when:
-          condition: << parameters.node-version >>
+          condition:
+            and:
+              - not:
+                  equal: [ 'latest', << parameters.node-version >> ]
+              - not:
+                equal: [ '', << parameters.node-version >> ]
           steps:
             - run:
                 name: Using Node v<< parameters.node-version >>
@@ -258,15 +263,13 @@ jobs:
                   brew unlink node
                   brew install node@<< parameters.node-version >>
                   brew link --overwrite --force node@<< parameters.node-version >>
-      - unless:
-          condition: << parameters.node-version >>
+      - when:
+          condition:
+            equal: [ 'latest', << parameters.node-version >> ]
           steps:
             - run:
                 name: Upgrading Node to latest version
                 command: brew uninstall node --ignore-dependencies && brew install node || true
-            - run:
-                name: Reinstall latest stable NPM version
-                command: npm i -g npm@latest
       - when:
           condition: << parameters.custom-npm-login >>
           steps:
