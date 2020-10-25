@@ -204,10 +204,10 @@ jobs:
         default: 'latest'
       cocoapods-version:
         type: string
-        default: "'>= 0'"
+        default: ''
       fastlane-version:
         type: string
-        default: "'>= 0'"
+        default: ''
       xcode-version:
         type: string
         default: '12.1.0'
