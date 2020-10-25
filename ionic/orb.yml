@@ -85,8 +85,7 @@ jobs:
       pwa-path:
         type: string
         default: 'www'
-    executor:
-      name: common/node-machine
+    executor: common/node-machine
     steps:
       - checkout
       - run:
