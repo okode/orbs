@@ -21,7 +21,7 @@ executors:
     parameters:
       node-version:
         type: string
-        default: '14.14'
+        default: '14'
     docker:
       - image: cimg/node:<< parameters.node-version >>
         auth:
@@ -33,9 +33,9 @@ executors:
     parameters:
       node-version:
         type: string
-        default: '14.14'
+        default: '14'
     docker:
-      - image: cimg/node:<< parameters.node-version >>-browsers
+      - image: circleci/node:<< parameters.node-version >>-browsers
         auth:
           username: $DOCKER_LOGIN
           password: $DOCKER_PASSWORD
@@ -486,7 +486,6 @@ jobs:
         type: string
     executor:
       name: node
-      node-version: "14.14"
     steps:
       - sentry-release:
           org: << parameters.org >>

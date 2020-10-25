@@ -14,7 +14,7 @@ jobs:
     parameters:
       node-version:
         type: string
-        default: '14.14'
+        default: '14'
       skip-tests:
         type: boolean
         default: false
