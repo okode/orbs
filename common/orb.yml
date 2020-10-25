@@ -14,7 +14,7 @@ cache-key-sonar-gradle: &cache-key-sonar-gradle
   key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "<< parameters.path >>/build.gradle" }}
 
 orbs:
-  aws-cli: circleci/aws-cli@1.0.0
+  aws-cli: circleci/aws-cli@1.3.0
 
 executors:
   node:
@@ -58,8 +58,6 @@ executors:
         auth:
           username: $DOCKER_LOGIN
           password: $DOCKER_PASSWORD
-
-
 commands:
   install-ios:
     description: Install iOS requirements
@@ -69,17 +67,59 @@ commands:
         default: 'latest'
       cocoapods-version:
         type: string
-        default: "'>= 0'"
+        default: ''
       fastlane-version:
         type: string
-        default: "'>= 0'"
+        default: ''
     steps:
       - run:
-          name: Installing iOS requirements
+          name: Installing Ionic and Firebase tools
           command: |
-            sudo gem install cocoapods -v << parameters.cocoapods-version >>
-            sudo gem install fastlane -v << parameters.fastlane-version >>
-            npm install --quiet -g @ionic/cli cordova@<< parameters.cordova-version >> firebase-tools
+            npm i --quiet -g @ionic/cli firebase-tools
+      - run:
+          name: Installing Cordova
+          command: |
+            npm i --quiet -g cordova@<< parameters.cordova-version >>
+      - when:
+          condition:
+            and:
+              - not:
+                  equal: [ 'latest', << parameters.cocoapods-version >> ]
+              - not:
+                  equal: [ '', << parameters.cocoapods-version >> ]
+          steps:
+            - run:
+                name: Installing Cocoapods version << parameters.cocoapods-version >>
+                command: |
+                  sudo gem install cocoapods -v << parameters.cocoapods-version >>
+      - when:
+          condition:
+            equal: [ 'latest', << parameters.cocoapods-version >> ]
+          steps:
+            - run:
+                name: Installing Cocoapods latest version
+                command: |
+                  sudo gem install cocoapods -v '>= 0'
+      - when:
+          condition:
+            and:
+              - not:
+                  equal: [ 'latest', << parameters.fastlane-version >> ]
+              - not:
+                  equal: [ '', << parameters.fastlane-version >> ]
+          steps:
+            - run:
+                name: Installing Fastlane version << parameters.fastlane-version >>
+                command: |
+                  sudo gem install fastlane -v << parameters.fastlane-version >>
+      - when:
+          condition:
+            equal: [ 'latest', << parameters.fastlane-version >> ]
+          steps:
+            - run:
+                name: Installing Fastlane latest version
+                command: |
+                  sudo gem install fastlane -v '>= 0'
   install-android:
     description: Install Android requirements
     parameters:

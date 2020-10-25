@@ -7,7 +7,7 @@ description: |
 orbs:
   common: okode/common@volatile
   android: circleci/android@0.2.1
-  gradle: circleci/gradle@2.1.0
+  gradle: circleci/gradle@2.2.0
 
 jobs:
   test:
@@ -198,7 +198,7 @@ jobs:
       node-version:
         type: enum
         default: ''
-        enum: [ '12', '' ]
+        enum: [ '', '12', 'latest' ]
       cordova-version:
         type: string
         default: 'latest'
