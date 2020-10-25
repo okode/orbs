@@ -264,6 +264,9 @@ jobs:
             - run:
                 name: Upgrading Node to latest version
                 command: brew uninstall node --ignore-dependencies && brew install node || true
+            - run:
+                name: Reinstall latest stable NPM version
+                command: npm i -g npm@latest
       - when:
           condition: << parameters.custom-npm-login >>
           steps:
