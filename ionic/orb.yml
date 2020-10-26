@@ -85,6 +85,9 @@ jobs:
       pwa-path:
         type: string
         default: 'www'
+      skip-inline-sourcemaps:
+        type: boolean
+        default: false
     executor: common/node-machine
     steps:
       - checkout
@@ -100,32 +103,35 @@ jobs:
           name: Building
           command: npm run build -- --progress false << parameters.build-params >>
           no_output_timeout: 30m
-      - run:
-          name: Inlining sourcemaps
-          command: |
-            if [[ $CIRCLE_TAG != *-dist ]]; then
-              echo "
-                import { readdirSync, existsSync, readFileSync } from 'fs';
-                import { replaceInFileSync } from 'replace-in-file';
-                process.chdir('www');
-                readdirSync('.')
-                  .filter(fname => fname.endsWith('.js') && existsSync(fname + '.map'))
-                  .map(fname => { return { js: fname, jsmap: fname + '.map' }; })
-                  .forEach(pair => {
-                    replaceInFileSync({
-                      files: pair.js,
-                      from: 'sourceMappingURL=' + pair.js + '.map',
-                      to: 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + readFileSync(pair.jsmap).toString('base64')
-                    })
-                      .filter(res => res.hasChanged)
-                      .forEach(res => { console.log('Inlined sourceMappingURL as base64 in ' + res.file); });
-                  });
-                process.chdir(__dirname);
-              " > inline-sourcemaps.ts
-              npm i --no-save replace-in-file
-              npx tsc inline-sourcemaps.ts
-              node inline-sourcemaps.js
-            fi
+      - unless:
+          condition: << parameters.skip-inline-sourcemaps >>
+          steps:
+            - run:
+                name: Inlining sourcemaps
+                command: |
+                  if [[ $CIRCLE_TAG != *-dist ]]; then
+                    echo "
+                      import { readdirSync, existsSync, readFileSync } from 'fs';
+                      import { replaceInFileSync } from 'replace-in-file';
+                      process.chdir('www');
+                      readdirSync('.')
+                        .filter(fname => fname.endsWith('.js') && existsSync(fname + '.map'))
+                        .map(fname => { return { js: fname, jsmap: fname + '.map' }; })
+                        .forEach(pair => {
+                          replaceInFileSync({
+                            files: pair.js,
+                            from: 'sourceMappingURL=' + pair.js + '.map',
+                            to: 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + readFileSync(pair.jsmap).toString('base64')
+                          })
+                            .filter(res => res.hasChanged)
+                            .forEach(res => { console.log('Inlined sourceMappingURL as base64 in ' + res.file); });
+                        });
+                      process.chdir(__dirname);
+                    " > inline-sourcemaps.ts
+                    npm i --no-save replace-in-file
+                    npx tsc inline-sourcemaps.ts
+                    node inline-sourcemaps.js
+                  fi
       - run:
           name: Packaging
           command: |
