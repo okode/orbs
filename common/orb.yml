@@ -422,8 +422,7 @@ commands:
               LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 fastlane sigh --force --development  \
               --app_identifier "<< parameters.package-name >>"                         \
               --provisioning_name "<< parameters.development-provisioning-name >>"     \
-              --team_id "<< parameters.team-id >>"                                     \
-              --cert_owner_name "Okode Developers"
+              --team_id "<< parameters.team-id >>"
             fi
   keystores:
     description: Retrieves Android keystores
