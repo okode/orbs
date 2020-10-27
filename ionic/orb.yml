@@ -149,7 +149,6 @@ jobs:
                 name: Inlining sourcemaps
                 command: |
                   if [[ $CIRCLE_TAG != *-dist ]]; then
-                    npm i --no-save replace-in-file
                     echo "
                       import { readdirSync, existsSync, readFileSync } from 'fs';
                       import { replaceInFileSync } from 'replace-in-file';
