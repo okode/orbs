@@ -27,10 +27,39 @@ jobs:
       custom-npm-login:
         type: boolean
         default: false
+      persist-results:
+        description: Deprecated
+        type: boolean
+        default: false
+      skip-sonar:
+        description: Deprecated
+        type: boolean
+        default: false
+      build-params:
+        description: Deprecated
+        type: string
+        default: 'deprecated'
     executor:
       name: common/node-browsers
       node-version: << parameters.node-version >>
     steps:
+      - run:
+          name: Checking deprecated parameters
+          command: |
+            if [[ << parameters.skip-sonar >> ]]; then
+              echo "
+              Parameter skip-sonar is deprecated, use sonar job instead:
+              - common/sonar:
+                  name: sonar
+                  attach-workspace: true
+              "
+            fi
+            if [[ "<< parameters.build-params >>" != "deprecated" ]]; then
+              echo "Parameter build-params is deprecated"
+            fi
+            if [[ << parameters.persist-results >> ]]; then
+              echo "Parameter persist-results is deprecated"
+            fi
       - checkout
       - when: 
           condition: << parameters.custom-npm-login >>
@@ -88,8 +117,18 @@ jobs:
       skip-inline-sourcemaps:
         type: boolean
         default: false
+      package-path:
+        description: Deprecated
+        type: string
+        default: 'deprecated'
     executor: common/node-machine
     steps:
+      - run:
+          name: Checking deprecated parameters
+          command: |
+            if [[ "<< parameters.package-path >>" != "deprecated" ]]; then
+              echo "Parameter package-path is deprecated"
+            fi
       - checkout
       - run:
           name: Upgrading Node v<< parameters.node-version >>
@@ -110,6 +149,7 @@ jobs:
                 name: Inlining sourcemaps
                 command: |
                   if [[ $CIRCLE_TAG != *-dist ]]; then
+                    npm i --no-save replace-in-file
                     echo "
                       import { readdirSync, existsSync, readFileSync } from 'fs';
                       import { replaceInFileSync } from 'replace-in-file';
@@ -195,9 +235,19 @@ jobs:
       pwa-path:
         type: string
         default: 'www'
+      cocoapods-lock-path:
+        description: Deprecated
+        type: string
+        default: 'deprecated'
     macos:
       xcode: "<< parameters.xcode-version >>"
     steps:
+      - run:
+          name: Checking deprecated parameters
+          command: |
+            if [[ "<< parameters.cocoapods-lock-path >>" != "deprecated" ]]; then
+              echo "Parameter cocoapods-lock-path is deprecated";
+            fi
       - checkout
       - when:
           condition: << parameters.update-brew >>
@@ -303,11 +353,21 @@ jobs:
       skip-upgrade-android-sdk:
         type: boolean
         default: false
+      api-version:
+        description: Deprecated
+        type: string
+        default: 'deprecated'
     executor:
       name: android/android
       sdk-version: '29'
       variant: 'node'
     steps:
+      - run:
+          name: Checking deprecated parameters
+          command: |
+            if [[ "<< parameters.api-version >>" != "deprecated" ]]; then
+              echo "Parameter api-version is deprecated"
+            fi
       - checkout
       - run:
           name: Installing JDK 1.8 required for Cordova support
