@@ -203,7 +203,7 @@ jobs:
       node-version:
         type: enum
         default: ''
-        enum: [ '', '12', 'latest' ]
+        enum: [ '', '12', '14', 'latest' ]
       cordova-version:
         type: string
         default: 'latest'
