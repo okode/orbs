@@ -359,7 +359,7 @@ jobs:
         default: '29'
     executor:
       name: android/android
-      sdk-version: "<< parameters.api-version >>"
+      sdk-version: << parameters.api-version >>
       variant: 'node'
     steps:
       - checkout
