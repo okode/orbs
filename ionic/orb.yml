@@ -353,20 +353,15 @@ jobs:
         type: boolean
         default: false
       api-version:
-        description: Deprecated
-        type: string
-        default: 'deprecated'
+        description: Android SDK version
+        type: enum
+        enum: [ '23', '24', '25', '26', '27', '28', '29' ]
+        default: '29'
     executor:
       name: android/android
-      sdk-version: '29'
+      sdk-version: "<< parameters.api-version >>"
       variant: 'node'
     steps:
-      - run:
-          name: Checking deprecated parameters
-          command: |
-            if [[ "<< parameters.api-version >>" != "deprecated" ]]; then
-              echo "Parameter api-version is deprecated"
-            fi
       - checkout
       - run:
           name: Installing JDK 1.8 required for Cordova support
