@@ -249,7 +249,7 @@ commands:
                 working_directory: << parameters.path >>
             - run:
                 name: Downloading Sonar scanner
-                command: curl -L https://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/4.3.0.2102/sonar-scanner-cli-4.3.0.2102.jar > sonar-scanner.jar
+                command: curl -L https://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/4.5.0.2216/sonar-scanner-cli-4.5.0.2216.jar > sonar-scanner.jar
                 working_directory: << parameters.path >>
             - restore_cache:
                 << : *cache-key-sonar-standalone
