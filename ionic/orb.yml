@@ -349,9 +349,6 @@ jobs:
       pwa-path:
         type: string
         default: 'www'
-      skip-upgrade-android-sdk:
-        type: boolean
-        default: false
       api-version:
         description: Android SDK version
         type: enum
@@ -391,7 +388,6 @@ jobs:
       - common/install-android:
           gradle-version: << parameters.gradle-version >>
           cordova-version: << parameters.cordova-version >>
-          skip-upgrade-android-sdk: << parameters.skip-upgrade-android-sdk >>
       - when:
           condition: << parameters.attach-workspace >>
           steps:
