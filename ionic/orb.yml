@@ -42,6 +42,7 @@ jobs:
     executor:
       name: common/node-browsers
       node-version: << parameters.node-version >>
+    resource_class: xlarge
     steps:
       - run:
           name: Checking deprecated parameters
