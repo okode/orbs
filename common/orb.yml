@@ -233,7 +233,6 @@ commands:
         default: false
         description: This will attach the workspace on the 'path' parameter.
     description: Running Sonar scanner
-    resource_class: xlarge
     steps:
       - when:
           condition: << parameters.attach-workspace >>
@@ -528,6 +527,7 @@ jobs:
         default: false
         description: This will attach the workspace on the 'path' parameter.
     executor: java
+    resource_class: xlarge
     steps:
       - checkout
       - sonar:
