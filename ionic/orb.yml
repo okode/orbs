@@ -122,6 +122,7 @@ jobs:
         type: string
         default: 'deprecated'
     executor: common/node-machine
+    resource_class: xlarge
     steps:
       - run:
           name: Checking deprecated parameters
@@ -240,6 +241,7 @@ jobs:
         default: 'deprecated'
     macos:
       xcode: "<< parameters.xcode-version >>"
+    resource_class: xlarge
     steps:
       - run:
           name: Checking deprecated parameters
@@ -361,6 +363,7 @@ jobs:
       name: android/android
       sdk-version: << parameters.api-version >>
       variant: 'node'
+    resource_class: xlarge
     steps:
       - checkout
       - run:
