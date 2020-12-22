@@ -241,7 +241,7 @@ jobs:
         default: 'deprecated'
     macos:
       xcode: "<< parameters.xcode-version >>"
-    resource_class: xlarge
+    resource_class: large
     steps:
       - run:
           name: Checking deprecated parameters
