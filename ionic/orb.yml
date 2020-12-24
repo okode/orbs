@@ -6,7 +6,7 @@ description: |
 
 orbs:
   common: okode/common@volatile
-  android: circleci/android@0.2.1
+  android: circleci/android@0.2.3
   gradle: circleci/gradle@2.2.0
 
 jobs:
