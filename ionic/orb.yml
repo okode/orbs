@@ -132,9 +132,12 @@ jobs:
               echo "Parameter package-path is deprecated"
             fi
       - checkout
-      - run:
-          name: Upgrading Node v<< parameters.node-version >>
-          command: echo "source /opt/circleci/.nvm/nvm.sh &>/dev/null && nvm install << parameters.node-version >>" >> ${BASH_ENV}
+      - unless:
+          condition: << parameters.node-version >>
+          steps:
+            - run:
+                name: Upgrading Node v<< parameters.node-version >>
+                command: echo "source /opt/circleci/.nvm/nvm.sh &>/dev/null && nvm install << parameters.node-version >>" >> ${BASH_ENV}
       - when:
           condition: << parameters.custom-npm-login >>
           steps:
