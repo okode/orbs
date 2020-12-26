@@ -28,7 +28,7 @@ executors:
           username: $DOCKER_LOGIN
           password: $DOCKER_PASSWORD
     environment:
-      NODE_OPTIONS: --max_old_space_size=7168
+      NODE_OPTIONS: --max_old_space_size=31744
   node-browsers:
     parameters:
       node-version:
