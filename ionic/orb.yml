@@ -135,7 +135,7 @@ jobs:
               echo "Parameter package-path is deprecated"
             fi
       - checkout
-      - unless:
+      - when:
           condition: << parameters.node-version >>
           steps:
             - run:
