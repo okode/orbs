@@ -28,7 +28,7 @@ executors:
           username: $DOCKER_LOGIN
           password: $DOCKER_PASSWORD
     environment:
-      NODE_OPTIONS: --max_old_space_size=15360
+      NODE_OPTIONS: --max_old_space_size=4096
   node-browsers:
     parameters:
       node-version:
@@ -40,12 +40,12 @@ executors:
           username: $DOCKER_LOGIN
           password: $DOCKER_PASSWORD
     environment:
-      NODE_OPTIONS: --max_old_space_size=15360
+      NODE_OPTIONS: --max_old_space_size=4096
   node-machine:
     machine:
       image: ubuntu-2004:202010-01
     environment:
-      NODE_OPTIONS: --max_old_space_size=15360
+      NODE_OPTIONS: --max_old_space_size=4096
   java:
     docker:
       - image: cimg/openjdk:15.0-node
