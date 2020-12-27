@@ -118,11 +118,14 @@ jobs:
       skip-inline-sourcemaps:
         type: boolean
         default: false
+      executor:
+        type: executor
+        default: common/node-machine
       package-path:
         description: Deprecated
         type: string
         default: 'deprecated'
-    executor: common/node
+    executor: << parameters.executor >>
     resource_class: xlarge
     steps:
       - run:
