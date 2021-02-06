@@ -223,7 +223,7 @@ jobs:
         default: ''
       xcode-version:
         type: string
-        default: '12.3.0'
+        default: '12.4.0'
       dev-certs-repo-url:
         type: string
         default: ''
