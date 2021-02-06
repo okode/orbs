@@ -139,9 +139,9 @@ jobs:
       - when:
           condition: << parameters.node-version >>
           steps:
-            - run:
-                name: Upgrading Node v<< parameters.node-version >>
-                command: echo "source /opt/circleci/.nvm/nvm.sh &>/dev/null && nvm install << parameters.node-version >>" >> ${BASH_ENV}
+            - node/install:
+                node-version: << parameters.node-version >>
+                install-npm: false
       - when:
           condition: << parameters.custom-npm-login >>
           steps:
@@ -237,9 +237,6 @@ jobs:
       custom-npm-login:
         type: boolean
         default: false
-      update-brew:
-        type: boolean
-        default: false
       pwa-path:
         type: string
         default: 'www'
@@ -258,32 +255,11 @@ jobs:
             fi
       - checkout
       - when:
-          condition: << parameters.update-brew >>
+          condition: << parameters.node-version >>
           steps:
-            - run:
-                name: Updating Homebrew
-                command: brew update
-      - when:
-          condition:
-            and:
-              - not:
-                  equal: [ 'latest', << parameters.node-version >> ]
-              - not:
-                  equal: [ '', << parameters.node-version >> ]
-          steps:
-            - run:
-                name: Using Node v<< parameters.node-version >>
-                command: |
-                  brew unlink node
-                  brew install node@<< parameters.node-version >>
-                  brew link --overwrite --force node@<< parameters.node-version >>
-      - when:
-          condition:
-            equal: [ 'latest', << parameters.node-version >> ]
-          steps:
-            - run:
-                name: Upgrading Node to latest version
-                command: brew uninstall node --ignore-dependencies && brew install node || true
+            - node/install:
+                node-version: << parameters.node-version >>
+                install-npm: false
       - when:
           condition: << parameters.custom-npm-login >>
           steps:
@@ -387,11 +363,9 @@ jobs:
             echo 'export PATH=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64/bin:$PATH' >> $BASH_ENV
             echo 'export JAVA_HOME=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64' >> $BASH_ENV
             source $BASH_ENV
-      - run:
-          name: Upgrading Node v<< parameters.node-version >>
-          command: |
-            sudo npm i -g n
-            sudo n << parameters.node-version >>
+      - node/install:
+          node-version: << parameters.node-version >>
+          install-npm: false
       - when:
           condition: << parameters.custom-npm-login >>
           steps:
