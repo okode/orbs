@@ -6,6 +6,7 @@ description: |
 
 orbs:
   common: okode/common@volatile
+  node: circleci/node@4.1.0
 
 executors:
   node:
@@ -36,7 +37,7 @@ jobs:
     executor: browsers
     steps:
       - checkout
-      - common/npm-install
+      - node/install-packages
       - run:
           name: Building
           command: npm run build -- << parameters.project >>
@@ -62,7 +63,7 @@ jobs:
     executor: node
     steps:
       - checkout
-      - common/npm-install
+      - node/install-packages
       - run:
           name: Building
           command: npm run build -- << parameters.project >>

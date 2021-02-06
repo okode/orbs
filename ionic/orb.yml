@@ -8,6 +8,7 @@ orbs:
   common: okode/common@volatile
   android: circleci/android@0.2.3
   gradle: circleci/gradle@2.2.0
+  node: circleci/node@4.1.0
 
 jobs:
   test:
@@ -69,7 +70,7 @@ jobs:
                 name: Fixing node_modules writting access
                 command: sudo chown -R $(whoami) /usr/local/lib/node_modules && sudo chown -R $(whoami) /usr/local/bin/
             - common/custom-npm-login
-      - common/npm-install
+      - node/install-packages
       - run:
           name: Type checking
           command: npx tsc --noEmit
@@ -145,7 +146,7 @@ jobs:
           condition: << parameters.custom-npm-login >>
           steps:
             - common/custom-npm-login
-      - common/npm-install
+      - node/install-packages
       - run:
           name: Building
           command: npm run build -- --progress false << parameters.build-params >>
@@ -287,7 +288,8 @@ jobs:
           condition: << parameters.custom-npm-login >>
           steps:
             - common/custom-npm-login
-      - common/npm-install
+      - node/install-packages:
+          cache-version: v1-{{ arch }}-{{ .Environment.CIRCLE_JOB }}
       - common/install-ios:
           cordova-version: << parameters.cordova-version >>
           cocoapods-version: << parameters.cocoapods-version >>
@@ -396,7 +398,8 @@ jobs:
             - run:
                 name: Logging into custom NPM registry
                 command: sudo npm install -g npm-cli-adduser && npm-cli-adduser
-      - common/npm-install
+      - node/install-packages:
+          cache-version: v1-{{ arch }}-{{ .Environment.CIRCLE_JOB }}
       - common/install-android:
           gradle-version: << parameters.gradle-version >>
           cordova-version: << parameters.cordova-version >>
