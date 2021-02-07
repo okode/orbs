@@ -361,6 +361,9 @@ jobs:
         type: enum
         enum: [ '23', '24', '25', '26', '27', '28', '29' ]
         default: '29'
+      cache-cordova-plugins:
+        type: boolean
+        default: false
     executor:
       name: android/android
       sdk-version: << parameters.api-version >>
