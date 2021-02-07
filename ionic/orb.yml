@@ -4,8 +4,8 @@ description: |
   Build and publish hybrid Apps for iOS / Android
   Repository: https://github.com/okode/orbs
 
-cache-key-cordova-ios-plugins: &cache-key-cordova-ios-plugins
-  key: cache-cordova-ios-plugins-{{ checksum "package-lock.json" }}
+cache-key-cordova-plugins: &cache-key-cordova-plugins
+  key: cache-cordova-{{ .Environment.CIRCLE_JOB }}-plugins-{{ checksum "package-lock.json" }}
 
 orbs:
   common: okode/common@volatile
@@ -292,7 +292,7 @@ jobs:
                 name: Clearing sourcemaps
                 command: find << parameters.pwa-path  >> -name *.map -type f -delete
       - restore_cache:
-          << : *cache-key-cordova-ios-plugins
+          << : *cache-key-cordova-plugins
       - run:
           name: Building
           command: |
@@ -303,9 +303,9 @@ jobs:
             fi
           no_output_timeout: 30m
       - save_cache:
-          << : *cache-key-cordova-ios-plugins
+          << : *cache-key-cordova-plugins
           paths:
-              - plugins
+            - plugins
       - persist_to_workspace:
           root: .
           paths:
@@ -398,6 +398,8 @@ jobs:
       - common/keystores:
           dist-certs-repo-url: << parameters.dist-certs-repo-url >>
           ssh-permission-fingerprint: << parameters.ssh-permission-fingerprint >>
+      - restore_cache:
+          << : *cache-key-cordova-plugins
       - gradle/with_cache:
           steps:
             - run:
@@ -409,6 +411,10 @@ jobs:
                     npm run ci:build
                   fi
                 no_output_timeout: 30m
+      - save_cache:
+          << : *cache-key-cordova-plugins
+          paths:
+            - plugins
       - persist_to_workspace:
           root: .
           paths:
