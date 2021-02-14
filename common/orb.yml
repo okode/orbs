@@ -12,6 +12,7 @@ cache-key-sonar-gradle: &cache-key-sonar-gradle
 
 orbs:
   aws-cli: circleci/aws-cli@1.3.2
+  slack: circleci/slack@4.2.1
 
 executors:
   node:
@@ -437,6 +438,12 @@ commands:
       - run:
           name: Authenticating NPM
           command: npm-cli-adduser
+  notify:
+    description: Send Slack notification
+    steps:
+      - slack/notify:
+          event: fail
+          custom: "{\n\t\"blocks\": [\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"plain_text\",\n\t\t\t\t\"text\": \":red_circle: Failed: ${CIRCLE_USERNAME} workflow (${CIRCLE_JOB}) in ${CIRCLE_PROJECT_REPONAME} (${CIRCLE_BRANCH})\",\n\t\t\t\t\"emoji\": true\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"actions\",\n\t\t\t\"elements\": [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"button\",\n\t\t\t\t\t\"text\": {\n\t\t\t\t\t\t\"type\": \"plain_text\",\n\t\t\t\t\t\t\"text\": \"View ${CIRCLE_PROJECT_REPONAME} ${CIRCLE_JOB} job\"\n\t\t\t\t\t},\n\t\t\t\t\t\"url\": \"${CIRCLE_BUILD_URL}\"\n\t\t\t\t}\n\t\t\t]\n\t\t}\n\t]\n}\n"
 
 jobs:
   sentry-release:
@@ -454,6 +461,7 @@ jobs:
           org: << parameters.org >>
           project: << parameters.project >>
           auth-token: << parameters.auth-token >>
+      - notify
   bitbucket-downloads:
     description: Upload artifacts to BitBucket Downloads
     parameters:
@@ -475,6 +483,7 @@ jobs:
           repo: << parameters.repo >>
           tag: << parameters.tag >>
           path: << parameters.path >>
+      - notify
   sonar:
     description: Run Sonar scanner
     parameters:
@@ -499,6 +508,7 @@ jobs:
           scanner: << parameters.scanner >>
           path: << parameters.path >>
           attach-workspace: << parameters.attach-workspace >>
+      - notify
   sonar-vpn:
     description: Run Sonar scanner with VPN
     machine: true
@@ -532,6 +542,7 @@ jobs:
           scanner: << parameters.scanner >>
           path: << parameters.path >>
           attach-workspace: << parameters.attach-workspace >>
+      - notify
   s3-sync:
     description: Publish contents to AWS S3 and optionally invalidate CloudFront
     parameters:
@@ -563,3 +574,4 @@ jobs:
                   aws cloudfront create-invalidation \
                   --distribution-id << parameters.distribution-id >> \
                   --paths << parameters.invalidate-paths >>
+      - notify

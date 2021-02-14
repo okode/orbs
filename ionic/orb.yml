@@ -105,6 +105,7 @@ jobs:
             - lint-results.json
             - coverage
             - www
+      - common/notify
   pwa:
     parameters:
       node-version:
@@ -193,6 +194,7 @@ jobs:
           paths:
             - << parameters.pwa-path >>
             - output/pwa.zip
+      - common/notify
   ios:
     parameters:
       package-name:
@@ -327,6 +329,7 @@ jobs:
             else
               npm run ci:deploy
             fi
+      - common/notify
   android:
     parameters:
       attach-workspace:
@@ -447,3 +450,4 @@ jobs:
               npm run ci:deploy
             fi
           no_output_timeout: 20m
+      - common/notify
