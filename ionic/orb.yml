@@ -9,9 +9,9 @@ cache-key-cordova-plugins: &cache-key-cordova-plugins
 
 orbs:
   common: okode/common@volatile
-  android: circleci/android@0.2.3
+  android: circleci/android@1.0.0
   gradle: circleci/gradle@2.2.0
-  node: circleci/node@4.1.0
+  node: circleci/node@4.1.1
 
 jobs:
   test:
@@ -362,8 +362,8 @@ jobs:
       api-version:
         description: Android SDK version
         type: enum
-        enum: [ '23', '24', '25', '26', '27', '28', '29' ]
-        default: '29'
+        enum: [ '23', '24', '25', '26', '27', '28', '29', '30' ]
+        default: '30'
       cache-cordova-plugins:
         type: boolean
         default: false

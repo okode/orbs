@@ -6,7 +6,7 @@ description: |
 
 orbs:
   common: okode/common@volatile
-  node: circleci/node@4.1.0
+  node: circleci/node@4.1.1
 
 executors:
   node:
