@@ -61,18 +61,14 @@ jobs:
       path:
         type: string
       access:
-        type: string
-        default: public
+        type: enum
+        default: 'public'
+        enum: [ 'public', 'restricted' ]
     executor: common/node
     steps:
       - attach_workspace:
           at: .
-      - run:
-          name: Installing NPM CLI Login
-          command: sudo npm install -g npm-cli-adduser
-      - run:
-          name: Authenticating NPM
-          command: npm-cli-adduser
+      - common/custom-npm-login
       - run:
           name: Publishing NPM package
           command: cd << parameters.path >> && npm publish --access=<< parameters.access >>

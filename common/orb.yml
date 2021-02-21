@@ -213,9 +213,9 @@ commands:
     parameters:
       scanner:
         type: enum
-        default: "standalone"
+        default: 'standalone'
         description: The way of running the Sonar analysis. It could be 'standalone' (running the analysis using the sonar-scanner.jar) or 'gradle' (using the 'sonarqube' gradle plugin of a build.gradle file).
-        enum: ["standalone", "gradle"]
+        enum: [ 'standalone', 'gradle' ]
       path:
         type: string
         default: .
