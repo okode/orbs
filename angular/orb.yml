@@ -1,26 +1,12 @@
 version: 2.1
 
 description: |
-  Build and publish Ionic/Angular libraries.
+  Build and publish Angular libraries.
   Repository: https://github.com/okode/orbs
 
 orbs:
   common: okode/common@volatile
   node: circleci/node@4.1.1
-
-executors:
-  node:
-    docker:
-      - image: circleci/node
-        auth:
-          username: $DOCKER_LOGIN
-          password: $DOCKER_PASSWORD
-  browsers:
-    docker:
-      - image: circleci/node:browsers
-        auth:
-          username: $DOCKER_LOGIN
-          password: $DOCKER_PASSWORD
 
 jobs:
   test:
@@ -33,21 +19,20 @@ jobs:
       skip-e2e:
         type: boolean
         default: false
-
-    executor: browsers
+    executor: common/node-browsers
     steps:
       - checkout
       - node/install-packages
       - run:
           name: Building
-          command: npm run build -- << parameters.project >>
+          command: npm run build -- << parameters.project >> --prod
       - unless:
           condition: << parameters.skip-tests >>
           steps:
             - common/chrome-upgrade
             - run:
                 name: Running unit tests
-                command: npm run test -- << parameters.project >> --watch false --progress false
+                command: npm run test -- << parameters.project >> --watch false
             - unless:
                 condition: << parameters.skip-e2e >>
                 steps:
@@ -60,7 +45,7 @@ jobs:
     parameters:
       project:
         type: string
-    executor: node
+    executor: common/node
     steps:
       - checkout
       - node/install-packages
@@ -78,7 +63,7 @@ jobs:
       access:
         type: string
         default: public
-    executor: node
+    executor: common/node
     steps:
       - attach_workspace:
           at: .
@@ -100,7 +85,7 @@ jobs:
       ssh-permission-fingerprint:
         type: string
         default: ''
-    executor: node
+    executor: common/node
     steps:
       - add_ssh_keys:
           fingerprints:
