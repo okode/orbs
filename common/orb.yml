@@ -31,9 +31,9 @@ executors:
     parameters:
       node-version:
         type: string
-        default: '14.15'
+        default: '14'
     docker:
-      - image: cimg/node:<< parameters.node-version >>-browsers
+      - image: circleci/node:<< parameters.node-version >>-browsers
         auth:
           username: $DOCKER_LOGIN
           password: $DOCKER_PASSWORD
@@ -213,9 +213,9 @@ commands:
     parameters:
       scanner:
         type: enum
-        default: 'standalone'
+        default: "standalone"
         description: The way of running the Sonar analysis. It could be 'standalone' (running the analysis using the sonar-scanner.jar) or 'gradle' (using the 'sonarqube' gradle plugin of a build.gradle file).
-        enum: [ 'standalone', 'gradle' ]
+        enum: ["standalone", "gradle"]
       path:
         type: string
         default: .
