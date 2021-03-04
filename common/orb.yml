@@ -429,6 +429,12 @@ commands:
               sed -i 's/KEYSTORE_STORE_PASS_PLACEHOLDER/'"$STORE_PASS"'/' build.json
               sed -i 's/KEYSTORE_PASS_PLACEHOLDER/'"$KEYSTORE_PASS"'/' build.json
             fi
+  fix-node-permissions:
+    description: Fixes global node_modules write access
+    steps:
+      - run:
+          name: Fixing node_modules writting access
+          command: sudo chown -R $(whoami) /usr/local/lib/node_modules && sudo chown -R $(whoami) /usr/local/bin/
   custom-npm-login:
     description: Logins with custom NPM registry
     steps:

@@ -69,9 +69,7 @@ jobs:
       - when: 
           condition: << parameters.custom-npm-login >>
           steps:
-            - run:
-                name: Fixing node_modules writting access
-                command: sudo chown -R $(whoami) /usr/local/lib/node_modules && sudo chown -R $(whoami) /usr/local/bin/
+            - common/fix-node-permissions
             - common/custom-npm-login
       - node/install-packages
       - run:
@@ -149,6 +147,7 @@ jobs:
       - when:
           condition: << parameters.custom-npm-login >>
           steps:
+            - common/fix-node-permissions
             - common/custom-npm-login
       - node/install-packages
       - run:
