@@ -434,7 +434,13 @@ commands:
     steps:
       - run:
           name: Fixing node_modules writting access
-          command: sudo chown -R $(whoami) /usr/local/lib/node_modules && sudo chown -R $(whoami) /usr/local/bin/
+          command: |
+            if [[ -d /usr/local/lib/node_modules ]]; then
+              sudo chown -R $(whoami) /usr/local/lib/node_modules
+            fi
+            if [[ -d /usr/local/bin/ ]]; then
+              sudo chown -R $(whoami) /usr/local/bin/
+            fi
   custom-npm-login:
     description: Logins with custom NPM registry
     steps:
