@@ -114,7 +114,7 @@ jobs:
         default: false
       build-params:
         type: string
-        default: '--prod'
+        default: '-- --prod'
       pwa-path:
         type: string
         default: 'www'
@@ -152,7 +152,7 @@ jobs:
       - node/install-packages
       - run:
           name: Building
-          command: npm run build -- --progress false << parameters.build-params >>
+          command: npm run build << parameters.build-params >>
           no_output_timeout: 30m
       - unless:
           condition: << parameters.skip-inline-sourcemaps >>
