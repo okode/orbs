@@ -11,7 +11,7 @@ orbs:
   common: okode/common@volatile
   android: circleci/android@1.0.0
   gradle: circleci/gradle@2.2.0
-  node: circleci/node@4
+  node: circleci/node@4.1.1
 
 jobs:
   test:
