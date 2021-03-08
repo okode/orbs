@@ -9,7 +9,7 @@ cache-key-gradle: &cache-key-gradle
 
 orbs:
   common: okode/common@volatile
-  node: circleci/node@4.1.1
+  node: circleci/node@4
 
 executors:
   java-node:

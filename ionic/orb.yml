@@ -9,9 +9,9 @@ cache-key-cordova-plugins: &cache-key-cordova-plugins
 
 orbs:
   common: okode/common@volatile
-  android: circleci/android@1.0.0
-  gradle: circleci/gradle@2.2.0
-  node: circleci/node@4.1.1
+  android: circleci/android@1
+  gradle: circleci/gradle@2
+  node: circleci/node@4
 
 jobs:
   test:

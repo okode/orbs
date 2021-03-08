@@ -11,8 +11,8 @@ cache-key-sonar-gradle: &cache-key-sonar-gradle
   key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "<< parameters.path >>/build.gradle" }}
 
 orbs:
-  aws-cli: circleci/aws-cli@1.3.2
-  slack: circleci/slack@4.2.1
+  aws-cli: circleci/aws-cli@1
+  slack: circleci/slack@4
 
 executors:
   node:
