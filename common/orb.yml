@@ -395,7 +395,7 @@ commands:
             --skip_itc || true
 
             if [[ "<< parameters.distribution >>" == "appstore" ]]; then
-              LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 fastlane sigh manage -p "<< parameters.distribution-provisioning-name >>"
+              LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 fastlane sigh --force manage -p "<< parameters.distribution-provisioning-name >>"
             fi
 
             if [[ $CIRCLE_TAG == *-dist ]]; then
