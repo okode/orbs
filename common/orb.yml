@@ -323,6 +323,10 @@ commands:
         type: string
       team-id:
         type: string
+      distribution:
+        type: enum
+        default: 'enterprise'
+        enum: [ 'enterprise', 'appstore' ]
       development-provisioning-name:
         type: string
       distribution-provisioning-name:
@@ -389,6 +393,10 @@ commands:
             --team_id "<< parameters.team-id >>"                  \
             --app_name "${CIRCLE_PROJECT_REPONAME}"               \
             --skip_itc || true
+
+            if [[ "<< parameters.distribution >>" == "appstore" ]]; then
+              LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 fastlane sigh manage -p "<< parameters.distribution-provisioning-name >>"
+            fi
 
             if [[ $CIRCLE_TAG == *-dist ]]; then
               LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 fastlane sigh --force                \
