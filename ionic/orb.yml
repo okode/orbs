@@ -198,6 +198,10 @@ jobs:
     parameters:
       package-name:
         type: string
+      distribution:
+        type: enum
+        default: 'enterprise'
+        enum: [ 'enterprise', 'appstore' ]
       team-id:
         type: string
       attach-workspace:
@@ -279,6 +283,7 @@ jobs:
           fastlane-version: << parameters.fastlane-version >>
       - common/keychain:
           package-name: << parameters.package-name >>
+          distribution: << parameters.distribution >>
           team-id: << parameters.team-id >>
           development-provisioning-name: << parameters.development-provisioning-name >>
           distribution-provisioning-name: << parameters.distribution-provisioning-name >>
