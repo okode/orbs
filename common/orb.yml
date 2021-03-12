@@ -394,12 +394,14 @@ commands:
               LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 fastlane sigh --force                \
                 --app_identifier "<< parameters.package-name >>"                       \
                 --provisioning_name "<< parameters.distribution-provisioning-name >>"  \
-                --team_id "<< parameters.team-id >>"
+                --team_id "<< parameters.team-id >>"                                   \
+                --fail_on_name_taken true
             else
               LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 fastlane sigh --force --development  \
               --app_identifier "<< parameters.package-name >>"                         \
               --provisioning_name "<< parameters.development-provisioning-name >>"     \
-              --team_id "<< parameters.team-id >>"
+              --team_id "<< parameters.team-id >>"                                     \
+              --fail_on_name_taken true
             fi
   keystores:
     description: Retrieves Android keystores
