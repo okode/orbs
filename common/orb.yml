@@ -571,6 +571,9 @@ jobs:
       invalidate-paths:
         type: string
         default: '"/index.html" "/assets/environments.json"'
+      package-path:
+        type: string
+        default: ''
     executor: aws-cli/default
     steps:
       - aws-cli/setup
@@ -579,6 +582,12 @@ jobs:
       - run:
           name: Syncing contents to S3
           command: aws s3 sync /tmp/workspace/<< parameters.from >> << parameters.to >> --delete
+      - when:
+          condition: << parameters.package-path >>
+          steps:
+            - run:
+                name: Uploading package pwa.zip to S3 in << parameters.package-path >> folder
+                command: aws s3 sync /tmp/workspace/output/pwa.zip << parameters.package-path >> --delete
       - when:
           condition: << parameters.distribution-id >>
           steps:
