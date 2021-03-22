@@ -19,7 +19,7 @@ executors:
     parameters:
       node-version:
         type: string
-        default: '14.15'
+        default: '14.16'
     docker:
       - image: cimg/node:<< parameters.node-version >>
         auth:
@@ -46,7 +46,7 @@ executors:
       NODE_OPTIONS: --max_old_space_size=4096
   java:
     docker:
-      - image: cimg/openjdk:15.0-node
+      - image: cimg/openjdk:16.0-node
         auth:
           username: $DOCKER_LOGIN
           password: $DOCKER_PASSWORD
