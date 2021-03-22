@@ -587,7 +587,7 @@ jobs:
           steps:
             - run:
                 name: Uploading package pwa.zip to S3 in << parameters.package-path >> folder
-                command: aws s3 sync /tmp/workspace/output/pwa.zip << parameters.package-path >> --delete
+                command: aws s3 sync /tmp/workspace/output/pwa.zip << parameters.to >>/<< parameters.package-path >> --delete
       - when:
           condition: << parameters.distribution-id >>
           steps:
