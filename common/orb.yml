@@ -153,7 +153,7 @@ commands:
       - run:
           name: Installing Fastlane
           command: |
-            if [[ $CIRCLE_TAG == *-dist ]]; then
+            if [[ $CIRCLE_TAG == *dist ]]; then
               gem install fastlane -NV
             fi
   vpn:
@@ -286,7 +286,7 @@ commands:
             sudo apt-get update
             sudo apt-get install google-chrome-stable
   sentry-release:
-    description: Create Sentry release and uploads sourcemaps from PWA
+    description: Create Sentry release and uploads sourcemaps from PWA for dist builds
     parameters:
       org:
         type: string
@@ -295,6 +295,10 @@ commands:
       auth-token:
         type: string
     steps:
+      - run: |
+          if [[ $CIRCLE_TAG != *dist ]]; then
+            circleci-agent step halt
+          fi
       - attach_workspace:
           at: /tmp/workspace
       - run:
@@ -306,15 +310,14 @@ commands:
             SENTRY_ORG: << parameters.org >>
             SENTRY_PROJECT: << parameters.project >>
           command: |
+            cd /tmp
+            npm init -y
+            npm i semver
+            VERSION=$(echo "var semver = require('semver'); const v = semver.parse(process.argv[2]); console.log(v.major + '.' + v.minor + '.' + v.patch);" | node - $CIRCLE_TAG)
             cd /tmp/workspace/www
-            VERSIONENVIRONMENT=${CIRCLE_TAG%-dist}
-            ENVIRONMENT=${VERSIONENVIRONMENT#*-}
-            VERSION=${VERSIONENVIRONMENT%-$ENVIRONMENT}
-            if [[ $CIRCLE_TAG == *-dist ]]; then VERSION=${VERSION}-dist; else VERSION=${CIRCLE_TAG}; fi
             sentry-cli --auth-token << parameters.auth-token >> releases new $VERSION
             sentry-cli --auth-token << parameters.auth-token >> releases files $VERSION upload-sourcemaps . --no-rewrite
             sentry-cli --auth-token << parameters.auth-token >> releases set-commits $VERSION --commit "okode/<< parameters.project >>@$CIRCLE_SHA1" || true
-            if [[ $CIRCLE_TAG == *-dist ]]; then sentry-cli --auth-token << parameters.auth-token >> releases deploys $VERSION new -e $ENVIRONMENT; fi
             sentry-cli --auth-token << parameters.auth-token >> releases finalize $VERSION
   keychain:
     description: Installs iOS certificates
@@ -368,7 +371,7 @@ commands:
             else
               rm -rf ${CERT_DIR}
               DIST=false
-              if [[ $CIRCLE_TAG == *-dist ]]; then
+              if [[ $CIRCLE_TAG == *dist ]]; then
                 git clone --quiet --depth=1 << parameters.dist-certs-repo-url >> ${CERT_DIR}
                 DIST=true
               else
@@ -390,7 +393,7 @@ commands:
             --app_name "${CIRCLE_PROJECT_REPONAME}"               \
             --skip_itc || true
 
-            if [[ $CIRCLE_TAG == *-dist ]]; then
+            if [[ $CIRCLE_TAG == *dist ]]; then
               LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 fastlane sigh --force                \
                 --app_identifier "<< parameters.package-name >>"                       \
                 --provisioning_name "<< parameters.distribution-provisioning-name >>"  \
@@ -422,7 +425,7 @@ commands:
       - run:
           name: Getting Android distribution keystore (if needed)
           command: |
-            if [[ $CIRCLE_TAG == *-dist ]] && [[ -n "<< parameters.dist-certs-repo-url >>" ]]; then
+            if [[ $CIRCLE_TAG == *dist ]] && [[ -n "<< parameters.dist-certs-repo-url >>" ]]; then
               CERT_DIR=certs
               rm -rf ${CERT_DIR}
               git clone --quiet --depth=1 << parameters.dist-certs-repo-url >> ${CERT_DIR}
