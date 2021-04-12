@@ -61,6 +61,7 @@ commands:
             ENVIRONMENT=${VERSIONENVIRONMENT#*-}
             VERSION=${VERSIONENVIRONMENT%-$ENVIRONMENT}
             if [[ $ENVIRONMENT == $VERSION ]]; then ENVIRONMENT=""; fi
+            echo "export OKODECI_VERSION=${VERSION}" >> $BASH_ENV
             echo "export OKODECI_ENVIRONMENT=${ENVIRONMENT}" >> $BASH_ENV
             source $BASH_ENV
   install-ios:
@@ -308,6 +309,7 @@ commands:
       auth-token:
         type: string
     steps:
+      - expand-environment
       - attach_workspace:
           at: /tmp/workspace
       - run:
@@ -320,15 +322,11 @@ commands:
             SENTRY_PROJECT: << parameters.project >>
           command: |
             cd /tmp/workspace/www
-            VERSIONENVIRONMENT=${CIRCLE_TAG%-dist}
-            ENVIRONMENT=${VERSIONENVIRONMENT#*-}
-            VERSION=${VERSIONENVIRONMENT%-$ENVIRONMENT}
-            if [[ $CIRCLE_TAG == *-dist ]]; then VERSION=${VERSION}-dist; else VERSION=${CIRCLE_TAG}; fi
-            sentry-cli --auth-token << parameters.auth-token >> releases new $VERSION
-            sentry-cli --auth-token << parameters.auth-token >> releases files $VERSION upload-sourcemaps . --no-rewrite
-            sentry-cli --auth-token << parameters.auth-token >> releases set-commits $VERSION --commit "okode/<< parameters.project >>@$CIRCLE_SHA1" || true
-            if [[ $ENVIRONMENT != $VERSION ]]; then sentry-cli --auth-token << parameters.auth-token >> releases deploys $VERSION new -e $ENVIRONMENT; fi
-            sentry-cli --auth-token << parameters.auth-token >> releases finalize $VERSION
+            sentry-cli --auth-token << parameters.auth-token >> releases new $CIRCLE_TAG
+            sentry-cli --auth-token << parameters.auth-token >> releases files $CIRCLE_TAG upload-sourcemaps . --no-rewrite
+            sentry-cli --auth-token << parameters.auth-token >> releases set-commits $CIRCLE_TAG --commit "okode/<< parameters.project >>@$CIRCLE_SHA1" || true
+            if [[ -v $OKODECI_ENVIRONMENT ]]; then sentry-cli --auth-token << parameters.auth-token >> releases deploys $CIRCLE_TAG new -e $OKODECI_ENVIRONMENT; fi
+            sentry-cli --auth-token << parameters.auth-token >> releases finalize $CIRCLE_TAG
   keychain:
     description: Installs iOS certificates
     parameters:
