@@ -115,9 +115,6 @@ jobs:
       build-params:
         type: string
         default: '-- --prod'
-      env-from-tag:
-        type: boolean
-        default: false
       pwa-path:
         type: string
         default: 'www'
@@ -153,22 +150,10 @@ jobs:
             - common/fix-node-permissions
             - common/custom-npm-login
       - node/install-packages
-      - when:
-          condition: << parameters.env-from-tag >>
-          steps:
-            - run:
-                name: Building
-                no_output_timeout: 30m
-                command: |
-                  npm i --no-save semver
-                  npm run build << parameters.build-params >> --configuration=$(echo "var semver = require('semver'); console.log(semver.parse(process.argv[2]).prerelease[2]);" | node - $CIRCLE_TAG)
-      - unless:
-          condition: << parameters.env-from-tag >>
-          steps:
-            - run:
-                name: Building
-                no_output_timeout: 30m
-                command: npm run build << parameters.build-params >>
+      - run:
+          name: Building
+          command: npm run build << parameters.build-params >>
+          no_output_timeout: 30m
       - unless:
           condition: << parameters.skip-inline-sourcemaps >>
           steps:
