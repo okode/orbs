@@ -131,6 +131,7 @@ jobs:
     executor: << parameters.executor >>
     resource_class: xlarge
     steps:
+      - common/expand-environment
       - run:
           name: Checking deprecated parameters
           command: |

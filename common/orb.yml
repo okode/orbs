@@ -51,6 +51,16 @@ executors:
           username: $DOCKER_LOGIN
           password: $DOCKER_PASSWORD
 commands:
+  expand-environment:
+    description: Expand environment variables
+    steps:
+      - run:
+          name: Expand environment variables
+          command: |
+            VERSIONENVIRONMENT=${CIRCLE_TAG%-dist}
+            ENVIRONMENT=${VERSIONENVIRONMENT#*-}
+            echo "export ENVIRONMENT_FROM_TAG=${ENVIRONMENT}" >> $BASH_ENV
+            source $BASH_ENV
   install-ios:
     description: Install iOS requirements
     parameters:
