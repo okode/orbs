@@ -175,7 +175,7 @@ jobs:
             - run:
                 name: Inlining sourcemaps
                 command: |
-                  if [[ $CIRCLE_TAG != *dist ]]; then
+                  if [[ $CIRCLE_TAG != *-dist ]]; then
                     echo "
                       import { readdirSync, existsSync, readFileSync } from 'fs';
                       import { replaceInFileSync } from 'replace-in-file';
