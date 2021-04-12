@@ -206,9 +206,10 @@ commands:
           name: Uploading artifacts to BitBucket Downloads
           command: |
             cd /tmp/workspace/<< parameters.path >>
-            for FILE in *.ipa; do mv ${FILE} $(basename ${FILE} .ipa)-<< parameters.tag >>.ipa; done
-            for FILE in *.apk; do mv ${FILE} $(basename ${FILE} .apk)-<< parameters.tag >>.apk; done
-            for FILE in *; do curl -X POST "https://<< parameters.auth-string >>@api.bitbucket.org/2.0/repositories/<< parameters.group >>/<< parameters.repo >>/downloads" --form files=@"${FILE}"; done
+            for FILE in *.ipa; do [ -f "$FILE" ] || continue; mv ${FILE} $(basename ${FILE} .ipa)-<< parameters.tag >>.ipa; done
+            for FILE in *.apk; do [ -f "$FILE" ] || continue; mv ${FILE} $(basename ${FILE} .apk)-<< parameters.tag >>.apk; done
+            for FILE in *.aab; do [ -f "$FILE" ] || continue; mv ${FILE} $(basename ${FILE} .aab)-<< parameters.tag >>.aab; done
+            for FILE in *; do [ -f "$FILE" ] || continue; curl -X POST "https://<< parameters.auth-string >>@api.bitbucket.org/2.0/repositories/<< parameters.group >>/<< parameters.repo >>/downloads" --form files=@"${FILE}"; done
   sonar:
     parameters:
       scanner:
