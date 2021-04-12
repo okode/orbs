@@ -59,6 +59,8 @@ commands:
           command: |
             VERSIONENVIRONMENT=${CIRCLE_TAG%-dist}
             ENVIRONMENT=${VERSIONENVIRONMENT#*-}
+            VERSION=${VERSIONENVIRONMENT%-$ENVIRONMENT}
+            if [[ $ENVIRONMENT == $VERSION ]]; then ENVIRONMENT=""; fi
             echo "export OKODECI_ENVIRONMENT=${ENVIRONMENT}" >> $BASH_ENV
             source $BASH_ENV
   install-ios:
