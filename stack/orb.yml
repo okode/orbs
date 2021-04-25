@@ -33,16 +33,20 @@ jobs:
         default: false
       base-href:
         type: string
-        default: "/"
+        default: '/'
       archive-name:
         type: string
-        default: ""
+        default: ''
+      override-npm-ci-command:
+        type: string
+        default: ''
     executor: java-node
     working_directory: ~/project/<< parameters.path >>
     steps:
       - checkout:
           path: ~/project
-      - node/install-packages
+      - node/install-packages:
+          override-ci-command: << parameters.override-npm-ci-command >>
       - when:
           condition: << parameters.package >>
           steps:

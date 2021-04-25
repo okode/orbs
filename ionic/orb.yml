@@ -39,6 +39,9 @@ jobs:
         description: Deprecated
         type: boolean
         default: false
+      override-npm-ci-command:
+        type: string
+        default: ''
       build-params:
         description: Deprecated
         type: string
@@ -71,7 +74,8 @@ jobs:
           steps:
             - common/fix-node-permissions
             - common/custom-npm-login
-      - node/install-packages
+      - node/install-packages:
+          override-ci-command: << parameters.override-npm-ci-command >>
       - run:
           name: Type checking
           command: npx tsc --noEmit
@@ -124,6 +128,9 @@ jobs:
       executor:
         type: executor
         default: common/node
+      override-npm-ci-command:
+        type: string
+        default: ''
       package-path:
         description: Deprecated
         type: string
@@ -150,7 +157,8 @@ jobs:
           steps:
             - common/fix-node-permissions
             - common/custom-npm-login
-      - node/install-packages
+      - node/install-packages:
+          override-ci-command: << parameters.override-npm-ci-command >>
       - run:
           name: Building
           command: npm run build << parameters.build-params >>
@@ -248,6 +256,9 @@ jobs:
       cache-cordova-plugins:
         type: boolean
         default: false
+      override-npm-ci-command:
+        type: string
+        default: ''
       cocoapods-lock-path:
         description: Deprecated
         type: string
@@ -274,6 +285,7 @@ jobs:
             - common/custom-npm-login
       - node/install-packages:
           cache-version: v1-{{ arch }}-{{ .Environment.CIRCLE_JOB }}
+          override-ci-command: << parameters.override-npm-ci-command >>
       - common/install-ios:
           cordova-version: << parameters.cordova-version >>
           cocoapods-version: << parameters.cocoapods-version >>
@@ -367,6 +379,9 @@ jobs:
       cache-cordova-plugins:
         type: boolean
         default: false
+      override-npm-ci-command:
+        type: string
+        default: ''
     executor:
       name: android/android
       sdk-version: << parameters.api-version >>
@@ -398,6 +413,7 @@ jobs:
                 command: sudo npm install -g npm-cli-adduser && npm-cli-adduser
       - node/install-packages:
           cache-version: v1-{{ arch }}-{{ .Environment.CIRCLE_JOB }}
+          override-ci-command: << parameters.override-npm-ci-command >>
       - common/install-android:
           gradle-version: << parameters.gradle-version >>
           cordova-version: << parameters.cordova-version >>
