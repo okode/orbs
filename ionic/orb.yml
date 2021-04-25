@@ -8,7 +8,7 @@ cache-key-cordova-plugins: &cache-key-cordova-plugins
   key: cache-cordova-{{ .Environment.CIRCLE_JOB }}-plugins-{{ checksum "package-lock.json" }}
 
 orbs:
-  common: okode/common@volatile
+  common: okode/common@2
   android: circleci/android@1
   gradle: circleci/gradle@2
   node: circleci/node@4
@@ -44,7 +44,8 @@ jobs:
         type: string
         default: 'deprecated'
     executor:
-      name: common/node-browsers
+      name: common/node
+      feature: '-browsers'
       node-version: << parameters.node-version >>
     resource_class: xlarge
     steps:
@@ -217,7 +218,7 @@ jobs:
       node-version:
         type: enum
         default: ''
-        enum: [ '', '12', '14', 'latest' ]
+        enum: [ '', '12', '14', '16', 'latest' ]
       cordova-version:
         type: string
         default: 'latest'
