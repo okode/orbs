@@ -19,14 +19,10 @@ jobs:
       skip-e2e:
         type: boolean
         default: false
-      override-npm-ci-command:
-        type: string
-        default: ''
     executor: common/node-browsers
     steps:
       - checkout
-      - node/install-packages:
-          override-ci-command: << parameters.override-npm-ci-command >>
+      - node/install-packages
       - run:
           name: Building
           command: npm run build -- << parameters.project >> --prod
@@ -49,14 +45,10 @@ jobs:
     parameters:
       project:
         type: string
-      override-npm-ci-command:
-        type: string
-        default: ''
     executor: common/node
     steps:
       - checkout
-      - node/install-packages:
-          override-ci-command: << parameters.override-npm-ci-command >>
+      - node/install-packages
       - run:
           name: Building
           command: npm run build -- << parameters.project >>
