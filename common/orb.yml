@@ -308,6 +308,9 @@ commands:
         type: string
       auth-token:
         type: string
+      pwa-path:
+        type: string
+        default: www
     steps:
       - expand-environment
       - attach_workspace:
@@ -321,7 +324,7 @@ commands:
             SENTRY_ORG: << parameters.org >>
             SENTRY_PROJECT: << parameters.project >>
           command: |
-            cd /tmp/workspace/www
+            cd /tmp/workspace/<< parameters.pwa-path >>
             sentry-cli --auth-token << parameters.auth-token >> releases new $CIRCLE_TAG
             sentry-cli --auth-token << parameters.auth-token >> releases files $CIRCLE_TAG upload-sourcemaps . --no-rewrite
             sentry-cli --auth-token << parameters.auth-token >> releases set-commits $CIRCLE_TAG --commit "okode/<< parameters.project >>@$CIRCLE_SHA1" || true
