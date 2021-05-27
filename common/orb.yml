@@ -483,12 +483,16 @@ jobs:
         type: string
       auth-token:
         type: string
+      pwa-path:
+        type: string
+        default: "www"
     executor: node
     steps:
       - sentry-release:
           org: << parameters.org >>
           project: << parameters.project >>
           auth-token: << parameters.auth-token >>
+          pwa-path: << parameters.pwa-path >>
       - notify
   bitbucket-downloads:
     description: Upload artifacts to BitBucket Downloads
