@@ -58,7 +58,7 @@ commands:
           name: Expand environment variables
           command: |
             VERSIONENVIRONMENT=${CIRCLE_TAG%-dist}
-            ENVIRONMENT=${VERSIONENVIRONMENT#*-}
+            ENVIRONMENT=${VERSIONENVIRONMENT##*-}
             VERSION=${VERSIONENVIRONMENT%-$ENVIRONMENT}
             if [[ $ENVIRONMENT == $VERSION ]]; then ENVIRONMENT=""; fi
             echo "export OKODECI_VERSION=${VERSION}" >> $BASH_ENV
