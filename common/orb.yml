@@ -48,7 +48,7 @@ executors:
     macos:
       xcode: "12.5.0"
     environment:
-      NODE_OPTIONS: --max_old_space_size=8192
+      NODE_OPTIONS: --max_old_space_size=6144
   java:
     docker:
       - image: cimg/openjdk:16.0-node
