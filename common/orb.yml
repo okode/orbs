@@ -44,6 +44,11 @@ executors:
       image: ubuntu-2004:202101-01
     environment:
       NODE_OPTIONS: --max_old_space_size=4096
+  node-mac-machine:
+    macos:
+      xcode: "12.5.0"
+    environment:
+      NODE_OPTIONS: --max_old_space_size=8192
   java:
     docker:
       - image: cimg/openjdk:16.0-node
