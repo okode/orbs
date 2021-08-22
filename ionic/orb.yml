@@ -367,6 +367,9 @@ jobs:
       cache-cordova-plugins:
         type: boolean
         default: false
+      use-default-jdk:
+        type: boolean
+        default: false
     executor:
       name: android/android
       sdk-version: << parameters.api-version >>
@@ -374,19 +377,22 @@ jobs:
     resource_class: xlarge
     steps:
       - checkout
-      - run:
-          name: Installing JDK 1.8 required for Cordova support
-          command: |
-            sudo apt update
-            sudo apt install software-properties-common
-            sudo apt update
-            wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo apt-key add -
-            sudo add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
-            sudo apt update
-            sudo apt install adoptopenjdk-8-hotspot
-            echo 'export PATH=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64/bin:$PATH' >> $BASH_ENV
-            echo 'export JAVA_HOME=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64' >> $BASH_ENV
-            source $BASH_ENV
+      - unless:
+          condition: << parameters.use-default-jdk >>
+          steps:
+            - run:
+                name: Installing JDK 1.8 required for Cordova support
+                command: |
+                  sudo apt update
+                  sudo apt install software-properties-common
+                  sudo apt update
+                  wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo apt-key add -
+                  sudo add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
+                  sudo apt update
+                  sudo apt install adoptopenjdk-8-hotspot
+                  echo 'export PATH=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64/bin:$PATH' >> $BASH_ENV
+                  echo 'export JAVA_HOME=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64' >> $BASH_ENV
+                  source $BASH_ENV
       - node/install:
           node-version: << parameters.node-version >>
           install-npm: false
