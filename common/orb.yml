@@ -10,6 +10,9 @@ cache-key-sonar-standalone: &cache-key-sonar-standalone
 cache-key-sonar-gradle: &cache-key-sonar-gradle
   key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "<< parameters.path >>/build.gradle" }}
 
+cache-key-sonar-maven: &cache-key-sonar-maven
+  key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "<< parameters.path >>/build.gradle" }}
+
 orbs:
   aws-cli: circleci/aws-cli@1
   slack: circleci/slack@4
@@ -202,6 +205,32 @@ commands:
           rm -f /tmp/vpn.conf /tmp/auth.txt
           sudo openvpn --daemon --config /etc/openvpn/vpn.conf
           sleep 10
+  vpn-ipsec:
+    description: Start VPN connection
+    parameters:
+      config:
+        type: string
+      secrets:
+        type: string
+      connection-name:
+        description: The name of the connection configured at ipsec.conf file
+        type: string
+    steps:
+     - run:
+        name: Starting VPN connection
+        command: |
+          sudo apt-get update || true
+          sudo apt-get install resolvconf strongswan
+          echo "<< parameters.config >>" > /tmp/ipsec.conf
+          echo "<< parameters.secrets >>" > /tmp/ipsec.secrets
+          sudo bash -c "base64 -d /tmp/ipsec.conf > /etc/ipsec.conf"
+          sudo bash -c "base64 -d /tmp/ipsec.secrets > /etc/ipsec.secrets"
+          rm -f /tmp/ipsec.conf /tmp/ipsec.secrets
+          sleep 3
+          sudo ipsec update
+          sudo ipsec rereadsecrets
+          sudo ipsec up << parameters.connection-name >>
+          sleep 10
   bitbucket-downloads:
     description: Upload artifacts to BitBucket Downloads
     parameters:
@@ -231,12 +260,15 @@ commands:
       scanner:
         type: enum
         default: "standalone"
-        description: The way of running the Sonar analysis. It could be 'standalone' (running the analysis using the sonar-scanner.jar) or 'gradle' (using the 'sonarqube' gradle plugin of a build.gradle file).
-        enum: ["standalone", "gradle"]
+        description: The way of running the Sonar analysis. It could be 'standalone' (running the analysis using the sonar-scanner.jar), 'gradle' (using the 'sonarqube' gradle plugin of a build.gradle file) or 'maven'.
+        enum: [ 'standalone', 'gradle', 'maven' ]
       path:
         type: string
         default: .
         description: The path to run the Sonar analysis on. This will set the 'working_directory' of the Sonar analysis steps, not the entire job one. The 'attach_workspace' step will be set at this path.
+      scanner-args:
+        type: string
+        default: ''
       attach-workspace:
         type: boolean
         default: false
@@ -290,6 +322,24 @@ commands:
                 working_directory: << parameters.path >>
             - save_cache:
                 << : *cache-key-sonar-gradle
+                paths:
+                  - ~/.sonar
+      - when:
+          condition:
+            equal: [ 'maven', << parameters.scanner >> ]
+          steps:
+            - run:
+                name: Maven Scanner
+                command: echo "Maven scanner selected running on $(pwd)"
+                working_directory: << parameters.path >>
+            - restore_cache:
+                << : *cache-key-sonar-maven
+            - run:
+                name: Scanning
+                command: mvn clean package sonar:sonar << parameters.scanner-args >>
+                working_directory: << parameters.path >>
+            - save_cache:
+                << : *cache-key-sonar-maven
                 paths:
                   - ~/.sonar
   chrome-upgrade:
@@ -525,8 +575,8 @@ jobs:
       scanner:
         type: enum
         default: 'standalone'
-        description: The way of running the Sonar analysis. It could be 'standalone' (running the analysis using the sonar-scanner.jar) or 'gradle' (using the 'sonarqube' gradle plugin of a build.gradle file).
-        enum: [ 'standalone', 'gradle' ]
+        description: The way of running the Sonar analysis. It could be 'standalone' (running the analysis using the sonar-scanner.jar), 'gradle' (using the 'sonarqube' gradle plugin of a build.gradle file) or 'maven'.
+        enum: [ 'standalone', 'gradle', 'maven' ]
       path:
         type: string
         default: .
@@ -573,6 +623,41 @@ jobs:
           user: << parameters.user >>
           password: << parameters.password >>
           config: << parameters.config >>
+      - sonar:
+          scanner: << parameters.scanner >>
+          path: << parameters.path >>
+          attach-workspace: << parameters.attach-workspace >>
+      - notify
+  sonar-vpn-ipsec:
+    description: Run Sonar scanner with VPN using IPSEC
+    machine: true
+    parameters:
+      config:
+        type: string
+      secrets:
+        type: string
+      connection-name:
+        description: The name of the connection configured at ipsec.conf file
+        type: string
+      scanner:
+        type: enum
+        default: 'standalone'
+        description: The way of running the Sonar analysis. It could be 'standalone' (running the analysis using the sonar-scanner.jar), 'gradle' (using the 'sonarqube' gradle plugin of a build.gradle file) or 'maven'.
+        enum: [ 'standalone', 'gradle', 'maven' ]
+      path:
+        type: string
+        default: .
+        description: The path to run the Sonar analysis on. This will set the 'working_directory' of the Sonar analysis steps, not the entire job one. The 'attach_workspace' step will be set at this path.
+      attach-workspace:
+        type: boolean
+        default: false
+        description: This will attach the workspace on the 'path' parameter.
+    steps:
+      - checkout
+      - vpn-ipsec:
+          config: << parameters.config >>
+          secrets: << parameters.secrets >>
+          connection-name: << parameters.connection-name >>
       - sonar:
           scanner: << parameters.scanner >>
           path: << parameters.path >>
