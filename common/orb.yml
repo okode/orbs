@@ -229,6 +229,8 @@ commands:
           sleep 3
           sudo ipsec update
           sudo ipsec rereadsecrets
+          cat /etc/ipsec.conf
+          cat /etc/ipsec.secrets
           sudo ipsec up << parameters.connection-name >>
           sleep 10
   bitbucket-downloads:
