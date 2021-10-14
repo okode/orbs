@@ -226,13 +226,11 @@ commands:
           sudo bash -c "base64 -d /tmp/ipsec.conf > /etc/ipsec.conf"
           sudo bash -c "base64 -d /tmp/ipsec.secrets > /etc/ipsec.secrets"
           rm -f /tmp/ipsec.conf /tmp/ipsec.secrets
-          sleep 3
           sudo ipsec update
+          sleep 5
           sudo ipsec rereadsecrets
-          cat /etc/ipsec.conf
-          cat /etc/ipsec.secrets
+          sleep 5
           sudo ipsec up << parameters.connection-name >>
-          sleep 10
   bitbucket-downloads:
     description: Upload artifacts to BitBucket Downloads
     parameters:
