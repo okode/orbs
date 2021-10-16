@@ -16,7 +16,7 @@ fi
 
 git checkout -b version/$TAG
 
-find . -type f -name '*.yml' -exec sed -i '' "s/okode\/common@1/okode\/common@${TAG}/" {} +
+find . -type f -name '*.yml' -exec sed -i '' "s/okode\/common@2/okode\/common@${TAG}/" {} +
 
 git commit -a -m"Bumped version $TAG"
 git tag $TAG -m $TAG
