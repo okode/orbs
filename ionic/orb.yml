@@ -18,7 +18,7 @@ jobs:
     parameters:
       node-version:
         type: string
-        default: '14'
+        default: '16'
       skip-tests:
         type: boolean
         default: false
@@ -342,7 +342,7 @@ jobs:
         default: false
       node-version:
         type: string
-        default: '14'
+        default: '16'
       cordova-version:
         type: string
         default: 'latest'
