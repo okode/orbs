@@ -32,12 +32,15 @@ executors:
       NODE_OPTIONS: --max_old_space_size=4096
   node-machine:
     machine:
-      image: ubuntu-2004:202101-01
+      image: ubuntu-2004:202107-02
     environment:
       NODE_OPTIONS: --max_old_space_size=4096
+  node-mac-machine:
+    macos:
+      xcode: '13.0.0'
   java:
     docker:
-      - image: cimg/openjdk:16.0-node
+      - image: cimg/openjdk:11.0-node
         auth:
           username: $DOCKER_LOGIN
           password: $DOCKER_PASSWORD
@@ -49,7 +52,7 @@ commands:
           name: Expand environment variables
           command: |
             VERSIONENVIRONMENT=${CIRCLE_TAG%-dist}
-            ENVIRONMENT=${VERSIONENVIRONMENT#*-}
+            ENVIRONMENT=${VERSIONENVIRONMENT##*-}
             VERSION=${VERSIONENVIRONMENT%-$ENVIRONMENT}
             if [[ $ENVIRONMENT == $VERSION ]]; then ENVIRONMENT=""; fi
             echo "export OKODECI_VERSION=${VERSION}" >> $BASH_ENV
@@ -218,9 +221,9 @@ commands:
     parameters:
       scanner:
         type: enum
-        default: "standalone"
+        default: 'standalone'
         description: The way of running the Sonar analysis. It could be 'standalone' (running the analysis using the sonar-scanner.jar) or 'gradle' (using the 'sonarqube' gradle plugin of a build.gradle file).
-        enum: ["standalone", "gradle"]
+        enum: [ 'standalone', 'gradle' ]
       path:
         type: string
         default: .
@@ -299,6 +302,9 @@ commands:
         type: string
       auth-token:
         type: string
+      pwa-path:
+        type: string
+        default: www
     steps:
       - expand-environment
       - attach_workspace:
@@ -312,7 +318,7 @@ commands:
             SENTRY_ORG: << parameters.org >>
             SENTRY_PROJECT: << parameters.project >>
           command: |
-            cd /tmp/workspace/www
+            cd /tmp/workspace/<< parameters.pwa-path >>
             sentry-cli --auth-token << parameters.auth-token >> releases new $CIRCLE_TAG
             sentry-cli --auth-token << parameters.auth-token >> releases files $CIRCLE_TAG upload-sourcemaps . --no-rewrite
             sentry-cli --auth-token << parameters.auth-token >> releases set-commits $CIRCLE_TAG --commit "okode/<< parameters.project >>@$CIRCLE_SHA1" || true
@@ -348,7 +354,7 @@ commands:
           steps:
             - add_ssh_keys:
                 fingerprints:
-                  - "<< parameters.ssh-permission-fingerprint >>"
+                  - '<< parameters.ssh-permission-fingerprint >>'
       - run:
           name: Installing iOS certificates
           command: |
@@ -471,12 +477,16 @@ jobs:
         type: string
       auth-token:
         type: string
+      pwa-path:
+        type: string
+        default: 'www'
     executor: node
     steps:
       - sentry-release:
           org: << parameters.org >>
           project: << parameters.project >>
           auth-token: << parameters.auth-token >>
+          pwa-path: << parameters.pwa-path >>
       - notify
   bitbucket-downloads:
     description: Upload artifacts to BitBucket Downloads

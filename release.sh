@@ -7,27 +7,25 @@ if [[ $# -ne 1 ]]; then
 fi
 
 TAG=$1
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
-if [[ ($TAG != "dev:first") && (-n $(git status -z))]]; then
+if [[ (-n $(git status -z)) ]]; then
   echo "Repository not clean, ensure you have committed all your changes"
   exit 1
 fi
 
-if [[ $TAG == "dev:first" ]]; then
-  find . -type f -name '*.yml' -exec sed -i '' 's/volatile/dev:first/' {} +
-fi
+git checkout -b version/$TAG
+
+find . -type f -name '*.yml' -exec sed -i '' "s/okode\/common@1/okode\/common@${TAG}/" {} +
+
+git commit -a -m"Bumped version $TAG"
+git tag $TAG -m $TAG
 
 circleci orb publish common/orb.yml okode/common@$TAG
 circleci orb publish ionic/orb.yml okode/ionic@$TAG
 circleci orb publish angular/orb.yml okode/angular@$TAG
 circleci orb publish stack/orb.yml okode/stack@$TAG
 
-if [[ $TAG != "dev:first" ]]
-then
-  
-  git tag $TAG -m $TAG
-  git push --tags
-
-else
-  find . -type f -name '*.yml' -exec sed -i '' 's/dev:first/volatile/' {} +
-fi
+git checkout $CURRENT_BRANCH
+git branch -D version/$TAG
+git push --tags
