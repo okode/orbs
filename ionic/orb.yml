@@ -18,7 +18,7 @@ jobs:
     parameters:
       node-version:
         type: string
-        default: '16'
+        default: 'current'
       skip-tests:
         type: boolean
         default: false
