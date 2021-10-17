@@ -12,6 +12,7 @@ orbs:
   android: circleci/android@1
   gradle: circleci/gradle@2
   node: circleci/node@4
+  browser-tools: circleci/browser-tools@1
 
 jobs:
   test:
@@ -31,42 +32,15 @@ jobs:
       custom-npm-login:
         type: boolean
         default: false
-      persist-results:
-        description: Deprecated
-        type: boolean
-        default: false
-      skip-sonar:
-        description: Deprecated
-        type: boolean
-        default: false
-      build-params:
-        description: Deprecated
-        type: string
-        default: 'deprecated'
     executor:
       name: common/node
       feature: '-browsers'
       node-version: << parameters.node-version >>
     resource_class: xlarge
     steps:
-      - run:
-          name: Checking deprecated parameters
-          command: |
-            if [[ << parameters.skip-sonar >> ]]; then
-              echo "
-              Parameter skip-sonar is deprecated, use sonar job instead:
-              - common/sonar:
-                  name: sonar
-                  attach-workspace: true
-              "
-            fi
-            if [[ "<< parameters.build-params >>" != "deprecated" ]]; then
-              echo "Parameter build-params is deprecated"
-            fi
-            if [[ << parameters.persist-results >> ]]; then
-              echo "Parameter persist-results is deprecated"
-            fi
       - checkout
+      - browser-tools/install-chrome
+      - browser-tools/install-chromedriver
       - when: 
           condition: << parameters.custom-npm-login >>
           steps:
@@ -125,20 +99,10 @@ jobs:
       executor:
         type: executor
         default: common/node
-      package-path:
-        description: Deprecated
-        type: string
-        default: 'deprecated'
     executor: << parameters.executor >>
     resource_class: xlarge
     steps:
       - common/expand-environment
-      - run:
-          name: Checking deprecated parameters
-          command: |
-            if [[ "<< parameters.package-path >>" != "deprecated" ]]; then
-              echo "Parameter package-path is deprecated"
-            fi
       - checkout
       - when:
           condition: << parameters.node-version >>
@@ -224,19 +188,9 @@ jobs:
       skip-inline-sourcemaps:
         type: boolean
         default: false
-      cocoapods-lock-path:
-        description: Deprecated
-        type: string
-        default: 'deprecated'
     macos:
       xcode: "<< parameters.xcode-version >>"
     steps:
-      - run:
-          name: Checking deprecated parameters
-          command: |
-            if [[ "<< parameters.cocoapods-lock-path >>" != "deprecated" ]]; then
-              echo "Parameter cocoapods-lock-path is deprecated";
-            fi
       - checkout
       - when:
           condition: << parameters.node-version >>
