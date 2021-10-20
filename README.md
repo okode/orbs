@@ -19,6 +19,9 @@ Also modify the release.sh script in order to add the publish command correspond
 
 ## Testing
 
+> **IMPORTANT:** Do not commit any of this changes! The proper way to publish on `dev:first` version
+> is to have its own branch.
+
 To test the modified orbs you need to publish them directly using the `circleci` command and setting
 its version to `dev:first`, e.g.:
 
@@ -52,8 +55,6 @@ $ circleci orb publish stack/orb.yml okode/stack@dev:first
 ```
 
 Remember also to set the `dev:first` orb version at the config.yml template of the proyect that is going to be used to test.
-
-> **IMPORTANT:** Do not commit any of this changes!
 
 ## Publishing
 
