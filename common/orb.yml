@@ -644,6 +644,9 @@ jobs:
         default: 'standalone'
         description: The way of running the Sonar analysis. It could be 'standalone' (running the analysis using the sonar-scanner.jar), 'gradle' (using the 'sonarqube' gradle plugin of a build.gradle file) or 'maven'.
         enum: [ 'standalone', 'gradle', 'maven' ]
+      scanner-args:
+        type: string
+        default: ''
       path:
         type: string
         default: .
@@ -660,6 +663,7 @@ jobs:
           connection-name: << parameters.connection-name >>
       - sonar:
           scanner: << parameters.scanner >>
+          scanner-args: << parameters.scanner-args >>
           path: << parameters.path >>
           attach-workspace: << parameters.attach-workspace >>
       - notify
