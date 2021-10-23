@@ -63,7 +63,7 @@ commands:
     parameters:
       cordova-version:
         type: string
-        default: 'latest'
+        default: ''
       cocoapods-version:
         type: string
         default: ''
@@ -75,10 +75,13 @@ commands:
           name: Installing Ionic and Firebase tools
           command: |
             npm i --quiet -g @ionic/cli firebase-tools
-      - run:
-          name: Installing Cordova
-          command: |
-            npm i --quiet -g cordova@<< parameters.cordova-version >>
+      - when:
+          condition: << parameters.cordova-version >>
+          steps:
+            - run:
+                name: Installing Cordova
+                command: |
+                  npm i --quiet -g cordova@<< parameters.cordova-version >>
       - when:
           condition:
             and:

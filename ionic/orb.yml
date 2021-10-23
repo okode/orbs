@@ -157,7 +157,7 @@ jobs:
         enum: [ '', '12', '14', '16', 'latest' ]
       cordova-version:
         type: string
-        default: 'latest'
+        default: ''
       cocoapods-version:
         type: string
         default: ''
