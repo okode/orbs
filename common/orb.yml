@@ -266,7 +266,7 @@ commands:
                 working_directory: << parameters.path >>
             - restore_cache:
                 << : *cache-key-sonar-standalone
-            - when:
+            - unless:
                 condition: << parameters.skip-typescript-install >>
                 steps:
                   - run:
