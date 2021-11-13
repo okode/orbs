@@ -516,6 +516,9 @@ jobs:
   sonar:
     description: Run Sonar scanner
     parameters:
+      executor:
+        type: executor
+        default: java
       scanner:
         type: enum
         default: 'standalone'
@@ -529,8 +532,7 @@ jobs:
         type: boolean
         default: false
         description: This will attach the workspace on the 'path' parameter.
-    executor: java
-    resource_class: xlarge
+    executor: << parameters.executor >>
     steps:
       - checkout
       - sonar:

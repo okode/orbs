@@ -36,7 +36,6 @@ jobs:
       name: common/node
       feature: '-browsers'
       node-version: << parameters.node-version >>
-    resource_class: xlarge
     steps:
       - checkout
       - browser-tools/install-chrome
@@ -100,7 +99,6 @@ jobs:
         type: executor
         default: common/node
     executor: << parameters.executor >>
-    resource_class: xlarge
     steps:
       - common/expand-environment
       - checkout
@@ -336,7 +334,6 @@ jobs:
       name: android/android
       sdk-version: << parameters.api-version >>
       variant: 'node'
-    resource_class: xlarge
     steps:
       - checkout
       - unless:
