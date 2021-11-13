@@ -235,6 +235,10 @@ commands:
         type: boolean
         default: false
         description: This will attach the workspace on the 'path' parameter.
+      skip-typescript-install:
+        type: boolean
+        default: false
+        description: Skip installing or upgrading TypeScript compiler (will use default one).
     description: Running Sonar scanner
     steps:
       - when:
@@ -256,10 +260,13 @@ commands:
                 working_directory: << parameters.path >>
             - restore_cache:
                 << : *cache-key-sonar-standalone
-            - run:
-                name: Upgrading TypeScript
-                command: npm i typescript@latest
-                working_directory: << parameters.path >>
+            - when:
+                condition: << parameters.skip-typescript-install >>
+                steps:
+                  - run:
+                      name: Upgrading TypeScript
+                      command: npm i typescript@latest
+                      working_directory: << parameters.path >>
             - run:
                 name: Scanning
                 command: java -jar sonar-scanner.jar
@@ -532,6 +539,10 @@ jobs:
         type: boolean
         default: false
         description: This will attach the workspace on the 'path' parameter.
+      skip-typescript-install:
+        type: boolean
+        default: false
+        description: Skip installing or upgrading TypeScript compiler (will use default one).
     executor: << parameters.executor >>
     steps:
       - checkout
@@ -539,6 +550,7 @@ jobs:
           scanner: << parameters.scanner >>
           path: << parameters.path >>
           attach-workspace: << parameters.attach-workspace >>
+          skip-typescript-install: << parameters.skip-typescript-install >>
       - notify
   sonar-vpn:
     description: Run Sonar scanner with VPN
