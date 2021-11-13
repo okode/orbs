@@ -539,7 +539,6 @@ jobs:
         default: false
         description: This will attach the workspace on the 'path' parameter.
     executor: << parameters.executor >>
-    resource_class: xlarge
     steps:
       - checkout
       - sonar:

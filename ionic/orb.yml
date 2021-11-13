@@ -46,7 +46,6 @@ jobs:
     executor:
       name: common/node-browsers
       node-version: << parameters.node-version >>
-    resource_class: xlarge
     steps:
       - run:
           name: Checking deprecated parameters
@@ -129,7 +128,6 @@ jobs:
         type: string
         default: 'deprecated'
     executor: << parameters.executor >>
-    resource_class: xlarge
     steps:
       - common/expand-environment
       - run:
@@ -381,7 +379,6 @@ jobs:
       name: android/android
       sdk-version: << parameters.api-version >>
       variant: 'node'
-    resource_class: xlarge
     steps:
       - checkout
       - unless:
