@@ -46,7 +46,7 @@ executors:
       NODE_OPTIONS: --max_old_space_size=4096
   node-mac-machine:
     macos:
-      xcode: '13.0.0'
+      xcode: '13.1.0'
   java:
     docker:
       - image: cimg/openjdk:11.0-node
