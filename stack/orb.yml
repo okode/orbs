@@ -8,7 +8,7 @@ cache-key-gradle: &cache-key-gradle
   key: cache-gradle-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "build.gradle" }}
 
 orbs:
-  common: okode/common@1
+  common: okode/common@1.0.169
   node: circleci/node@4
 
 executors:

@@ -5,7 +5,7 @@ description: |
   Repository: https://github.com/okode/orbs
 
 orbs:
-  common: okode/common@1
+  common: okode/common@1.0.169
   node: circleci/node@4
 
 jobs:
