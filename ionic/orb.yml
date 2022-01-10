@@ -8,7 +8,7 @@ cache-key-cordova-plugins: &cache-key-cordova-plugins
   key: cache-cordova-{{ .Environment.CIRCLE_JOB }}-plugins-{{ checksum "package-lock.json" }}
 
 orbs:
-  common: okode/common@volatile
+  common: okode/common@1
   android: circleci/android@1
   gradle: circleci/gradle@2
   node: circleci/node@4
@@ -46,7 +46,6 @@ jobs:
     executor:
       name: common/node-browsers
       node-version: << parameters.node-version >>
-    resource_class: xlarge
     steps:
       - run:
           name: Checking deprecated parameters
@@ -129,7 +128,6 @@ jobs:
         type: string
         default: 'deprecated'
     executor: << parameters.executor >>
-    resource_class: xlarge
     steps:
       - common/expand-environment
       - run:
@@ -189,7 +187,7 @@ jobs:
       node-version:
         type: enum
         default: ''
-        enum: [ '', '12', '14', 'latest' ]
+        enum: [ '', '12', '14', '16', 'latest' ]
       cordova-version:
         type: string
         default: 'latest'
@@ -201,7 +199,7 @@ jobs:
         default: ''
       xcode-version:
         type: string
-        default: '13.0.0'
+        default: '13.2.0'
       dev-certs-repo-url:
         type: string
         default: ''
@@ -248,7 +246,7 @@ jobs:
           steps:
             - common/custom-npm-login
       - node/install-packages:
-          cache-version: v1-{{ arch }}-{{ .Environment.CIRCLE_JOB }}
+          cache-version: v2-{{ arch }}-{{ .Environment.CIRCLE_JOB }}
       - common/install-ios:
           cordova-version: << parameters.cordova-version >>
           cocoapods-version: << parameters.cocoapods-version >>
@@ -381,7 +379,6 @@ jobs:
       name: android/android
       sdk-version: << parameters.api-version >>
       variant: 'node'
-    resource_class: xlarge
     steps:
       - checkout
       - unless:

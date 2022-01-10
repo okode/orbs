@@ -22,7 +22,7 @@ executors:
     parameters:
       node-version:
         type: string
-        default: '14.16'
+        default: '14.18'
     docker:
       - image: cimg/node:<< parameters.node-version >>
         auth:
@@ -49,7 +49,7 @@ executors:
       NODE_OPTIONS: --max_old_space_size=4096
   node-mac-machine:
     macos:
-      xcode: "12.5.0"
+      xcode: '13.1.0'
   java:
     docker:
       - image: cimg/openjdk:11.0-node
@@ -273,6 +273,10 @@ commands:
         type: boolean
         default: false
         description: This will attach the workspace on the 'path' parameter.
+      skip-typescript-install:
+        type: boolean
+        default: false
+        description: Skip installing or upgrading TypeScript compiler (will use default one).
     description: Running Sonar scanner
     steps:
       - when:
@@ -290,14 +294,17 @@ commands:
                 working_directory: << parameters.path >>
             - run:
                 name: Downloading Sonar scanner
-                command: curl -L https://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/4.6.0.2311/sonar-scanner-cli-4.6.0.2311.jar > sonar-scanner.jar
+                command: curl -L https://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/4.6.2.2472/sonar-scanner-cli-4.6.2.2472.jar > sonar-scanner.jar
                 working_directory: << parameters.path >>
             - restore_cache:
                 << : *cache-key-sonar-standalone
-            - run:
-                name: Upgrading TypeScript
-                command: npm i typescript@latest
-                working_directory: << parameters.path >>
+            - unless:
+                condition: << parameters.skip-typescript-install >>
+                steps:
+                  - run:
+                      name: Upgrading TypeScript
+                      command: npm i typescript@latest
+                      working_directory: << parameters.path >>
             - run:
                 name: Scanning
                 command: java -jar sonar-scanner.jar
@@ -413,7 +420,7 @@ commands:
           steps:
             - add_ssh_keys:
                 fingerprints:
-                  - "<< parameters.ssh-permission-fingerprint >>"
+                  - '<< parameters.ssh-permission-fingerprint >>'
       - run:
           name: Installing iOS certificates
           command: |
@@ -538,7 +545,7 @@ jobs:
         type: string
       pwa-path:
         type: string
-        default: "www"
+        default: 'www'
     executor: node
     steps:
       - sentry-release:
@@ -572,6 +579,9 @@ jobs:
   sonar:
     description: Run Sonar scanner
     parameters:
+      executor:
+        type: executor
+        default: java
       scanner:
         type: enum
         default: 'standalone'
@@ -585,14 +595,18 @@ jobs:
         type: boolean
         default: false
         description: This will attach the workspace on the 'path' parameter.
-    executor: java
-    resource_class: xlarge
+      skip-typescript-install:
+        type: boolean
+        default: false
+        description: Skip installing or upgrading TypeScript compiler (will use default one).
+    executor: << parameters.executor >>
     steps:
       - checkout
       - sonar:
           scanner: << parameters.scanner >>
           path: << parameters.path >>
           attach-workspace: << parameters.attach-workspace >>
+          skip-typescript-install: << parameters.skip-typescript-install >>
       - notify
   sonar-vpn:
     description: Run Sonar scanner with VPN
