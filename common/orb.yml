@@ -343,7 +343,13 @@ commands:
                 << : *cache-key-sonar-maven
             - run:
                 name: Scanning
-                command: mvn clean package sonar:sonar << parameters.scanner-args >>
+                command: | 
+                  cd project/metsintegration_fe
+                  mvn package
+                working_directory: << parameters.path >>
+            - run:
+                name: Scanning
+                command: mvn sonar:sonar << parameters.scanner-args >>
                 working_directory: << parameters.path >>
             - save_cache:
                 << : *cache-key-sonar-maven
