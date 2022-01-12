@@ -23,8 +23,6 @@ git tag $TAG -m $TAG
 
 circleci orb publish common/orb.yml okode/common@$TAG
 circleci orb publish ionic/orb.yml okode/ionic@$TAG
-circleci orb publish angular/orb.yml okode/angular@$TAG
-circleci orb publish stack/orb.yml okode/stack@$TAG
 
 git checkout $CURRENT_BRANCH
 git branch -D version/$TAG
