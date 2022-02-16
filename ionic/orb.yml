@@ -73,7 +73,7 @@ jobs:
       - node/install-packages
       - run:
           name: Type checking
-          command: npm run build
+          command: npx tsc --noEmit
       - unless:
           condition: << parameters.skip-lint >>
           steps:
