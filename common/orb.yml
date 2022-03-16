@@ -11,7 +11,7 @@ cache-key-sonar-gradle: &cache-key-sonar-gradle
   key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "<< parameters.path >>/build.gradle" }}
 
 orbs:
-  aws-cli: circleci/aws-cli@1
+  aws-cli: circleci/aws-cli@2
   slack: circleci/slack@4
 
 executors:
@@ -19,7 +19,7 @@ executors:
     parameters:
       node-version:
         type: string
-        default: '14.18'
+        default: '14.19'
     docker:
       - image: cimg/node:<< parameters.node-version >>
         auth:
@@ -137,9 +137,6 @@ commands:
       gradle-version:
         type: string
         default: ''
-      skip-upgrade-android-sdk:
-        type: boolean
-        default: false
     steps:
       - run:
           name: Installing SDKMAN!
@@ -150,13 +147,6 @@ commands:
           name: Installing Gradle
           command: |
             sdk install gradle << parameters.gradle-version >>
-      - unless:
-          condition: << parameters.skip-upgrade-android-sdk >>
-          steps:
-            - run:
-                name: Installing Android Platform 28
-                command: |
-                  yes | sdkmanager "platforms;android-28" || true
       - run:
           name: Installing Ionic and Cordova
           command: sudo npm i --quiet -g @ionic/cli cordova@<< parameters.cordova-version >>
