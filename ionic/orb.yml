@@ -9,7 +9,7 @@ cache-key-cordova-plugins: &cache-key-cordova-plugins
 
 orbs:
   common: okode/common@1
-  android: circleci/android@2
+  android: circleci/android@1
   gradle: circleci/gradle@2
   node: circleci/node@4
 
@@ -359,18 +359,13 @@ jobs:
         type: string
         default: 'www'
       skip-upgrade-android-sdk:
-        description: Deprecated
         type: boolean
-        default: true
+        default: false
       api-version:
-        description: Android SDK version (deprecated)
+        description: Android SDK version
         type: enum
         enum: [ '23', '24', '25', '26', '27', '28', '29', '30' ]
         default: '30'
-      android-executor-tag:
-        description: Docker image tag to get building on Android.
-        type: string
-        default: 2022.03.1-node
       cache-cordova-plugins:
         type: boolean
         default: false
@@ -381,8 +376,9 @@ jobs:
         type: boolean
         default: false
     executor:
-      name: android/android-docker
-      tag: << parameters.android-executor-tag >>
+      name: android/android
+      sdk-version: << parameters.api-version >>
+      variant: 'node'
     steps:
       - checkout
       - unless:
@@ -415,6 +411,7 @@ jobs:
       - common/install-android:
           gradle-version: << parameters.gradle-version >>
           cordova-version: << parameters.cordova-version >>
+          skip-upgrade-android-sdk: << parameters.skip-upgrade-android-sdk >>
       - when:
           condition: << parameters.attach-workspace >>
           steps:

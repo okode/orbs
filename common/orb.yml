@@ -137,6 +137,9 @@ commands:
       gradle-version:
         type: string
         default: ''
+      skip-upgrade-android-sdk:
+        type: boolean
+        default: false
     steps:
       - run:
           name: Installing SDKMAN!
@@ -147,6 +150,13 @@ commands:
           name: Installing Gradle
           command: |
             sdk install gradle << parameters.gradle-version >>
+      - unless:
+          condition: << parameters.skip-upgrade-android-sdk >>
+          steps:
+            - run:
+                name: Installing Android Platform 28
+                command: |
+                  yes | sdkmanager "platforms;android-28" || true
       - run:
           name: Installing Ionic and Cordova
           command: sudo npm i --quiet -g @ionic/cli cordova@<< parameters.cordova-version >>
