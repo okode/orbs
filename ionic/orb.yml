@@ -142,7 +142,6 @@ jobs:
           steps:
             - node/install:
                 node-version: << parameters.node-version >>
-                install-npm: false
       - when:
           condition: << parameters.custom-npm-login >>
           steps:
@@ -240,7 +239,6 @@ jobs:
           steps:
             - node/install:
                 node-version: << parameters.node-version >>
-                install-npm: false
       - when:
           condition: << parameters.custom-npm-login >>
           steps:
@@ -399,7 +397,6 @@ jobs:
                   source $BASH_ENV
       - node/install:
           node-version: << parameters.node-version >>
-          install-npm: false
       - when:
           condition: << parameters.custom-npm-login >>
           steps:
