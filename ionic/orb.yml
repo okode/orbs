@@ -292,7 +292,7 @@ jobs:
         default: false
       node-version:
         type: string
-        default: '16'
+        default: ''
       install-ionic:
         type: boolean
         default: false
@@ -319,8 +319,11 @@ jobs:
       tag: << parameters.android-docker-tag >>
     steps:
       - checkout
-      - node/install:
-          node-version: << parameters.node-version >>
+      - unless:
+          condition: << parameters.node-version >>
+          steps:
+            - node/install:
+                node-version: << parameters.node-version >>
       - when:
           condition: << parameters.custom-npm-login >>
           steps:
