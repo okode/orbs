@@ -9,7 +9,7 @@ cache-key-cordova-plugins: &cache-key-cordova-plugins
 
 orbs:
   common: okode/common@2
-  android: circleci/android@1
+  android: circleci/android@2
   gradle: circleci/gradle@2
   node: circleci/node@5
   browser-tools: circleci/browser-tools@1
@@ -293,12 +293,12 @@ jobs:
       node-version:
         type: string
         default: '16'
-      cordova-version:
-        type: string
-        default: 'latest'
-      gradle-version:
-        type: string
-        default: ''
+      install-ionic:
+        type: boolean
+        default: false
+      install-cordova:
+        type: boolean
+        default: false
       dist-certs-repo-url:
         type: string
         default: ''
@@ -311,45 +311,14 @@ jobs:
       pwa-path:
         type: string
         default: 'www'
-      skip-upgrade-android-sdk:
-        type: boolean
-        default: false
-      api-version:
-        description: Android SDK version
-        type: enum
-        enum: [ '23', '24', '25', '26', '27', '28', '29', '30' ]
-        default: '30'
-      cache-cordova-plugins:
-        type: boolean
-        default: false
-      use-default-jdk:
-        type: boolean
-        default: false
-      skip-inline-sourcemaps:
-        type: boolean
-        default: false
+      android-docker-tag:
+        type: string
+        default: '2022.03-node'
     executor:
-      name: android/android
-      sdk-version: << parameters.api-version >>
-      variant: 'node'
+      name: android/android-docker
+      tag: << parameters.android-docker-tag >>
     steps:
       - checkout
-      - unless:
-          condition: << parameters.use-default-jdk >>
-          steps:
-            - run:
-                name: Installing JDK 1.8 required for Cordova support
-                command: |
-                  sudo apt update
-                  sudo apt install software-properties-common
-                  sudo apt update
-                  wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo apt-key add -
-                  sudo add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
-                  sudo apt update
-                  sudo apt install adoptopenjdk-8-hotspot
-                  echo 'export PATH=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64/bin:$PATH' >> $BASH_ENV
-                  echo 'export JAVA_HOME=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64' >> $BASH_ENV
-                  source $BASH_ENV
       - node/install:
           node-version: << parameters.node-version >>
       - when:
@@ -361,54 +330,16 @@ jobs:
       - node/install-packages:
           cache-version: v1-{{ arch }}-{{ .Environment.CIRCLE_JOB }}
       - common/install-android:
-          gradle-version: << parameters.gradle-version >>
-          cordova-version: << parameters.cordova-version >>
-          skip-upgrade-android-sdk: << parameters.skip-upgrade-android-sdk >>
+          install-ionic: << parameters.install-ionic >>
+          install-cordova: << parameters.install-cordova >>
       - when:
           condition: << parameters.attach-workspace >>
           steps:
             - attach_workspace:
                 at: .
-            - unless:
-                condition: << parameters.skip-inline-sourcemaps >>
-                steps:
-                  - run:
-                      name: Inlining sourcemaps
-                      command: |
-                        if [[ $CIRCLE_TAG != *-dist ]]; then
-                          echo "
-                            import { readdirSync, existsSync, readFileSync } from 'fs';
-                            import { replaceInFileSync } from 'replace-in-file';
-                            process.chdir('www');
-                            readdirSync('.')
-                              .filter(fname => fname.endsWith('.js') && existsSync(fname + '.map'))
-                              .map(fname => { return { js: fname, jsmap: fname + '.map' }; })
-                              .forEach(pair => {
-                                replaceInFileSync({
-                                  files: pair.js,
-                                  from: 'sourceMappingURL=' + pair.js + '.map',
-                                  to: 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + readFileSync(pair.jsmap).toString('base64')
-                                })
-                                  .filter(res => res.hasChanged)
-                                  .forEach(res => { console.log('Inlined sourceMappingURL as base64 in ' + res.file); });
-                              });
-                            process.chdir(__dirname);
-                          " > inline-sourcemaps.ts
-                          npm i --no-save replace-in-file
-                          npx tsc inline-sourcemaps.ts
-                          node inline-sourcemaps.js
-                        fi
-            - run:
-                name: Clearing sourcemaps
-                command: find << parameters.pwa-path >> -name *.map -type f -delete
       - common/keystores:
           dist-certs-repo-url: << parameters.dist-certs-repo-url >>
           ssh-permission-fingerprint: << parameters.ssh-permission-fingerprint >>
-      - when:
-          condition: << parameters.cache-cordova-plugins >>
-          steps:
-            - restore_cache:
-                << : *cache-key-cordova-plugins
       - gradle/with_cache:
           steps:
             - run:
@@ -420,13 +351,6 @@ jobs:
                     npm run ci:build
                   fi
                 no_output_timeout: 30m
-      - when:
-          condition: << parameters.cache-cordova-plugins >>
-          steps:
-            - save_cache:
-                << : *cache-key-cordova-plugins
-                paths:
-                  - plugins
       - persist_to_workspace:
           root: .
           paths:

@@ -125,35 +125,25 @@ commands:
   install-android:
     description: Install Android requirements
     parameters:
-      cordova-version:
-        type: string
-        default: 'latest'
-      gradle-version:
-        type: string
-        default: ''
-      skip-upgrade-android-sdk:
+      install-ionic:
+        type: boolean
+        default: false
+      install-cordova:
         type: boolean
         default: false
     steps:
-      - run:
-          name: Installing SDKMAN!
-          command: |
-            curl -s "https://get.sdkman.io?rcupdate=false" | bash
-            echo -e '\nsource "/home/circleci/.sdkman/bin/sdkman-init.sh"' >> $BASH_ENV
-      - run:
-          name: Installing Gradle
-          command: |
-            sdk install gradle << parameters.gradle-version >>
-      - unless:
-          condition: << parameters.skip-upgrade-android-sdk >>
+      - when:
+          condition: << parameters.install-ionic >>
           steps:
             - run:
-                name: Installing Android Platform 28
-                command: |
-                  yes | sdkmanager "platforms;android-28" || true
-      - run:
-          name: Installing Ionic and Cordova
-          command: sudo npm i --quiet -g @ionic/cli cordova@<< parameters.cordova-version >>
+                name: Installing Ionic
+                command: sudo npm i --quiet -g @ionic/cli
+      - when:
+          condition: << parameters.install-cordova >>
+          steps:
+            - run:
+                name: Installing Cordova
+                command: sudo npm i --quiet -g cordova
       - run:
           name: Installing Firebase
           command: |
