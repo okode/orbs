@@ -313,7 +313,7 @@ jobs:
         default: 'www'
       android-docker-tag:
         type: string
-        default: '2022.03-node'
+        default: '2022.04-node'
     executor:
       name: android/android-docker
       tag: << parameters.android-docker-tag >>
