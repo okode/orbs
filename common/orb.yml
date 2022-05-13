@@ -19,7 +19,7 @@ executors:
     parameters:
       node-version:
         type: string
-        default: '14.19'
+        default: '16.15'
     docker:
       - image: cimg/node:<< parameters.node-version >>
         auth:
