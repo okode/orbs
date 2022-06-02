@@ -224,8 +224,9 @@ jobs:
         description: Deprecated
         type: string
         default: 'deprecated'
-    macos:
-      xcode: "<< parameters.xcode-version >>"
+    executor:
+      name: common/node-mac-machine
+      xcode-version: << parameters.xcode-version >>
     steps:
       - run:
           name: Checking deprecated parameters
