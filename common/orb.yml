@@ -311,7 +311,7 @@ commands:
           at: /tmp/workspace
       - run:
           name: Installing Sentry CLI
-          command: sudo npm i -g @sentry/cli --quiet --unsafe-perm
+          command: npm i -g @sentry/cli --quiet --unsafe-perm
       - run:
           name: Creating Sentry release and uploading sourcemaps
           environment:

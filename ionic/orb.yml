@@ -163,7 +163,7 @@ jobs:
         default: ''
       xcode-version:
         type: string
-        default: '13.3.1'
+        default: '13.4.0'
       dev-certs-repo-url:
         type: string
         default: ''
@@ -199,7 +199,7 @@ jobs:
           steps:
             - common/custom-npm-login
       - node/install-packages:
-          cache-version: v2-{{ arch }}-{{ .Environment.CIRCLE_JOB }}
+          cache-version: v3-{{ arch }}-{{ .Environment.CIRCLE_JOB }}
       - common/install-ios:
           cordova-version: << parameters.cordova-version >>
           cocoapods-version: << parameters.cocoapods-version >>
