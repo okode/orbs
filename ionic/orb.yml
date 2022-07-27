@@ -292,6 +292,7 @@ jobs:
                             });
                             process.chdir(__dirname);
                           " > inline-sourcemaps.js
+                          npm i --no-save replace-in-file | true
                           node inline-sourcemaps.js
                         fi
             - run:
@@ -442,6 +443,7 @@ jobs:
                             });
                             process.chdir(__dirname);
                           " > inline-sourcemaps.js
+                          npm i --no-save replace-in-file | true
                           node inline-sourcemaps.js
                         fi
             - run:
