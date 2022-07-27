@@ -198,7 +198,7 @@ jobs:
         default: ''
       xcode-version:
         type: string
-        default: '13.4.0'
+        default: '13.4.1'
       dev-certs-repo-url:
         type: string
         default: ''
