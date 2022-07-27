@@ -185,8 +185,9 @@ jobs:
       skip-inline-sourcemaps:
         type: boolean
         default: false
-    macos:
-      xcode: "<< parameters.xcode-version >>"
+    executor:
+      name: common/node-mac-machine
+      xcode-version: << parameters.xcode-version >>
     steps:
       - checkout
       - when:
@@ -245,7 +246,7 @@ jobs:
                             process.chdir(__dirname);
                           " > inline-sourcemaps.ts
                           npm i --no-save replace-in-file
-                          npx tsc inline-sourcemaps.ts
+                          npx tsc inline-sourcemaps.ts | true
                           node inline-sourcemaps.js
                         fi
             - run:
@@ -314,6 +315,9 @@ jobs:
       android-docker-tag:
         type: string
         default: '2022.04.1-node'
+      skip-inline-sourcemaps:
+        type: boolean
+        default: false
     executor:
       name: android/android-docker
       tag: << parameters.android-docker-tag >>
@@ -340,6 +344,38 @@ jobs:
           steps:
             - attach_workspace:
                 at: .
+            - unless:
+                condition: << parameters.skip-inline-sourcemaps >>
+                steps:
+                  - run:
+                      name: Inlining sourcemaps
+                      command: |
+                        if [[ $CIRCLE_TAG != *-dist ]]; then
+                          echo "
+                            import { readdirSync, existsSync, readFileSync } from 'fs';
+                            import { replaceInFileSync } from 'replace-in-file';
+                            process.chdir('www');
+                            readdirSync('.')
+                              .filter(fname => fname.endsWith('.js') && existsSync(fname + '.map'))
+                              .map(fname => { return { js: fname, jsmap: fname + '.map' }; })
+                              .forEach(pair => {
+                                replaceInFileSync({
+                                  files: pair.js,
+                                  from: 'sourceMappingURL=' + pair.js + '.map',
+                                  to: 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + readFileSync(pair.jsmap).toString('base64')
+                                })
+                                  .filter(res => res.hasChanged)
+                                  .forEach(res => { console.log('Inlined sourceMappingURL as base64 in ' + res.file); });
+                              });
+                            process.chdir(__dirname);
+                          " > inline-sourcemaps.ts
+                          npm i --no-save replace-in-file
+                          npx tsc inline-sourcemaps.ts | true
+                          node inline-sourcemaps.js
+                        fi
+            - run:
+                name: Clearing sourcemaps
+                command: find << parameters.pwa-path >> -name *.map -type f -delete
       - common/keystores:
           dist-certs-repo-url: << parameters.dist-certs-repo-url >>
           ssh-permission-fingerprint: << parameters.ssh-permission-fingerprint >>
