@@ -386,7 +386,7 @@ commands:
             security set-keychain-settings -t 3600 -u ${KEY_CHAIN}
             security list-keychains -s ${KEY_CHAIN}
             security default-keychain -s ${KEY_CHAIN}
-            if [ -z "<< parameters.dev-certs-repo-url >>" ] || [ -z "<< parameters.dist-certs-repo-url >>" ]; then
+            if [ -z "<< parameters.dev-certs-repo-url >>" ] || [ -z "<< parameters.dist-certs-repo-url >>" ]; then
               curl https://developer.apple.com/certificationauthority/AppleWWDRCA.cer > ${CERT_DIR}/AppleWWDRCA.cer
               curl https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer > ${CERT_DIR}/AppleWWDRCAG3.cer
               security import ${CERT_DIR}/AppleWWDRCA.cer -k ${KEY_CHAIN} -T /usr/bin/codesign
