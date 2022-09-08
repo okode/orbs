@@ -19,7 +19,7 @@ executors:
     parameters:
       node-version:
         type: string
-        default: 'current'
+        default: 'lts'
       feature:
         type: string
         default: ''
