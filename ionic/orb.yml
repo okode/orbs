@@ -9,7 +9,7 @@ cache-key-cordova-plugins: &cache-key-cordova-plugins
 
 orbs:
   common: okode/common@1
-  android: circleci/android@1
+  android: circleci/android@2
   gradle: circleci/gradle@2
   node: circleci/node@5
 
@@ -366,6 +366,9 @@ jobs:
         type: enum
         enum: [ '23', '24', '25', '26', '27', '28', '29', '30' ]
         default: '30'
+      android-docker-tag:
+        type: string
+        default: '2022.08.1-node'
       cache-cordova-plugins:
         type: boolean
         default: false
@@ -376,9 +379,8 @@ jobs:
         type: boolean
         default: false
     executor:
-      name: android/android
-      sdk-version: << parameters.api-version >>
-      variant: 'node'
+      name: android/android-docker
+      tag: << parameters.android-docker-tag >>
     steps:
       - checkout
       - unless:
