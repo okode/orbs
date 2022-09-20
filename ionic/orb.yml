@@ -19,7 +19,7 @@ jobs:
     parameters:
       node-version:
         type: string
-        default: 'current'
+        default: ''
       skip-tests:
         type: boolean
         default: false
@@ -32,14 +32,19 @@ jobs:
       custom-npm-login:
         type: boolean
         default: false
-    executor:
-      name: common/node
-      feature: '-browsers'
-      node-version: << parameters.node-version >>
+      executor:
+        type: executor
+        default: common/node
+    executor: << parameters.executor >>
     steps:
       - checkout
       - browser-tools/install-chrome
       - browser-tools/install-chromedriver
+      - when:
+          condition: << parameters.node-version >>
+          steps:
+            - node/install:
+                node-version: << parameters.node-version >>
       - when: 
           condition: << parameters.custom-npm-login >>
           steps:
