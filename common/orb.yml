@@ -30,6 +30,21 @@ executors:
           password: $DOCKER_PASSWORD
     environment:
       NODE_OPTIONS: --max_old_space_size=4096
+  node-browsers:
+    parameters:
+      node-version:
+        type: string
+        default: 'lts'
+      feature:
+        type: string
+        default: '-browsers'
+    docker:
+      - image: cimg/node:<< parameters.node-version >><< parameters.feature >>
+        auth:
+          username: $DOCKER_LOGIN
+          password: $DOCKER_PASSWORD
+    environment:
+      NODE_OPTIONS: --max_old_space_size=4096
   node-machine:
     machine:
       image: ubuntu-2004:202201-02

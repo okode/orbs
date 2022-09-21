@@ -34,7 +34,7 @@ jobs:
         default: false
       executor:
         type: executor
-        default: common/node
+        default: common/node-browsers
     executor: << parameters.executor >>
     steps:
       - checkout
