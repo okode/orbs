@@ -385,6 +385,7 @@ jobs:
       - checkout
       - run:
           name: Fix Android build-tools installation
+          shell: /bin/bash
           command: |
             SDK_VERSION=$(sdkmanager --list_installed | grep -e "build-tools" | grep -Po "(?<=\|).*?(?=\|)" | head -n 1 | xargs)
             cp /home/circleci/android-sdk/build-tools/$SDK_VERSION/d8 /home/circleci/android-sdk/build-tools/$SDK_VERSION/dx
