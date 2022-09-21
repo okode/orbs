@@ -383,6 +383,12 @@ jobs:
       tag: << parameters.android-docker-tag >>
     steps:
       - checkout
+      - run:
+          name: Fix Android build-tools installation
+          command: |
+            SDK_VERSION=$(sdkmanager --list_installed | grep -e "build-tools" | grep -Po "(?<=\|).*?(?=\|)" | head -n 1 | xargs)
+            cp /home/circleci/android-sdk/build-tools/$SDK_VERSION/d8 /home/circleci/android-sdk/build-tools/$SDK_VERSION/dx
+            cp /home/circleci/android-sdk/build-tools/$SDK_VERSION/lib/d8.jar /home/circleci/android-sdk/build-tools/$SDK_VERSION/lib/dx.jar
       - unless:
           condition: << parameters.use-default-jdk >>
           steps:
