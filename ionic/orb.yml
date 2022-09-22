@@ -369,6 +369,9 @@ jobs:
       android-docker-tag:
         type: string
         default: '2022.08.1-node'
+      build-tools-version:
+        type: string
+        default: ''
       cache-cordova-plugins:
         type: boolean
         default: false
@@ -383,13 +386,23 @@ jobs:
       tag: << parameters.android-docker-tag >>
     steps:
       - checkout
+      - when:
+          condition: << parameters.build-tools-version >>
+          steps:
+            - run:
+                name: Installing required Android Build Tools version
+                command: sdkmanager --install "build-tools;<< parameters.build-tools-version >>"
       - run:
           name: Fix Android build-tools installation
           shell: /bin/bash
           command: |
-            SDK_VERSION=$(sdkmanager --list_installed | grep -e "build-tools" | grep -Po "(?<=\|).*?(?=\|)" | head -n 1 | xargs)
-            cp /home/circleci/android-sdk/build-tools/$SDK_VERSION/d8 /home/circleci/android-sdk/build-tools/$SDK_VERSION/dx
-            cp /home/circleci/android-sdk/build-tools/$SDK_VERSION/lib/d8.jar /home/circleci/android-sdk/build-tools/$SDK_VERSION/lib/dx.jar
+            if [ -z "<< parameters.build-tools-version >>" ]; then
+              BUILD_TOOLS_VERSION=$(sdkmanager --list_installed | grep -e "build-tools" | grep -Po "(?<=\|).*?(?=\|)" | head -n 1 | xargs)
+            else
+              BUILD_TOOLS_VERSION=<< parameters.build-tools-version >>
+            fi
+            cp /home/circleci/android-sdk/build-tools/$BUILD_TOOLS_VERSION/d8 /home/circleci/android-sdk/build-tools/$BUILD_TOOLS_VERSION/dx
+            cp /home/circleci/android-sdk/build-tools/$BUILD_TOOLS_VERSION/lib/d8.jar /home/circleci/android-sdk/build-tools/$BUILD_TOOLS_VERSION/lib/dx.jar
       - unless:
           condition: << parameters.use-default-jdk >>
           steps:
