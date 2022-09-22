@@ -174,7 +174,7 @@ commands:
           name: Installing Fastlane
           command: |
             if [[ $CIRCLE_TAG == *-dist ]]; then
-              gem install fastlane -NV
+              sudo gem install fastlane -NV
             fi
   vpn:
     description: Start VPN connection
