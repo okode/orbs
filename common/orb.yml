@@ -87,7 +87,7 @@ commands:
       - run:
           name: Installing Ionic and Firebase tools
           command: |
-            npm i --quiet -g @ionic/cli firebase-tools
+            npm i --quiet -g @ionic/cli firebase-tools@11.11.0
       - run:
           name: Installing Cordova
           command: |
@@ -169,7 +169,7 @@ commands:
           command: |
             sudo chown -R $(whoami) /usr/local/lib/node_modules
             sudo chown -R $(whoami) /usr/local/bin
-            npm i --quiet -g firebase-tools
+            npm i --quiet -g firebase-tools@11.11.0
       - run:
           name: Installing Fastlane
           command: |
