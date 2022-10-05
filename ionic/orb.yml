@@ -391,7 +391,10 @@ jobs:
           steps:
             - run:
                 name: Installing required Android Build Tools version
-                command: sdkmanager --install "build-tools;<< parameters.build-tools-version >>"
+                command: |
+                  BUILD_TOOLS_VERSION=$(sdkmanager --list_installed | grep -e "build-tools" | grep -Po "(?<=\|).*?(?=\|)" | head -n 1 | xargs)
+                  sdkmanager --uninstall "build-tools;$BUILD_TOOLS_VERSION"
+                  sdkmanager --install "build-tools;<< parameters.build-tools-version >>"
       - run:
           name: Fix Android build-tools installation
           shell: /bin/bash
