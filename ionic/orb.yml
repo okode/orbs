@@ -8,7 +8,7 @@ cache-key-cordova-plugins: &cache-key-cordova-plugins
   key: cache-cordova-{{ .Environment.CIRCLE_JOB }}-plugins-{{ checksum "package-lock.json" }}
 
 orbs:
-  common: okode/common@2
+  common: okode/common@2.0.39
   android: circleci/android@2
   gradle: circleci/gradle@2
   node: circleci/node@5
