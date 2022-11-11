@@ -319,7 +319,7 @@ jobs:
         default: 'www'
       android-docker-tag:
         type: string
-        default: '2022.04.1-node'
+        default: '2022.09.2-node'
       skip-inline-sourcemaps:
         type: boolean
         default: false

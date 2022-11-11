@@ -49,14 +49,14 @@ executors:
       npm_config_prefix: ~/.
   node-machine:
     machine:
-      image: ubuntu-2004:202201-02
+      image: ubuntu-2204:2022.10.2
     environment:
       NODE_OPTIONS: --max_old_space_size=4096
   node-mac-machine:
     parameters:
       xcode-version:
         type: string
-        default: '13.4.1'
+        default: '14.1'
     macos:
       xcode: << parameters.xcode-version >>
   java:
