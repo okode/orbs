@@ -510,6 +510,7 @@ jobs:
           name: Deploying
           command: |
             if [[ -f "scripts/deploy.sh" ]]; then
+              unset FIREBASE_TOKEN
               GOOGLE_APPLICATION_CREDENTIALS_JSON=$(echo $GOOGLE_APPLICATION_CREDENTIALS_B64 | base64 --decode)
               printf '%s\n' "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > ./generic-service-account-key.json
               scripts/deploy.sh
