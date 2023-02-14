@@ -154,9 +154,8 @@ jobs:
         type: string
         default: ''
       node-version:
-        type: enum
+        type: string
         default: ''
-        enum: [ '', '12', '14', '16', 'latest' ]
       cordova-version:
         type: string
         default: ''
@@ -233,25 +232,26 @@ jobs:
                       command: |
                         if [[ $CIRCLE_TAG != *-dist ]]; then
                           echo "
-                            import { readdirSync, existsSync, readFileSync } from 'fs';
-                            import { replaceInFileSync } from 'replace-in-file';
+                            \"use strict\";
+                            exports.__esModule = true;
+                            var fs_1 = require(\"fs\");
+                            var replace_in_file_1 = require(\"replace-in-file\");
                             process.chdir('www');
-                            readdirSync('.')
-                              .filter(fname => fname.endsWith('.js') && existsSync(fname + '.map'))
-                              .map(fname => { return { js: fname, jsmap: fname + '.map' }; })
-                              .forEach(pair => {
-                                replaceInFileSync({
-                                  files: pair.js,
-                                  from: 'sourceMappingURL=' + pair.js + '.map',
-                                  to: 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + readFileSync(pair.jsmap).toString('base64')
+                            (0, fs_1.readdirSync)('.')
+                                .filter(function (fname) { return fname.endsWith('.js') && (0, fs_1.existsSync)(fname + '.map'); })
+                                .map(function (fname) { return { js: fname, jsmap: fname + '.map' }; })
+                                .forEach(function (pair) {
+                                (0, replace_in_file_1.replaceInFileSync)({
+                                    files: pair.js,
+                                    from: 'sourceMappingURL=' + pair.js + '.map',
+                                    to: 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + (0, fs_1.readFileSync)(pair.jsmap).toString('base64')
                                 })
-                                  .filter(res => res.hasChanged)
-                                  .forEach(res => { console.log('Inlined sourceMappingURL as base64 in ' + res.file); });
-                              });
+                                    .filter(function (res) { return res.hasChanged; })
+                                    .forEach(function (res) { console.log('Inlined sourceMappingURL as base64 in ' + res.file); });
+                            });
                             process.chdir(__dirname);
-                          " > inline-sourcemaps.ts
+                          " > inline-sourcemaps.js
                           npm i --no-save replace-in-file | true
-                          npx tsc inline-sourcemaps.ts | true
                           node inline-sourcemaps.js
                         fi
             - run:
@@ -361,25 +361,26 @@ jobs:
                       command: |
                         if [[ $CIRCLE_TAG != *-dist ]]; then
                           echo "
-                            import { readdirSync, existsSync, readFileSync } from 'fs';
-                            import { replaceInFileSync } from 'replace-in-file';
+                            \"use strict\";
+                            exports.__esModule = true;
+                            var fs_1 = require(\"fs\");
+                            var replace_in_file_1 = require(\"replace-in-file\");
                             process.chdir('www');
-                            readdirSync('.')
-                              .filter(fname => fname.endsWith('.js') && existsSync(fname + '.map'))
-                              .map(fname => { return { js: fname, jsmap: fname + '.map' }; })
-                              .forEach(pair => {
-                                replaceInFileSync({
-                                  files: pair.js,
-                                  from: 'sourceMappingURL=' + pair.js + '.map',
-                                  to: 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + readFileSync(pair.jsmap).toString('base64')
+                            (0, fs_1.readdirSync)('.')
+                                .filter(function (fname) { return fname.endsWith('.js') && (0, fs_1.existsSync)(fname + '.map'); })
+                                .map(function (fname) { return { js: fname, jsmap: fname + '.map' }; })
+                                .forEach(function (pair) {
+                                (0, replace_in_file_1.replaceInFileSync)({
+                                    files: pair.js,
+                                    from: 'sourceMappingURL=' + pair.js + '.map',
+                                    to: 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + (0, fs_1.readFileSync)(pair.jsmap).toString('base64')
                                 })
-                                  .filter(res => res.hasChanged)
-                                  .forEach(res => { console.log('Inlined sourceMappingURL as base64 in ' + res.file); });
-                              });
+                                    .filter(function (res) { return res.hasChanged; })
+                                    .forEach(function (res) { console.log('Inlined sourceMappingURL as base64 in ' + res.file); });
+                            });
                             process.chdir(__dirname);
-                          " > inline-sourcemaps.ts
+                          " > inline-sourcemaps.js
                           npm i --no-save replace-in-file | true
-                          npx tsc inline-sourcemaps.ts | true
                           node inline-sourcemaps.js
                         fi
             - run:
