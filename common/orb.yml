@@ -153,7 +153,7 @@ commands:
       - run:
           name: Installing Gradle
           command: |
-            sdk install gradle << parameters.gradle-version >>
+            sdk install gradle << parameters.gradle-version >> || true
       - unless:
           condition: << parameters.skip-upgrade-android-sdk >>
           steps:
