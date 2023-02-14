@@ -11,7 +11,7 @@ cache-key-sonar-gradle: &cache-key-sonar-gradle
   key: cache-sonar-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "<< parameters.path >>/build.gradle" }}
 
 orbs:
-  aws-cli: circleci/aws-cli@2
+  aws-cli: circleci/aws-cli@3
   slack: circleci/slack@4
 
 executors:
@@ -599,6 +599,9 @@ jobs:
   s3-sync:
     description: Publish contents to AWS S3 and optionally invalidate CloudFront
     parameters:
+      role-arn:
+        type: string
+        default: ''
       from:
         type: string
         default: 'www'
@@ -615,7 +618,15 @@ jobs:
         default: ''
     executor: aws-cli/default
     steps:
-      - aws-cli/setup
+      - when:
+          condition: << parameters.role-arn >>
+          steps:
+            - aws-cli/setup:
+                role-arn: '<< parameters.role-arn >>'
+      - unless:
+          condition: << parameters.role-arn >>
+          steps:
+            - aws-cli/setup
       - attach_workspace:
           at: /tmp/workspace
       - when:
