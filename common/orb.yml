@@ -145,15 +145,6 @@ commands:
         type: boolean
         default: false
     steps:
-      - run:
-          name: Installing SDKMAN!
-          command: |
-            curl -s "https://get.sdkman.io?rcupdate=false" | bash
-            echo -e '\nsource "/home/circleci/.sdkman/bin/sdkman-init.sh"' >> $BASH_ENV
-      - run:
-          name: Installing Gradle
-          command: |
-            sdk install gradle << parameters.gradle-version >> || true
       - unless:
           condition: << parameters.skip-upgrade-android-sdk >>
           steps:
