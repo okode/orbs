@@ -384,6 +384,10 @@ jobs:
       skip-inline-sourcemaps:
         type: boolean
         default: false
+      resource-class:
+        type: string
+        default: medium
+    resource_class: << parameters.resource-class >>
     executor:
       name: android/android-docker
       tag: << parameters.android-docker-tag >>
