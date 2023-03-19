@@ -608,6 +608,9 @@ jobs:
         default: 'www'
       to:
         type: string
+      dynatrace-inject-url:
+        type: string
+        default: ''
       distribution-id:
         type: string
         default: ''
@@ -630,6 +633,14 @@ jobs:
             - aws-cli/setup
       - attach_workspace:
           at: /tmp/workspace
+      - when:
+          condition: << parameters.dynatrace-inject-url >>
+          steps:
+            - run:
+                name: Injecting dynatrace script
+                command: |
+                  DYNATRACE_URL=<< parameters.dynatrace-inject-url >>
+                  sed -i 's,<\/head>,<script type="text\/javascript" src="'"$DYNATRACE_URL"'" crossorigin="anonymous"><\/script>\n<\/head>,g' /tmp/workspace/output/www/index.html
       - when:
           condition: << parameters.package-path >>
           steps:
