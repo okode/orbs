@@ -87,7 +87,7 @@ jobs:
     parameters:
       node-version:
         type: string
-        default: ''
+        default: '16'
       custom-npm-login:
         type: boolean
         default: false
@@ -155,7 +155,7 @@ jobs:
         default: ''
       node-version:
         type: string
-        default: ''
+        default: '16'
       cordova-version:
         type: string
         default: ''
@@ -167,7 +167,7 @@ jobs:
         default: ''
       xcode-version:
         type: string
-        default: '13.4.1'
+        default: '14.2.0'
       dev-certs-repo-url:
         type: string
         default: ''
@@ -327,6 +327,10 @@ jobs:
       skip-inline-sourcemaps:
         type: boolean
         default: false
+      resource-class:
+        type: string
+        default: medium
+    resource_class: << parameters.resource-class >>
     executor:
       name: android/android-docker
       tag: << parameters.android-docker-tag >>
