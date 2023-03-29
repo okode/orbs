@@ -30,7 +30,6 @@ executors:
           password: $DOCKER_PASSWORD
     environment:
       NODE_OPTIONS: --max_old_space_size=4096
-      npm_config_prefix: ~/.
   node-browsers:
     parameters:
       node-version:
@@ -46,7 +45,6 @@ executors:
           password: $DOCKER_PASSWORD
     environment:
       NODE_OPTIONS: --max_old_space_size=4096
-      npm_config_prefix: ~/.
   node-machine:
     machine:
       image: ubuntu-2204:2022.10.2
