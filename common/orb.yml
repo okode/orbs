@@ -329,20 +329,17 @@ commands:
       - attach_workspace:
           at: /tmp/workspace
       - run:
-          name: Installing Sentry CLI
-          command: npm i -g @sentry/cli --quiet --unsafe-perm
-      - run:
           name: Creating Sentry release and uploading sourcemaps
           environment:
             SENTRY_ORG: << parameters.org >>
             SENTRY_PROJECT: << parameters.project >>
           command: |
             cd /tmp/workspace/<< parameters.pwa-path >>
-            sentry-cli --auth-token << parameters.auth-token >> releases new $CIRCLE_TAG
-            sentry-cli --auth-token << parameters.auth-token >> releases files $CIRCLE_TAG upload-sourcemaps . --no-rewrite
-            sentry-cli --auth-token << parameters.auth-token >> releases set-commits $CIRCLE_TAG --commit "okode/<< parameters.project >>@$CIRCLE_SHA1" || true
-            if [[ -v $OKODECI_ENVIRONMENT ]]; then sentry-cli --auth-token << parameters.auth-token >> releases deploys $CIRCLE_TAG new -e $OKODECI_ENVIRONMENT; fi
-            sentry-cli --auth-token << parameters.auth-token >> releases finalize $CIRCLE_TAG
+            npx @sentry/cli --auth-token << parameters.auth-token >> releases new $CIRCLE_TAG
+            npx @sentry/cli --auth-token << parameters.auth-token >> releases files $CIRCLE_TAG upload-sourcemaps . --no-rewrite
+            npx @sentry/cli --auth-token << parameters.auth-token >> releases set-commits $CIRCLE_TAG --commit "okode/<< parameters.project >>@$CIRCLE_SHA1" || true
+            if [[ -v $OKODECI_ENVIRONMENT ]]; then npx @sentry/cli --auth-token << parameters.auth-token >> releases deploys $CIRCLE_TAG new -e $OKODECI_ENVIRONMENT; fi
+            npx @sentry/cli --auth-token << parameters.auth-token >> releases finalize $CIRCLE_TAG
   keychain:
     description: Installs iOS certificates
     parameters:
