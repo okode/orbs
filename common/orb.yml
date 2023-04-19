@@ -87,7 +87,7 @@ commands:
       - run:
           name: Installing Ionic and Firebase tools
           command: |
-            npm i --quiet -g @ionic/cli firebase-tools@11.11.0
+            npm i --quiet -g @ionic/cli@6 firebase-tools@11.11.0
       - run:
           name: Installing Cordova
           command: |
