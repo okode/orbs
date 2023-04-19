@@ -154,7 +154,7 @@ commands:
                   yes | sdkmanager "platforms;android-28" || true
       - run:
           name: Installing Ionic and Cordova
-          command: sudo npm i --quiet -g @ionic/cli cordova@<< parameters.cordova-version >>
+          command: sudo npm i --quiet -g @ionic/cli@6 cordova@<< parameters.cordova-version >>
       - run:
           name: Installing Firebase
           command: |
