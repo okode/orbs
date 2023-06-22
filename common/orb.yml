@@ -57,6 +57,7 @@ executors:
         default: '14.2.0'
     macos:
       xcode: << parameters.xcode-version >>
+    resource_class: macos.x86.medium.gen2
   java:
     docker:
       - image: cimg/openjdk:11.0-node
