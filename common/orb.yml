@@ -26,7 +26,7 @@ executors:
           username: $DOCKER_LOGIN
           password: $DOCKER_PASSWORD
     environment:
-      NODE_OPTIONS: --max_old_space_size=4096
+      NODE_OPTIONS: --max_old_space_size=3072
   node-browsers:
     parameters:
       node-version:
@@ -38,7 +38,7 @@ executors:
           username: $DOCKER_LOGIN
           password: $DOCKER_PASSWORD
     environment:
-      NODE_OPTIONS: --max_old_space_size=4096
+      NODE_OPTIONS: --max_old_space_size=3072
   node-machine:
     machine:
       image: ubuntu-2004:202201-02
