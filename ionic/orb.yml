@@ -309,6 +309,9 @@ jobs:
       install-cordova:
         type: boolean
         default: false
+      key-name:
+        type: string
+        default: android-release.keystore
       dist-certs-repo-url:
         type: string
         default: ''
@@ -393,6 +396,7 @@ jobs:
       - common/keystores:
           dist-certs-repo-url: << parameters.dist-certs-repo-url >>
           ssh-permission-fingerprint: << parameters.ssh-permission-fingerprint >>
+          key-name: << parameters.key-name >>
       - gradle/with_cache:
           steps:
             - run:
