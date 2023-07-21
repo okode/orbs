@@ -41,9 +41,10 @@ jobs:
     executor: << parameters.executor >>
     steps:
       - checkout
-      - browser-tools/install-chrome:
+      - browser-tools/install-browser-tools:
           chrome-version: << parameters.chrome-version >>
-      - browser-tools/install-chromedriver
+          install-firefox: false
+          install-geckodriver: false
       - when:
           condition: << parameters.node-version >>
           steps:
