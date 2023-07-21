@@ -77,8 +77,6 @@ jobs:
                   - run:
                       name: E2E testing
                       command: npm run e2e
-            - store_test_results:
-                path: test-results
       - persist_to_workspace:
           root: .
           paths:
