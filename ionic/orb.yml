@@ -32,13 +32,17 @@ jobs:
       custom-npm-login:
         type: boolean
         default: false
+      chrome-version:
+        type: string
+        default: 'latest'
       executor:
         type: executor
         default: common/node-browsers
     executor: << parameters.executor >>
     steps:
       - checkout
-      - browser-tools/install-chrome
+      - browser-tools/install-chrome:
+          chrome-version: << parameters.chrome-version >>
       - browser-tools/install-chromedriver
       - when:
           condition: << parameters.node-version >>
