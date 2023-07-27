@@ -257,7 +257,7 @@ commands:
             - attach_workspace:
                 at: << parameters.path >>
       - when:
-          condition: 
+          condition:
             equal: [ 'standalone', << parameters.scanner >> ]
           steps:
             - run:
@@ -286,7 +286,7 @@ commands:
                 paths:
                   - ~/.sonar
       - when:
-          condition: 
+          condition:
             equal: [ 'gradle', << parameters.scanner >> ]
           steps:
             - run:
@@ -455,8 +455,8 @@ commands:
               git clone --quiet --depth=1 << parameters.dist-certs-repo-url >> ${CERT_DIR}
               STORE_PASS=$(jq -r '.[] | select(.distribution == true and .name == "<< parameters.key-name >>").storePassword' $CERT_DIR/keystores.json)
               KEYSTORE_PASS=$(jq -r '.[] | select(.distribution == true and .name == "<< parameters.key-name >>").password' $CERT_DIR/keystores.json)
-              sed -i 's/KEYSTORE_STORE_PASS_PLACEHOLDER/'"$STORE_PASS"'/' build.json
-              sed -i 's/KEYSTORE_PASS_PLACEHOLDER/'"$KEYSTORE_PASS"'/' build.json
+              sed -i 's/KEYSTORE_STORE_PASS_PLACEHOLDER/'"$STORE_PASS"'/' build.json 2>/dev/null
+              sed -i 's/KEYSTORE_PASS_PLACEHOLDER/'"$KEYSTORE_PASS"'/' build.json 2>/dev/null
             fi
   fix-node-permissions:
     description: Fixes global node_modules write access
