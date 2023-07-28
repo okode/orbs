@@ -459,8 +459,10 @@ commands:
                 sed -i 's/KEYSTORE_STORE_PASS_PLACEHOLDER/'"$STORE_PASS"'/' build.json
                 sed -i 's/KEYSTORE_PASS_PLACEHOLDER/'"$KEYSTORE_PASS"'/' build.json
               else
-                ANDROID_STORE_PASS=$(jq -r '.[] | select(.distribution == true and .name == "<< parameters.key-name >>").storePassword' $CERT_DIR/keystores.json)
-                ANDROID_KEYSTORE_PASS=$(jq -r '.[] | select(.distribution == true and .name == "<< parameters.key-name >>").password' $CERT_DIR/keystores.json)
+                STORE_PASS=$(jq -r '.[] | select(.distribution == true and .name == "<< parameters.key-name >>").storePassword' $CERT_DIR/keystores.json)
+                KEYSTORE_PASS=$(jq -r '.[] | select(.distribution == true and .name == "<< parameters.key-name >>").password' $CERT_DIR/keystores.json)
+                echo "export ANDROID_STORE_PASS=$STORE_PASS" >> $BASH_ENV
+                echo "export ANDROID_KEYSTORE_PASS=$KEYSTORE_PASS" >> $BASH_ENV
               fi
             fi
   fix-node-permissions:
