@@ -454,10 +454,13 @@ commands:
               rm -rf ${CERT_DIR}
               git clone --quiet --depth=1 << parameters.dist-certs-repo-url >> ${CERT_DIR}
               if test -f "build.json"; then
-                  STORE_PASS=$(jq -r '.[] | select(.distribution == true and .name == "<< parameters.key-name >>").storePassword' $CERT_DIR/keystores.json)
-                  KEYSTORE_PASS=$(jq -r '.[] | select(.distribution == true and .name == "<< parameters.key-name >>").password' $CERT_DIR/keystores.json)
-                  sed -i 's/KEYSTORE_STORE_PASS_PLACEHOLDER/'"$STORE_PASS"'/' build.json
-                  sed -i 's/KEYSTORE_PASS_PLACEHOLDER/'"$KEYSTORE_PASS"'/' build.json
+                STORE_PASS=$(jq -r '.[] | select(.distribution == true and .name == "<< parameters.key-name >>").storePassword' $CERT_DIR/keystores.json)
+                KEYSTORE_PASS=$(jq -r '.[] | select(.distribution == true and .name == "<< parameters.key-name >>").password' $CERT_DIR/keystores.json)
+                sed -i 's/KEYSTORE_STORE_PASS_PLACEHOLDER/'"$STORE_PASS"'/' build.json
+                sed -i 's/KEYSTORE_PASS_PLACEHOLDER/'"$KEYSTORE_PASS"'/' build.json
+              else
+                ANDROID_STORE_PASS=$(jq -r '.[] | select(.distribution == true and .name == "<< parameters.key-name >>").storePassword' $CERT_DIR/keystores.json)
+                ANDROID_KEYSTORE_PASS=$(jq -r '.[] | select(.distribution == true and .name == "<< parameters.key-name >>").password' $CERT_DIR/keystores.json)
               fi
             fi
   fix-node-permissions:
