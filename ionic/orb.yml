@@ -426,16 +426,15 @@ jobs:
             - run:
                 name: Installing JDK 1.8 required for Cordova support
                 command: |
+                  sudo mkdir -p /etc/apt/keyrings
+                  sudo echo "deb [signed-by=/etc/apt/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+                  sudo curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/cloud.google.gpg
                   sudo apt update
-                  sudo apt install software-properties-common
-                  sudo apt update
-                  wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo apt-key add -
-                  sudo add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
-                  sudo apt update
-                  sudo apt install adoptopenjdk-8-hotspot
-                  echo 'export PATH=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64/bin:$PATH' >> $BASH_ENV
-                  echo 'export JAVA_HOME=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64' >> $BASH_ENV
+                  sudo apt-get install openjdk-8-jdk
+                  echo 'export PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH' >> $BASH_ENV
+                  echo 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64' >> $BASH_ENV
                   source $BASH_ENV
+                  java -version
       - node/install:
           node-version: << parameters.node-version >>
       - when:
