@@ -35,6 +35,9 @@ jobs:
       chrome-version:
         type: string
         default: 'latest'
+      install-chromedriver:
+        type: boolean
+        default: true
       executor:
         type: executor
         default: common/node-browsers
@@ -43,6 +46,7 @@ jobs:
       - checkout
       - browser-tools/install-browser-tools:
           chrome-version: << parameters.chrome-version >>
+          install-chromedriver: << parameters.install-chromedriver >>
           install-firefox: false
           install-geckodriver: false
       - when:
