@@ -415,6 +415,7 @@ jobs:
           command: |
             if [ -z "<< parameters.build-tools-version >>" ]; then
               BUILD_TOOLS_VERSION=$(sdkmanager --list_installed | grep -e "build-tools" | grep -Po "(?<=\|).*?(?=\|)" | head -n 1 | xargs)
+              BUILD_TOOLS_VERSION=$(echo "$BUILD_TOOLS_VERSION" | tr ' ' '-')
             else
               BUILD_TOOLS_VERSION=<< parameters.build-tools-version >>
             fi
@@ -440,9 +441,7 @@ jobs:
       - when:
           condition: << parameters.custom-npm-login >>
           steps:
-            - run:
-                name: Logging into custom NPM registry
-                command: sudo npm install -g npm-cli-adduser && npm-cli-adduser
+            - common/custom-npm-login
       - node/install-packages:
           cache-version: v1-{{ arch }}-{{ .Environment.CIRCLE_JOB }}
       - common/install-android:

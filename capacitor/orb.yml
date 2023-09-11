@@ -5,7 +5,7 @@ description: |
   Repository: https://github.com/okode/orbs
 
 orbs:
-  common: okode/common@1
+  common: okode/common@dev:first
   android: circleci/android@2
   gradle: circleci/gradle@2
   node: circleci/node@5
@@ -104,10 +104,14 @@ jobs:
                 name: Clearing sourcemaps
                 command: find << parameters.pwa-path >> -name *.map -type f -delete
       - run:
+          name: Syncing Capacitor project
+          command: npx cap sync ios
+      - run:
           name: Building
           command: |
-            if [[ $CIRCLE_TAG != *-dist ]]; then
+            if [[ $CIRCLE_TAG = *-dist ]]; then
               export BUILD_TYPE=release
+              export MATCH_PASSWORD=$MATCH_PASSWORD_DIST
             else
               export BUILD_TYPE=beta
             fi
@@ -116,7 +120,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - output/*.ipa
+            - artifacts/*.ipa
       - common/notify
   android:
     parameters:
@@ -174,19 +178,21 @@ jobs:
           command: |
             if [ -z "<< parameters.build-tools-version >>" ]; then
               BUILD_TOOLS_VERSION=$(sdkmanager --list_installed | grep -e "build-tools" | grep -Po "(?<=\|).*?(?=\|)" | head -n 1 | xargs)
+              BUILD_TOOLS_VERSION=$(echo "$BUILD_TOOLS_VERSION" | tr ' ' '-')
             else
               BUILD_TOOLS_VERSION=<< parameters.build-tools-version >>
             fi
             cp /home/circleci/android-sdk/build-tools/$BUILD_TOOLS_VERSION/d8 /home/circleci/android-sdk/build-tools/$BUILD_TOOLS_VERSION/dx
             cp /home/circleci/android-sdk/build-tools/$BUILD_TOOLS_VERSION/lib/d8.jar /home/circleci/android-sdk/build-tools/$BUILD_TOOLS_VERSION/lib/dx.jar
+      - run:
+          name: Fix Ruby Gems permissions
+          command: sudo chown -R $(whoami) /var/lib/gems
       - node/install:
           node-version: << parameters.node-version >>
       - when:
           condition: << parameters.custom-npm-login >>
           steps:
-            - run:
-                name: Logging into custom NPM registry
-                command: sudo npm install -g npm-cli-adduser && npm-cli-adduser
+            - common/custom-npm-login
       - node/install-packages:
           cache-version: v1-{{ arch }}-{{ .Environment.CIRCLE_JOB }}
       - run:
@@ -234,12 +240,15 @@ jobs:
           dist-certs-repo-url: << parameters.dist-certs-repo-url >>
           ssh-permission-fingerprint: << parameters.ssh-permission-fingerprint >>
           key-name: << parameters.key-name >>
+      - run:
+          name: Syncing Capacitor project
+          command: npx cap sync android
       - gradle/with_cache:
           steps:
             - run:
                 name: Building
                 command: |
-                  if [[ $CIRCLE_TAG != *-dist ]]; then
+                  if [[ $CIRCLE_TAG = *-dist ]]; then
                     export BUILD_TYPE=release
                   else
                     export BUILD_TYPE=beta
@@ -249,8 +258,8 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - output/*.apk
-            - output/*.aab
+            - artifacts/*.apk
+            - artifacts/*.aab
       - common/notify
 
 commands:

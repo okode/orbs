@@ -441,8 +441,13 @@ commands:
               git clone --quiet --depth=1 << parameters.dist-certs-repo-url >> ${CERT_DIR}
               STORE_PASS=$(jq -r '.[] | select(.distribution == true and .name == "<< parameters.key-name >>").storePassword' $CERT_DIR/keystores.json)
               KEYSTORE_PASS=$(jq -r '.[] | select(.distribution == true and .name == "<< parameters.key-name >>").password' $CERT_DIR/keystores.json)
-              sed -i 's/KEYSTORE_STORE_PASS_PLACEHOLDER/'"$STORE_PASS"'/' build.json
-              sed -i 's/KEYSTORE_PASS_PLACEHOLDER/'"$KEYSTORE_PASS"'/' build.json
+              KEY_ALIAS=$(jq -r '.[] | select(.distribution == true and .name == "<< parameters.key-name >>").alias' $CERT_DIR/keystores.json)
+              echo "export RELEASE_KEYSTORE_FILE_NAME=<< parameters.key-name >>" >> $BASH_ENV
+              echo "export RELEASE_KEYSTORE_PASS=${STORE_PASS}" >> $BASH_ENV
+              echo "export RELEASE_KEYSTORE_KEY_ALIAS=${KEYSTORE_PASS}" >> $BASH_ENV
+              echo "export RELEASE_KEYSTORE_KEY_PASS=${KEY_ALIAS}" >> $BASH_ENV
+              sed -i 's/KEYSTORE_STORE_PASS_PLACEHOLDER/'"$STORE_PASS"'/' build.json || true
+              sed -i 's/KEYSTORE_PASS_PLACEHOLDER/'"$KEYSTORE_PASS"'/' build.json || true
             fi
   fix-node-permissions:
     description: Fixes global node_modules write access
@@ -460,11 +465,11 @@ commands:
     description: Logins with custom NPM registry
     steps:
       - run:
-          name: Installing NPM CLI Login
-          command: npm install -g npm-cli-adduser
+          name: Setting NPM auth token
+          command: npm set //$NPM_REGISTRY/:_authToken $TOKEN
       - run:
-          name: Authenticating NPM
-          command: npm-cli-adduser
+          name: Setting custom NPM scope
+          command: npm config set $NPM_SCOPE:registry $NPM_REGISTRY
   notify:
     description: Send Slack notification
     steps:
