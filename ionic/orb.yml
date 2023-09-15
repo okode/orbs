@@ -329,11 +329,15 @@ jobs:
       - run:
           name: Deploying
           command: |
+            export GOOGLE_APPLICATION_CREDENTIALS=$(mktemp)
+            GOOGLE_APPLICATION_CREDENTIALS_JSON=$(echo $GOOGLE_APPLICATION_CREDENTIALS_B64 | base64 --decode)
+            printf '%s\n' "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > $GOOGLE_APPLICATION_CREDENTIALS
             if [[ -f "scripts/deploy.sh" ]]; then
               scripts/deploy.sh
             else
               npm run ci:deploy
             fi
+            rm -f $GOOGLE_APPLICATION_CREDENTIALS
       - common/notify
   android:
     parameters:
