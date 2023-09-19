@@ -250,6 +250,13 @@ jobs:
                 command: |
                   if [[ $CIRCLE_TAG = *-dist ]]; then
                     export BUILD_TYPE=release
+
+                    echo "export GOOGLE_APPLICATION_CREDENTIALS=$(mktemp)" >> $BASH_ENV
+                    source $BASH_ENV
+                    GOOGLE_APPLICATION_CREDENTIALS_JSON=$(echo $GOOGLE_APPLICATION_CREDENTIALS_B64 | base64 --decode)
+                    printf '%s\n' "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > $GOOGLE_APPLICATION_CREDENTIALS
+
+                    echo "${GOOGLEPLAY_AUTH_JSON}" > gplay.json
                   else
                     export BUILD_TYPE=beta
                   fi
