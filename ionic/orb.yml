@@ -12,6 +12,7 @@ orbs:
   android: circleci/android@2
   gradle: circleci/gradle@2
   node: circleci/node@5
+  browser-tools: circleci/browser-tools@1
 
 jobs:
   test:
@@ -43,6 +44,12 @@ jobs:
         description: Deprecated
         type: string
         default: 'deprecated'
+      chrome-version:
+        type: string
+        default: 'latest'
+      install-chromedriver:
+        type: boolean
+        default: true
     executor:
       name: common/node-browsers
       node-version: << parameters.node-version >>
@@ -65,6 +72,11 @@ jobs:
               echo "Parameter persist-results is deprecated"
             fi
       - checkout
+      - browser-tools/install-browser-tools:
+          chrome-version: << parameters.chrome-version >>
+          install-chromedriver: << parameters.install-chromedriver >>
+          install-firefox: false
+          install-geckodriver: false
       - when: 
           condition: << parameters.custom-npm-login >>
           steps:
