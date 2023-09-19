@@ -29,9 +29,9 @@ executors:
     parameters:
       node-version:
         type: string
-        default: '16'
+        default: '18.10'
     docker:
-      - image: circleci/node:<< parameters.node-version >>-browsers
+      - image: cimg/node:<< parameters.node-version >>-browsers
         auth:
           username: $DOCKER_LOGIN
           password: $DOCKER_PASSWORD

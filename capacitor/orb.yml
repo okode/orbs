@@ -271,7 +271,7 @@ jobs:
 
 commands:
   install-ios:
-    description: ...
+    description: Install iOS requirements
     parameters:
       cocoapods-version:
         type: string
