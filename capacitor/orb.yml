@@ -115,7 +115,7 @@ jobs:
             else
               export BUILD_TYPE=beta
             fi
-            bundle install && bundle exec fastlane ios ${BUILD_TYPE} distribute:true
+            bundle install && bundle exec fastlane ${CIRCLE_JOB} ${BUILD_TYPE} distribute:true
           no_output_timeout: 30m
       - persist_to_workspace:
           root: .
@@ -260,7 +260,7 @@ jobs:
                   else
                     export BUILD_TYPE=beta
                   fi
-                  bundle install && bundle exec fastlane android ${BUILD_TYPE} distribute:true
+                  bundle install && bundle exec fastlane ${CIRCLE_JOB} ${BUILD_TYPE} distribute:true
                 no_output_timeout: 30m
       - persist_to_workspace:
           root: .
