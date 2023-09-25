@@ -186,7 +186,7 @@ jobs:
             cp /home/circleci/android-sdk/build-tools/$BUILD_TOOLS_VERSION/lib/d8.jar /home/circleci/android-sdk/build-tools/$BUILD_TOOLS_VERSION/lib/dx.jar
       - run:
           name: Fix Ruby Gems permissions
-          command: sudo chown -R $(whoami) /var/lib/gems
+          command: sudo chown -R $(whoami) /var/lib/gems && sudo chown -R $(whoami) /usr/local/bin
       - node/install:
           node-version: << parameters.node-version >>
       - when:
