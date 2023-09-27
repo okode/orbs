@@ -313,6 +313,9 @@ jobs:
       install-ionic:
         type: boolean
         default: false
+      install-firebase:
+        type: boolean
+        default: true
       install-cordova:
         type: boolean
         default: false
@@ -362,6 +365,7 @@ jobs:
       - common/install-android:
           install-ionic: << parameters.install-ionic >>
           install-cordova: << parameters.install-cordova >>
+          install-firebase: << parameters.install-firebase >>
       - when:
           condition: << parameters.attach-workspace >>
           steps:

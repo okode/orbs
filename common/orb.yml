@@ -151,6 +151,9 @@ commands:
       install-cordova:
         type: boolean
         default: false
+      install-firebase:
+        type: boolean
+        default: true
     steps:
       - when:
           condition: << parameters.install-ionic >>
@@ -164,12 +167,15 @@ commands:
             - run:
                 name: Installing Cordova
                 command: sudo npm i --quiet -g cordova
-      - run:
-          name: Installing Firebase
-          command: |
-            sudo chown -R $(whoami) /usr/local/lib/node_modules
-            sudo chown -R $(whoami) /usr/local/bin
-            npm i --quiet -g firebase-tools@11.11.0
+      - when:
+          condition: << parameters.install-firebase >>
+          steps:
+            - run:
+                name: Installing Firebase
+                command: |
+                  sudo chown -R $(whoami) /usr/local/lib/node_modules
+                  sudo chown -R $(whoami) /usr/local/bin
+                  npm i --quiet -g firebase-tools@11.11.0 --force
       - run:
           name: Installing Fastlane
           command: |
