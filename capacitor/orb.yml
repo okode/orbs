@@ -37,9 +37,6 @@ jobs:
       pwa-path:
         type: string
         default: 'www'
-      skip-inline-sourcemaps:
-        type: boolean
-        default: false
     executor:
       name: common/node-mac-machine
       xcode-version: << parameters.xcode-version >>
@@ -65,44 +62,6 @@ jobs:
       - install-ios:
           cocoapods-version: << parameters.cocoapods-version >>
           fastlane-version: << parameters.fastlane-version >>
-      - when:
-          condition: << parameters.attach-workspace >>
-          steps:
-            - attach_workspace:
-                at: .
-            - unless:
-                condition: << parameters.skip-inline-sourcemaps >>
-                steps:
-                  - run:
-                      name: Inlining sourcemaps
-                      command: |
-                        if [[ $CIRCLE_TAG != *-dist ]]; then
-                          echo "
-                            \"use strict\";
-                            exports.__esModule = true;
-                            var fs_1 = require(\"fs\");
-                            var replace_in_file_1 = require(\"replace-in-file\");
-                            process.chdir('www');
-                            (0, fs_1.readdirSync)('.')
-                                .filter(function (fname) { return fname.endsWith('.js') && (0, fs_1.existsSync)(fname + '.map'); })
-                                .map(function (fname) { return { js: fname, jsmap: fname + '.map' }; })
-                                .forEach(function (pair) {
-                                (0, replace_in_file_1.replaceInFileSync)({
-                                    files: pair.js,
-                                    from: 'sourceMappingURL=' + pair.js + '.map',
-                                    to: 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + (0, fs_1.readFileSync)(pair.jsmap).toString('base64')
-                                })
-                                    .filter(function (res) { return res.hasChanged; })
-                                    .forEach(function (res) { console.log('Inlined sourceMappingURL as base64 in ' + res.file); });
-                            });
-                            process.chdir(__dirname);
-                          " > inline-sourcemaps.js
-                          npm i --no-save replace-in-file | true
-                          node inline-sourcemaps.js
-                        fi
-            - run:
-                name: Clearing sourcemaps
-                command: find << parameters.pwa-path >> -name *.map -type f -delete
       - run:
           name: Syncing Capacitor project
           command: npx cap sync ios
@@ -151,9 +110,6 @@ jobs:
       build-tools-version:
         type: string
         default: ''
-      skip-inline-sourcemaps:
-        type: boolean
-        default: false
       resource-class:
         type: string
         default: medium
@@ -198,44 +154,6 @@ jobs:
       - run:
           name: Installing Fastlane
           command: sudo gem install fastlane -NV
-      - when:
-          condition: << parameters.attach-workspace >>
-          steps:
-            - attach_workspace:
-                at: .
-            - unless:
-                condition: << parameters.skip-inline-sourcemaps >>
-                steps:
-                  - run:
-                      name: Inlining sourcemaps
-                      command: |
-                        if [[ $CIRCLE_TAG != *-dist ]]; then
-                          echo "
-                            \"use strict\";
-                            exports.__esModule = true;
-                            var fs_1 = require(\"fs\");
-                            var replace_in_file_1 = require(\"replace-in-file\");
-                            process.chdir('www');
-                            (0, fs_1.readdirSync)('.')
-                                .filter(function (fname) { return fname.endsWith('.js') && (0, fs_1.existsSync)(fname + '.map'); })
-                                .map(function (fname) { return { js: fname, jsmap: fname + '.map' }; })
-                                .forEach(function (pair) {
-                                (0, replace_in_file_1.replaceInFileSync)({
-                                    files: pair.js,
-                                    from: 'sourceMappingURL=' + pair.js + '.map',
-                                    to: 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + (0, fs_1.readFileSync)(pair.jsmap).toString('base64')
-                                })
-                                    .filter(function (res) { return res.hasChanged; })
-                                    .forEach(function (res) { console.log('Inlined sourceMappingURL as base64 in ' + res.file); });
-                            });
-                            process.chdir(__dirname);
-                          " > inline-sourcemaps.js
-                          npm i --no-save replace-in-file | true
-                          node inline-sourcemaps.js
-                        fi
-            - run:
-                name: Clearing sourcemaps
-                command: find << parameters.pwa-path >> -name *.map -type f -delete
       - common/keystores:
           dist-certs-repo-url: << parameters.dist-certs-repo-url >>
           ssh-permission-fingerprint: << parameters.ssh-permission-fingerprint >>
