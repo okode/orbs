@@ -13,9 +13,6 @@ orbs:
 jobs:
   ios:
     parameters:
-      attach-workspace:
-        type: boolean
-        default: false
       node-version:
         type: string
         default: '18'
@@ -42,6 +39,8 @@ jobs:
       xcode-version: << parameters.xcode-version >>
     steps:
       - checkout
+      - attach_workspace:
+          at: .
       - when:
           condition: << parameters.ssh-permission-fingerprint >>
           steps:
@@ -83,9 +82,6 @@ jobs:
       - common/notify
   android:
     parameters:
-      attach-workspace:
-        type: boolean
-        default: false
       node-version:
         type: string
         default: '18'
@@ -119,6 +115,8 @@ jobs:
       tag: << parameters.android-docker-tag >>
     steps:
       - checkout
+      - attach_workspace:
+          at: .
       - when:
           condition: << parameters.build-tools-version >>
           steps:
