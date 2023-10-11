@@ -469,7 +469,7 @@ commands:
           command: npm set //$NPM_REGISTRY/:_authToken $NPM_TOKEN
       - run:
           name: Setting custom NPM scope
-          command: npm config set $NPM_SCOPE:registry $NPM_REGISTRY
+          command: npm config set $NPM_SCOPE:registry http://$NPM_REGISTRY
   notify:
     description: Send Slack notification
     steps:
