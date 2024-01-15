@@ -55,12 +55,21 @@ executors:
       xcode-version:
         type: string
         default: '14.2.0'
+      resource-class:
+        type: string
+        default: macos.m1.medium.gen1
     macos:
       xcode: << parameters.xcode-version >>
-    resource_class: macos.x86.medium.gen2
+    resource_class: << parameters.resource-class >>
   java:
     docker:
       - image: cimg/openjdk:11.0-node
+        auth:
+          username: $DOCKER_LOGIN
+          password: $DOCKER_PASSWORD
+  java-17:
+    docker:
+      - image: cimg/openjdk:17.0-node
         auth:
           username: $DOCKER_LOGIN
           password: $DOCKER_PASSWORD
