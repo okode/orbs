@@ -534,7 +534,7 @@ jobs:
     parameters:
       executor:
         type: executor
-        default: java
+        default: java-17
       scanner:
         type: enum
         default: 'standalone'
