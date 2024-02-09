@@ -142,7 +142,8 @@ commands:
             - run:
                 name: Installing Fastlane version << parameters.fastlane-version >>
                 command: |
-                  sudo gem install fastlane -v << parameters.fastlane-version >>
+                  sudo gem install fastlane -v << parameters.fastlane-version >> -NV
+                no_output_timeout: 20m
       - when:
           condition:
             equal: [ 'latest', << parameters.fastlane-version >> ]
@@ -150,7 +151,8 @@ commands:
             - run:
                 name: Installing Fastlane latest version
                 command: |
-                  sudo gem install fastlane
+                  sudo gem install fastlane -NV
+                no_output_timeout: 20m
   install-android:
     description: Install Android requirements
     parameters:
