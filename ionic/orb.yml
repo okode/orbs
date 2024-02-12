@@ -175,6 +175,9 @@ jobs:
       xcode-version:
         type: string
         default: '14.2.0'
+      resource-class:
+        type: string
+        default: macos.m1.medium.gen1
       dev-certs-repo-url:
         type: string
         default: ''
@@ -199,6 +202,7 @@ jobs:
     executor:
       name: common/node-mac-machine
       xcode-version: << parameters.xcode-version >>
+      resource-class: << parameters.resource-class >>
     steps:
       - checkout
       - when:
