@@ -554,7 +554,7 @@ commands:
       - slack/notify:
           event: fail
           custom: << parameters.template >>
-  install_op:
+  install-onepassword-cli:
     description: Install 1Password CLI
     parameters:
       version:
@@ -563,7 +563,7 @@ commands:
     steps:
       - 1password/install-cli:
           version: << parameters.version >>
-  upgrade_android_sdk:
+  upgrade-android-sdk:
     description: Install Android requirements
     parameters:
       skip-upgrade:
