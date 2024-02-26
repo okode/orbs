@@ -544,7 +544,7 @@ commands:
       - 1password/install-cli:
           version: << parameters.version >>
   upgrade-android-sdk:
-    description: Install Android requirements
+    description: Upgrade Android SDK
     parameters:
       skip-upgrade:
         type: boolean
