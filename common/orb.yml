@@ -13,6 +13,7 @@ cache-key-sonar-gradle: &cache-key-sonar-gradle
 orbs:
   aws-cli: circleci/aws-cli@3
   slack: circleci/slack@4
+  1password: onepassword/secrets@1.0.0
 
 executors:
   node:
@@ -203,26 +204,50 @@ commands:
       config:
         type: string
     steps:
-     - run:
-        name: Starting VPN connection
-        command: |
-          wget -O - https://swupdate.openvpn.net/repos/repo-public.gpg > /tmp/repo-public.gpg
-          sudo apt-key add /tmp/repo-public.gpg
-          sudo rm -f /var/lib/apt/lists/lock
-          sudo rm -f /var/cache/apt/archives/lock
-          sudo rm -f /var/lib/dpkg/lock
-          sudo dpkg --configure -a
-          sudo bash -c 'echo "deb http://build.openvpn.net/debian/openvpn/release/2.4 trusty main" > /etc/apt/sources.list.d/openvpn-aptrepo.list'
-          sudo apt-get update || true
-          sudo apt-get install openvpn
-          echo "<< parameters.config >>" > /tmp/vpn.conf
-          echo "<< parameters.user >>" > /tmp/auth.txt
-          echo "<< parameters.password >>" >> /tmp/auth.txt
-          sudo bash -c "base64 -d /tmp/vpn.conf > /etc/openvpn/vpn.conf"
-          sudo cp /tmp/auth.txt /etc/openvpn/auth.txt
-          rm -f /tmp/vpn.conf /tmp/auth.txt
-          sudo openvpn --daemon --config /etc/openvpn/vpn.conf
-          sleep 10
+      - run:
+          name: Starting VPN connection
+          command: |
+            wget -O - https://swupdate.openvpn.net/repos/repo-public.gpg > /tmp/repo-public.gpg
+            sudo apt-key add /tmp/repo-public.gpg
+            sudo rm -f /var/lib/apt/lists/lock
+            sudo rm -f /var/cache/apt/archives/lock
+            sudo rm -f /var/lib/dpkg/lock
+            sudo dpkg --configure -a
+            sudo bash -c 'echo "deb http://build.openvpn.net/debian/openvpn/release/2.4 trusty main" > /etc/apt/sources.list.d/openvpn-aptrepo.list'
+            sudo apt-get update || true
+            sudo apt-get install openvpn
+            echo "<< parameters.config >>" > /tmp/vpn.conf
+            echo "<< parameters.user >>" > /tmp/auth.txt
+            echo "<< parameters.password >>" >> /tmp/auth.txt
+            sudo bash -c "base64 -d /tmp/vpn.conf > /etc/openvpn/vpn.conf"
+            sudo cp /tmp/auth.txt /etc/openvpn/auth.txt
+            rm -f /tmp/vpn.conf /tmp/auth.txt
+            sudo openvpn --daemon --config /etc/openvpn/vpn.conf
+            sleep 10
+  mac_vpn:
+    description: Start VPN connection for MacOS
+    parameters:
+      user:
+        type: string
+      password:
+        type: string
+      config:
+        type: string
+    steps:
+      - run:
+          name: Start VPN connection
+          command: |
+            brew install openvpn
+            echo "<< parameters.config >>" > /tmp/vpn.conf
+            echo "<< parameters.user >>" > /tmp/auth.txt
+            echo "<< parameters.password >>" >> /tmp/auth.txt
+            bash -c "base64 -d /tmp/vpn.conf > /opt/homebrew/etc/openvpn/openvpn.conf"
+            sed -i '' 's/\/etc\/openvpn/\/opt\/homebrew\/etc\/openvpn/' /opt/homebrew/etc/openvpn/openvpn.conf
+            sed -i '' 's/^[^#]*[up|down][[:blank:]]*\/opt\/homebrew\/etc\/openvpn\/update-resolv-conf/#&/' /opt/homebrew/etc/openvpn/openvpn.conf
+            cp /tmp/auth.txt /opt/homebrew/etc/openvpn/auth.txt
+            rm -f /tmp/vpn.conf /tmp/auth.txt
+            sudo brew services start openvpn
+            sleep 10
   bitbucket-downloads:
     description: Upload artifacts to BitBucket Downloads
     parameters:
@@ -509,7 +534,29 @@ commands:
       - slack/notify:
           event: fail
           custom: "{\n\t\"blocks\": [\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"plain_text\",\n\t\t\t\t\"text\": \":red_circle: Failed: ${CIRCLE_USERNAME} workflow (${CIRCLE_JOB}) in ${CIRCLE_PROJECT_REPONAME} (${CIRCLE_BRANCH})\",\n\t\t\t\t\"emoji\": true\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"actions\",\n\t\t\t\"elements\": [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"button\",\n\t\t\t\t\t\"text\": {\n\t\t\t\t\t\t\"type\": \"plain_text\",\n\t\t\t\t\t\t\"text\": \"View ${CIRCLE_PROJECT_REPONAME} ${CIRCLE_JOB} job\"\n\t\t\t\t\t},\n\t\t\t\t\t\"url\": \"${CIRCLE_BUILD_URL}\"\n\t\t\t\t}\n\t\t\t]\n\t\t}\n\t]\n}\n"
-
+  install-onepassword-cli:
+    description: Install 1Password CLI
+    parameters:
+      version:
+        type: string
+        default: '2.24.0'
+    steps:
+      - 1password/install-cli:
+          version: << parameters.version >>
+  upgrade-android-sdk:
+    description: Upgrade Android SDK
+    parameters:
+      skip-upgrade:
+        type: boolean
+        default: false
+    steps:
+      - unless:
+          condition: << parameters.skip-upgrade >>
+          steps:
+            - run:
+                name: Installing Android Platform 28
+                command: |
+                  yes | sdkmanager "platforms;android-28" || true
 jobs:
   sentry-release:
     description: Create Sentry release and uploads sourcemaps from bundle
