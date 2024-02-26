@@ -530,30 +530,10 @@ commands:
           command: npm-cli-adduser
   notify:
     description: Send Slack notification
-    parameters:
-      template:
-        type: string
-        default: "{\n\t\"blocks\": [\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"plain_text\",\n\t\t\t\t\"text\": \":red_circle: Failed: ${CIRCLE_USERNAME} workflow (${CIRCLE_JOB}) in ${CIRCLE_PROJECT_REPONAME} (${CIRCLE_BRANCH})\",\n\t\t\t\t\"emoji\": true\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"actions\",\n\t\t\t\"elements\": [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"button\",\n\t\t\t\t\t\"text\": {\n\t\t\t\t\t\t\"type\": \"plain_text\",\n\t\t\t\t\t\t\"text\": \"View ${CIRCLE_PROJECT_REPONAME} ${CIRCLE_JOB} job\"\n\t\t\t\t\t},\n\t\t\t\t\t\"url\": \"${CIRCLE_BUILD_URL}\"\n\t\t\t\t}\n\t\t\t]\n\t\t}\n\t]\n}\n"
-      slack-access-token:
-        type: string
-        default: ''
-      slack-default-channel:
-        type: string
-        default: ''
     steps:
-      - when:
-          condition: << parameters.slack-access-token >> && << parameters.slack-default-channel >>
-          steps:
-            - run:
-                name: "Setup Slack environment variables"
-                command: |
-                  echo "export SLACK_ACCESS_TOKEN=<< parameters.slack-access-token >>" >> "$BASH_ENV"
-                  echo "export SLACK_DEFAULT_CHANNEL=<< parameters.slack-default-channel >>" >> "$BASH_ENV"
-                  source "$BASH_ENV"
-                when: on_fail
       - slack/notify:
           event: fail
-          custom: << parameters.template >>
+          custom: "{\n\t\"blocks\": [\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"plain_text\",\n\t\t\t\t\"text\": \":red_circle: Failed: ${CIRCLE_USERNAME} workflow (${CIRCLE_JOB}) in ${CIRCLE_PROJECT_REPONAME} (${CIRCLE_BRANCH})\",\n\t\t\t\t\"emoji\": true\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"actions\",\n\t\t\t\"elements\": [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"button\",\n\t\t\t\t\t\"text\": {\n\t\t\t\t\t\t\"type\": \"plain_text\",\n\t\t\t\t\t\t\"text\": \"View ${CIRCLE_PROJECT_REPONAME} ${CIRCLE_JOB} job\"\n\t\t\t\t\t},\n\t\t\t\t\t\"url\": \"${CIRCLE_BUILD_URL}\"\n\t\t\t\t}\n\t\t\t]\n\t\t}\n\t]\n}\n"
   install-onepassword-cli:
     description: Install 1Password CLI
     parameters:
