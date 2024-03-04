@@ -48,7 +48,7 @@ executors:
       NODE_OPTIONS: --max_old_space_size=4096
   node-machine:
     machine:
-      image: ubuntu-2204:2022.10.2
+      image: ubuntu-2204:2024.01.1
     environment:
       NODE_OPTIONS: --max_old_space_size=4096
   node-mac-machine:
