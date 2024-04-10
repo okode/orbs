@@ -125,7 +125,7 @@ jobs:
         default: false
       build-params:
         type: string
-        default: '-- --prod'
+        default: '-- --configuration=production'
       pwa-path:
         type: string
         default: 'www'
