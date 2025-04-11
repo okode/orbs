@@ -19,7 +19,7 @@ executors:
     parameters:
       node-version:
         type: string
-        default: '16.15'
+        default: "16.15"
     docker:
       - image: cimg/node:<< parameters.node-version >>
         auth:
@@ -29,7 +29,7 @@ executors:
     parameters:
       node-version:
         type: string
-        default: '18.10'
+        default: "18.10"
     docker:
       - image: cimg/node:<< parameters.node-version >>-browsers
         auth:
@@ -42,7 +42,7 @@ executors:
     parameters:
       xcode-version:
         type: string
-        default: '14.2.0'
+        default: "14.2.0"
       resource-class:
         type: string
         default: macos.m1.medium.gen1
@@ -80,13 +80,13 @@ commands:
     parameters:
       cordova-version:
         type: string
-        default: 'latest'
+        default: "latest"
       cocoapods-version:
         type: string
-        default: ''
+        default: ""
       fastlane-version:
         type: string
-        default: ''
+        default: ""
     steps:
       - run:
           name: Installing Ionic and Firebase tools
@@ -100,9 +100,9 @@ commands:
           condition:
             and:
               - not:
-                  equal: [ 'latest', << parameters.cocoapods-version >> ]
+                  equal: ["latest", << parameters.cocoapods-version >>]
               - not:
-                  equal: [ '', << parameters.cocoapods-version >> ]
+                  equal: ["", << parameters.cocoapods-version >>]
           steps:
             - run:
                 name: Installing Cocoapods version << parameters.cocoapods-version >>
@@ -110,7 +110,7 @@ commands:
                   sudo gem install cocoapods -v << parameters.cocoapods-version >>
       - when:
           condition:
-            equal: [ 'latest', << parameters.cocoapods-version >> ]
+            equal: ["latest", << parameters.cocoapods-version >>]
           steps:
             - run:
                 name: Installing Cocoapods latest version
@@ -120,9 +120,9 @@ commands:
           condition:
             and:
               - not:
-                  equal: [ 'latest', << parameters.fastlane-version >> ]
+                  equal: ["latest", << parameters.fastlane-version >>]
               - not:
-                  equal: [ '', << parameters.fastlane-version >> ]
+                  equal: ["", << parameters.fastlane-version >>]
           steps:
             - run:
                 name: Installing Fastlane version << parameters.fastlane-version >>
@@ -131,7 +131,7 @@ commands:
                 no_output_timeout: 20m
       - when:
           condition:
-            equal: [ 'latest', << parameters.fastlane-version >> ]
+            equal: ["latest", << parameters.fastlane-version >>]
           steps:
             - run:
                 name: Installing Fastlane latest version
@@ -143,10 +143,10 @@ commands:
     parameters:
       cordova-version:
         type: string
-        default: 'latest'
+        default: "latest"
       gradle-version:
         type: string
-        default: ''
+        default: ""
       skip-upgrade-android-sdk:
         type: boolean
         default: false
@@ -183,26 +183,26 @@ commands:
       config:
         type: string
     steps:
-     - run:
-        name: Starting VPN connection
-        command: |
-          wget -O - https://swupdate.openvpn.net/repos/repo-public.gpg > /tmp/repo-public.gpg
-          sudo apt-key add /tmp/repo-public.gpg
-          sudo rm -f /var/lib/apt/lists/lock
-          sudo rm -f /var/cache/apt/archives/lock
-          sudo rm -f /var/lib/dpkg/lock
-          sudo dpkg --configure -a
-          sudo bash -c 'echo "deb http://build.openvpn.net/debian/openvpn/release/2.4 trusty main" > /etc/apt/sources.list.d/openvpn-aptrepo.list'
-          sudo apt-get update || true
-          sudo apt-get install openvpn
-          echo "<< parameters.config >>" > /tmp/vpn.conf
-          echo "<< parameters.user >>" > /tmp/auth.txt
-          echo "<< parameters.password >>" >> /tmp/auth.txt
-          sudo bash -c "base64 -d /tmp/vpn.conf > /etc/openvpn/vpn.conf"
-          sudo cp /tmp/auth.txt /etc/openvpn/auth.txt
-          rm -f /tmp/vpn.conf /tmp/auth.txt
-          sudo openvpn --daemon --config /etc/openvpn/vpn.conf
-          sleep 10
+      - run:
+          name: Starting VPN connection
+          command: |
+            wget -O - https://swupdate.openvpn.net/repos/repo-public.gpg > /tmp/repo-public.gpg
+            sudo apt-key add /tmp/repo-public.gpg
+            sudo rm -f /var/lib/apt/lists/lock
+            sudo rm -f /var/cache/apt/archives/lock
+            sudo rm -f /var/lib/dpkg/lock
+            sudo dpkg --configure -a
+            sudo bash -c 'echo "deb http://build.openvpn.net/debian/openvpn/release/2.4 trusty main" > /etc/apt/sources.list.d/openvpn-aptrepo.list'
+            sudo apt-get update || true
+            sudo apt-get install openvpn
+            echo "<< parameters.config >>" > /tmp/vpn.conf
+            echo "<< parameters.user >>" > /tmp/auth.txt
+            echo "<< parameters.password >>" >> /tmp/auth.txt
+            sudo bash -c "base64 -d /tmp/vpn.conf > /etc/openvpn/vpn.conf"
+            sudo cp /tmp/auth.txt /etc/openvpn/auth.txt
+            rm -f /tmp/vpn.conf /tmp/auth.txt
+            sudo openvpn --daemon --config /etc/openvpn/vpn.conf
+            sleep 10
   bitbucket-downloads:
     description: Upload artifacts to BitBucket Downloads
     parameters:
@@ -231,9 +231,9 @@ commands:
     parameters:
       scanner:
         type: enum
-        default: 'standalone'
+        default: "standalone"
         description: The way of running the Sonar analysis. It could be 'standalone' (running the analysis using the sonar-scanner.jar) or 'gradle' (using the 'sonarqube' gradle plugin of a build.gradle file).
-        enum: [ 'standalone', 'gradle' ]
+        enum: ["standalone", "gradle"]
       path:
         type: string
         default: .
@@ -254,8 +254,8 @@ commands:
             - attach_workspace:
                 at: << parameters.path >>
       - when:
-          condition: 
-            equal: [ 'standalone', << parameters.scanner >> ]
+          condition:
+            equal: ["standalone", << parameters.scanner >>]
           steps:
             - run:
                 name: Standalone Scanner
@@ -266,7 +266,7 @@ commands:
                 command: curl -L https://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/4.7.0.2747/sonar-scanner-cli-4.7.0.2747.jar > sonar-scanner.jar
                 working_directory: << parameters.path >>
             - restore_cache:
-                << : *cache-key-sonar-standalone
+                <<: *cache-key-sonar-standalone
             - unless:
                 condition: << parameters.skip-typescript-install >>
                 steps:
@@ -279,25 +279,25 @@ commands:
                 command: java -jar sonar-scanner.jar
                 working_directory: << parameters.path >>
             - save_cache:
-                << : *cache-key-sonar-standalone
+                <<: *cache-key-sonar-standalone
                 paths:
                   - ~/.sonar
       - when:
-          condition: 
-            equal: [ 'gradle', << parameters.scanner >> ]
+          condition:
+            equal: ["gradle", << parameters.scanner >>]
           steps:
             - run:
                 name: Gradle Scanner
                 command: echo "Gradle scanner selected running on $(pwd)"
                 working_directory: << parameters.path >>
             - restore_cache:
-                << : *cache-key-sonar-gradle
+                <<: *cache-key-sonar-gradle
             - run:
                 name: Scanning
                 command: ./gradlew sonarqube -x test
                 working_directory: << parameters.path >>
             - save_cache:
-                << : *cache-key-sonar-gradle
+                <<: *cache-key-sonar-gradle
                 paths:
                   - ~/.sonar
   chrome-upgrade:
@@ -355,20 +355,20 @@ commands:
         type: string
       dev-certs-repo-url:
         type: string
-        default: ''
+        default: ""
       dist-certs-repo-url:
         type: string
-        default: ''
+        default: ""
       ssh-permission-fingerprint:
         type: string
-        default: ''
+        default: ""
     steps:
       - when:
           condition: << parameters.ssh-permission-fingerprint >>
           steps:
             - add_ssh_keys:
                 fingerprints:
-                  - '<< parameters.ssh-permission-fingerprint >>'
+                  - "<< parameters.ssh-permission-fingerprint >>"
       - run:
           name: Installing iOS certificates
           command: |
@@ -432,10 +432,10 @@ commands:
         type: string
       dist-certs-repo-url:
         type: string
-        default: ''
+        default: ""
       ssh-permission-fingerprint:
         type: string
-        default: ''
+        default: ""
     steps:
       - when:
           condition: << parameters.ssh-permission-fingerprint >>
@@ -477,10 +477,10 @@ commands:
     steps:
       - run:
           name: Setting NPM auth token
-          command: npm set //$NPM_REGISTRY/:_authToken $NPM_TOKEN
+          command: npm config set //$NPM_REGISTRY/:_authToken=$NPM_TOKEN
       - run:
           name: Setting custom NPM scope
-          command: npm config set $NPM_SCOPE:registry http://$NPM_REGISTRY
+          command: npm config set $NPM_SCOPE:registry https://$NPM_REGISTRY
   notify:
     description: Send Slack notification
     steps:
@@ -500,7 +500,7 @@ jobs:
         type: string
       pwa-path:
         type: string
-        default: 'www'
+        default: "www"
     executor: node
     steps:
       - sentry-release:
@@ -539,9 +539,9 @@ jobs:
         default: java-17
       scanner:
         type: enum
-        default: 'standalone'
+        default: "standalone"
         description: The way of running the Sonar analysis. It could be 'standalone' (running the analysis using the sonar-scanner.jar) or 'gradle' (using the 'sonarqube' gradle plugin of a build.gradle file).
-        enum: [ 'standalone', 'gradle' ]
+        enum: ["standalone", "gradle"]
       path:
         type: string
         default: .
@@ -575,9 +575,9 @@ jobs:
         type: string
       scanner:
         type: enum
-        default: 'standalone'
+        default: "standalone"
         description: The way of running the Sonar analysis. It could be 'standalone' (running the analysis using the sonar-scanner.jar) or 'gradle' (using the 'sonarqube' gradle plugin of a build.gradle file).
-        enum: [ 'standalone', 'gradle' ]
+        enum: ["standalone", "gradle"]
       path:
         type: string
         default: .
@@ -602,28 +602,28 @@ jobs:
     parameters:
       role-arn:
         type: string
-        default: ''
+        default: ""
       from:
         type: string
-        default: 'www'
+        default: "www"
       to:
         type: string
       distribution-id:
         type: string
-        default: ''
+        default: ""
       invalidate-paths:
         type: string
         default: '"/index.html" "/assets/environments.json"'
       package-path:
         type: string
-        default: ''
+        default: ""
     executor: aws-cli/default
     steps:
       - when:
           condition: << parameters.role-arn >>
           steps:
             - aws-cli/setup:
-                role-arn: '<< parameters.role-arn >>'
+                role-arn: "<< parameters.role-arn >>"
       - unless:
           condition: << parameters.role-arn >>
           steps:
